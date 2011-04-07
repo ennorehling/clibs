@@ -1,0 +1,4 @@
+
+quicklist:
+    A simple list that is better than (value, next) tuples in performance
+    and memory usage.
