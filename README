@@ -1,4 +1,7 @@
-
 quicklist:
     A simple list that is better than (value, next) tuples in performance
     and memory usage.
+
+storage:
+    An improvement over flat text files for simple serialization of data.
+    Also, an experiment in writing interfaces in C.
