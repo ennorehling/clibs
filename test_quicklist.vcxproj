@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cutest\CuTest.c" />
-    <ClCompile Include="quicklist_test.c" />
+    <ClCompile Include="test_quicklist.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="quicklist.vcxproj">
