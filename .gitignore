@@ -3,3 +3,5 @@
 Debug/
 ipch/
 Release/
+*.suo
+storage/test.dat
