@@ -5,3 +5,4 @@ ipch/
 Release/
 *.suo
 storage/test.dat
+*.sdf
