@@ -19,9 +19,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <string.h>
 #include <errno.h>
 
-#define QL_MAXSIZE 14           /* total struct is 64 bytes */
-#define QL_LIMIT 8
+#define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
+#define QL_LIMIT 8 /* fewer than this number in a node => attempt merge */
 
+/* The total size of this struct is 64 bytes on a 32-bit system with
+ * normal alignment. YMMV, so on a 64-bit system, twiddle the
+ * constants above */
 struct quicklist {
   struct quicklist *next;
   int num_elements;
