@@ -20,7 +20,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <errno.h>
 
 #define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
-#define QL_LIMIT 8 /* fewer than this number in a node => attempt merge */
+#define QL_LIMIT 7 /* this many or fewer number in a node => attempt merge */
 
 /* The total size of this struct is 64 bytes on a 32-bit system with
  * normal alignment. YMMV, so on a 64-bit system, twiddle the
@@ -93,7 +93,7 @@ int ql_delete(quicklist ** qlp, int index)
     if (ql->num_elements == 0) {
       *qlp = ql->next;
       free(ql);
-    } else if (ql->next && ql->num_elements < QL_LIMIT) {
+    } else if (ql->next && ql->num_elements <= QL_LIMIT) {
       quicklist *qn = ql->next;
       if (ql->num_elements + qn->num_elements > QL_MAXSIZE) {
         memcpy(ql->elements + ql->num_elements, qn->elements, sizeof(void *));
@@ -128,8 +128,8 @@ int ql_insert(quicklist ** qlp, int index, void *data)
       quicklist *qn = (quicklist *) malloc(sizeof(quicklist));
       qn->next = ql->next;
       ql->next = qn;
-      qn->num_elements = QL_LIMIT;
-      ql->num_elements -= QL_LIMIT;
+      qn->num_elements = ql->num_elements-QL_LIMIT;
+      ql->num_elements = QL_LIMIT;
       memcpy(qn->elements, ql->elements + ql->num_elements,
         QL_LIMIT * sizeof(void *));
       if (index <= ql->num_elements) {
