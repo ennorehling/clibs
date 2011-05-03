@@ -156,6 +156,21 @@ static void test_push_returns_end(CuTest * tc)
   CuAssertPtrEquals(tc, result, ql);
 }
 
+static void test_push_doesnt_invalidate_iterator(CuTest * tc)
+{
+  struct quicklist *list=NULL, *ql = NULL;
+  int n, i, qi=0;
+  ql_push(&list, 0);
+  ql = list;
+  for (i=1;i!=42;++i) {
+    ql_push(&list, (void*)(i*2-1));
+    ql_push(&list, (void*)(i*2));
+    n = (int)ql_get(ql, qi);
+    CuAssertIntEquals(tc, i-1, n);
+    ql_advance(&ql, &qi, 1);
+  }
+}
+
 static void test_delete_edgecases(CuTest * tc)
 {
   struct quicklist *ql = NULL;
@@ -214,6 +229,7 @@ int main(int argc, char ** argv)
   SUITE_ADD_TEST(suite, test_delete_rand);
   SUITE_ADD_TEST(suite, test_delete_edgecases);
   SUITE_ADD_TEST(suite, test_set_insert);
+  SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
 
   CuSuiteRun(suite);
   CuSuiteSummary(suite, output);
