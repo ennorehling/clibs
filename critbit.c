@@ -20,7 +20,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <assert.h>
 
 /* see http://cr.yp.to/critbit.html */
-typedef struct critbit_node {
+struct critbit_node {
   void * child[2];
   size_t byte;
   char pattern;
