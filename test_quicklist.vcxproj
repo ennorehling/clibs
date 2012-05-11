@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cutest\CuTest.c" />
+    <ClCompile Include="storage\test_storage.c" />
     <ClCompile Include="test_critbit.c" />
     <ClCompile Include="test_ctools.c" />
     <ClCompile Include="test_quicklist.c" />
@@ -19,6 +20,9 @@
   <ItemGroup>
     <ProjectReference Include="quicklist.vcxproj">
       <Project>{8d2d3349-dedf-4337-b429-77fab21d260d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="storage\storage.vcxproj">
+      <Project>{993ae14c-02d9-421c-93ab-b9b5acec325c}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">

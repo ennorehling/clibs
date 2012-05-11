@@ -27,5 +27,8 @@
     <ClCompile Include="test_critbit.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="storage\test_storage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
