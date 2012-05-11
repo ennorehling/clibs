@@ -213,10 +213,8 @@ static void test_delete_rand(CuTest * tc)
   CuAssertIntEquals(tc, 30, ql_length(ql));
 }
 
-int main(int argc, char ** argv)
+void add_suite_quicklist(CuSuite *suite)
 {
-  CuString *output = CuStringNew();
-  CuSuite *suite = CuSuiteNew();
   SUITE_ADD_TEST(suite, test_advance);
   SUITE_ADD_TEST(suite, test_replace);
   SUITE_ADD_TEST(suite, test_push);
@@ -230,11 +228,4 @@ int main(int argc, char ** argv)
   SUITE_ADD_TEST(suite, test_delete_edgecases);
   SUITE_ADD_TEST(suite, test_set_insert);
   SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
-
-  CuSuiteRun(suite);
-  CuSuiteSummary(suite, output);
-  CuSuiteDetails(suite, output);
-  printf("%s\n", output->buffer);
-  return suite->failCount;
 }
-

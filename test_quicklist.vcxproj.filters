@@ -21,5 +21,11 @@
     <ClCompile Include="test_quicklist.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_ctools.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_critbit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

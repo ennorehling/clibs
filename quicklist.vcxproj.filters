@@ -18,9 +18,15 @@
     <ClCompile Include="quicklist.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="critbit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="quicklist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="critbit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
