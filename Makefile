@@ -20,5 +20,5 @@ test_ctools: quicklist.o critbit.o binarystore.o textstore.o test_ctools.c stora
 	$(CC) -o test_ctools textstore.o binarystore.o quicklist.o critbit.o test_ctools.c test_quicklist.c test_critbit.c cutest/CuTest.c storage/test_storage.c $(INCLUDES) $(CFLAGS)
 
 clean:
-	@rm -f *.o *~ test_storage
+	@rm -f *.o *~ test_ctools
 
