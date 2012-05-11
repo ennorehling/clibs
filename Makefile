@@ -1,5 +1,4 @@
 CFLAGS = -Wall -g
-CC = gcc
 INCLUDES = -Istorage -I.
 
 all: test_ctools
@@ -17,7 +16,7 @@ quicklist.o: quicklist.c quicklist.h
 	$(CC) -c quicklist.c $(CFLAGS)
 
 test_ctools: quicklist.o critbit.o binarystore.o textstore.o test_ctools.c storage/test_storage.c storage/storage.h
-	$(CC) -o test_ctools textstore.o binarystore.o quicklist.o critbit.o test_ctools.c test_quicklist.c test_critbit.c cutest/CuTest.c storage/test_storage.c $(INCLUDES) $(CFLAGS)
+	$(CC) -o test_ctools textstore.o binarystore.o quicklist.o critbit.o test_ctools.c test_quicklist.c test_critbit.c cutest/CuTest.c storage/test_storage.c $(INCLUDES) $(CFLAGS) -lm
 
 clean:
 	@rm -f *.o *~ test_ctools
