@@ -23,7 +23,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 struct critbit_node {
   void * child[2];
   size_t byte;
-  char pattern;
+  char mask;
 };
 
 #define EXTERNAL_NODE 0
@@ -86,20 +86,33 @@ void cb_free(critbit_tree * cb, void (*release_cb)(void *))
 static void cb_insert_node(void ** iter, const char * key, size_t keylen)
 {
   void * ptr = *iter;
-  if (!ptr) {
-    *iter = make_external_node(key);
-  } else if (decode_pointer(&ptr)==INTERNAL_NODE) {
+  if (decode_pointer(&ptr)==INTERNAL_NODE) {
     struct critbit_node * node = (struct critbit_node *)ptr;
-    int branch = (keylen<node->byte) ? 0 : ((key[node->byte]&node->pattern)==0);
+    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
     cb_insert_node(&node->child[branch], key, keylen);
   } else {
     const char * ikey = key;
     const char * iptr = (const char *)ptr;
+    int mask, branch;
+    unsigned int byte = 0;
+    struct critbit_node * node = make_internal_node();
+
     while (*ikey && *iptr && *ikey==*iptr) {
       ++ikey;
       ++iptr;
+      ++byte;
     }
-
+    node->byte = byte;
+    mask = *ikey ^ *iptr; /* these are all the bits that differ */
+    mask |= mask>>1;
+    mask |= mask>>2;
+    mask |= mask>>4; /* now, every bit up to the MSB is set to 1 */
+    mask = (mask&~(mask>>1))^0xFF;
+    node->mask = (char)mask;
+    branch = ((1+((*ikey|node->mask)&0xFF))>>8);
+    node->child[1-branch] = *iter;
+    node->child[branch] = make_external_node(key);
+    *iter = (void *)node;
   }
 }
 
@@ -107,14 +120,18 @@ void cb_insert(critbit_tree * cb, const char * key)
 {
   assert(cb);
   assert(key);
-  cb_insert_node(&cb->root, key, strlen(key));
+  if (!cb->root) {
+    cb->root = make_external_node(key);
+  } else {
+    cb_insert_node(&cb->root, key, strlen(key));
+  }
 }
 
 static int cb_find_node(void * ptr, const char * key, size_t keylen)
 {
   if (decode_pointer(&ptr)==INTERNAL_NODE) {
     struct critbit_node * node = (struct critbit_node *)ptr;
-    int branch = (keylen<node->byte) ? 0 : ((key[node->byte]&node->pattern)==0);
+    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
     return cb_find_node(node->child[branch], key, keylen);
   }
   return strcmp(key, (const char*)ptr)==0;
