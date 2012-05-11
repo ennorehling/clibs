@@ -59,6 +59,12 @@ void * make_external_node(const char * key)
   return (void*)(numvalue+1);
 }
 
+struct critbit_node * make_internal_node(void)
+{
+  struct critbit_node *node = (struct critbit_node *)malloc(sizeof(struct critbit_node));
+  return node;
+}
+
 static void cb_free_node(void * ptr, void (*release_cb)(void *))
 {
   if (decode_pointer(&ptr)==INTERNAL_NODE) {
@@ -77,16 +83,25 @@ void cb_free(critbit_tree * cb, void (*release_cb)(void *))
   if (cb->root) cb_free_node(cb->root, release_cb);
 }
 
-static void cb_insert_node(void ** node, const char * key)
+static void cb_insert_node(void ** iter, const char * key, size_t keylen)
 {
-  if (!*node) *node = make_external_node(key);
+  void * ptr = *iter;
+  if (!ptr) {
+    *iter = make_external_node(key);
+  } else if (decode_pointer(&ptr)==INTERNAL_NODE) {
+    struct critbit_node * node = (struct critbit_node *)ptr;
+    int branch = (keylen<node->byte) ? 0 : ((key[node->byte]&node->pattern)==0);
+    cb_insert_node(&node->child[branch], key, keylen);
+  } else {
+    assert(!"not implemented");
+  }
 }
 
 void cb_insert(critbit_tree * cb, const char * key)
 {
   assert(cb);
   assert(key);
-  cb_insert_node(&cb->root, key);
+  cb_insert_node(&cb->root, key, strlen(key));
 }
 
 static int cb_find_node(void * ptr, const char * key, size_t keylen)
