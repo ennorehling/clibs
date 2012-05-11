@@ -1,7 +1,10 @@
 CFLAGS = -Wall -g
 INCLUDES = -Istorage -I.
 
-all: test_ctools
+all: tests
+
+tests: test_ctools
+	@./test_ctools
 
 binarystore.o: storage/binarystore.c storage/binarystore.h storage/storage.h
 	$(CC) -c storage/binarystore.c $(INCLUDES) $(CFLAGS)
