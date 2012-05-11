@@ -93,7 +93,13 @@ static void cb_insert_node(void ** iter, const char * key, size_t keylen)
     int branch = (keylen<node->byte) ? 0 : ((key[node->byte]&node->pattern)==0);
     cb_insert_node(&node->child[branch], key, keylen);
   } else {
-    assert(!"not implemented");
+    const char * ikey = key;
+    const char * iptr = (const char *)ptr;
+    while (*ikey && *iptr && *ikey==*iptr) {
+      ++ikey;
+      ++iptr;
+    }
+
   }
 }
 
