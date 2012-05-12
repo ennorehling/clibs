@@ -83,13 +83,13 @@ void cb_free(critbit_tree * cb, void (*release_cb)(void *))
   if (cb->root) cb_free_node(cb->root, release_cb);
 }
 
-static void cb_insert_node(void ** iter, const char * key, size_t keylen)
+static int cb_insert_node(void ** iter, const char * key, size_t keylen)
 {
   void * ptr = *iter;
   if (decode_pointer(&ptr)==INTERNAL_NODE) {
     struct critbit_node * node = (struct critbit_node *)ptr;
     int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
-    cb_insert_node(&node->child[branch], key, keylen);
+    return cb_insert_node(&node->child[branch], key, keylen);
   } else {
     const char * ikey = key;
     const char * iptr = (const char *)ptr;
@@ -102,6 +102,10 @@ static void cb_insert_node(void ** iter, const char * key, size_t keylen)
       ++iptr;
       ++byte;
     }
+
+    if (*ikey == *iptr) {
+      return CB_ENOMORE; /* duplicate entry */
+    }
     node->byte = byte;
     mask = *ikey ^ *iptr; /* these are all the bits that differ */
     mask |= mask>>1;
@@ -113,17 +117,19 @@ static void cb_insert_node(void ** iter, const char * key, size_t keylen)
     node->child[1-branch] = *iter;
     node->child[branch] = make_external_node(key);
     *iter = (void *)node;
+    return CB_SUCCESS;
   }
 }
 
-void cb_insert(critbit_tree * cb, const char * key)
+int cb_insert(critbit_tree * cb, const char * key)
 {
   assert(cb);
   assert(key);
   if (!cb->root) {
     cb->root = make_external_node(key);
+    return 1;
   } else {
-    cb_insert_node(&cb->root, key, strlen(key));
+    return cb_insert_node(&cb->root, key, strlen(key));
   }
 }
 
@@ -141,6 +147,6 @@ int cb_find(critbit_tree * cb, const char * key)
 {
   assert(cb);
   assert(key);
-  if (!cb->root) return 0;
+  if (!cb->root) return CB_ENOMORE;
   return cb_find_node(cb->root, key, strlen(key));
 }

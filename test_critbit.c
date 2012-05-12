@@ -8,11 +8,11 @@ static void test_empty(CuTest * tc)
   int result;
 
   result = cb_find(&cb, "herpderp");
-  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, result, CB_ENOMORE);
   result = cb_find(&cb, "herpderp");
-  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, result, CB_ENOMORE);
   cb_free(&cb, 0);
-  CuAssertPtrEquals(tc, 0, cb.root);
+  CuAssertPtrEquals(tc, cb.root, 0);
 }
 
 static void test_insert(CuTest * tc)
@@ -20,11 +20,15 @@ static void test_insert(CuTest * tc)
   critbit_tree cb = {0};
   int result;
 
-  cb_insert(&cb, "herpderp");
+  result = cb_insert(&cb, "herpderp");
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
   CuAssertPtrNotNull(tc, cb.root);
 
+  result = cb_insert(&cb, "herpderp");
+  CuAssertIntEquals(tc, result, CB_ENOMORE);
+
   result = cb_find(&cb, "herpderp");
-  CuAssertIntEquals(tc, result, 1);
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
   cb_free(&cb, 0);
 }
 
@@ -33,17 +37,19 @@ static void test_insert_more(CuTest * tc)
   critbit_tree cb = {0};
   int result;
 
-  cb_insert(&cb, "herp");
-  cb_insert(&cb, "derp");
-  cb_insert(&cb, "murp");
-  CuAssertPtrNotNull(tc, cb.root);
+  result = cb_insert(&cb, "herp");
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
+  result = cb_insert(&cb, "derp");
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
+  result = cb_insert(&cb, "murp");
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
 
   result = cb_find(&cb, "herp");
-  CuAssertIntEquals(tc, result, 1);
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
   result = cb_find(&cb, "derp");
-  CuAssertIntEquals(tc, result, 1);
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
   result = cb_find(&cb, "murp");
-  CuAssertIntEquals(tc, result, 1);
+  CuAssertIntEquals(tc, result, CB_SUCCESS);
 
   cb_free(&cb, 0);
 }

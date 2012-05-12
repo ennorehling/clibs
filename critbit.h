@@ -27,8 +27,11 @@ typedef struct critbit_tree {
   void * root;
 } critbit_tree;
 
+#define CB_ENOMORE 0
+#define CB_SUCCESS 1
+
 void cb_init(critbit_tree * cb);
-void cb_insert(critbit_tree * cb, const char * key);
+int cb_insert(critbit_tree * cb, const char * key);
 int cb_find(critbit_tree * cb, const char * key);
 void cb_free(critbit_tree * cb, void (*release_cb)(void *));
 
