@@ -99,6 +99,21 @@ static void test_erase(CuTest * tc)
   cb_free(&cb, 0);
 }
 
+static void test_insert_duplicates(CuTest * tc)
+{
+  critbit_tree cb = {0};
+  int result;
+
+  result = cb_insert(&cb, "herpderp");
+  result = cb_insert(&cb, "herpderp");
+  CuAssertIntEquals(tc, CB_ENOMORE, result);
+  result = cb_erase(&cb, "herpderp");
+  CuAssertIntEquals(tc, CB_SUCCESS, result);
+  CuAssertPtrEquals(tc, 0, cb.root);
+
+  cb_free(&cb, 0);
+}
+
 void add_suite_critbit(CuSuite *suite)
 {
   SUITE_ADD_TEST(suite, test_empty);
@@ -106,4 +121,5 @@ void add_suite_critbit(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_insert_more);
   SUITE_ADD_TEST(suite, test_insert_reverse);
   SUITE_ADD_TEST(suite, test_erase);
+  SUITE_ADD_TEST(suite, test_insert_duplicates);
 }
