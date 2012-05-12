@@ -34,7 +34,7 @@ void cb_init(critbit_tree * cb);
 int cb_insert(critbit_tree * cb, const char * key);
 int cb_find(critbit_tree * cb, const char * key);
 int cb_erase(critbit_tree * cb, const char * key);
-void cb_free(critbit_tree * cb, void (*release_cb)(void *));
+void cb_clear(critbit_tree * cb);
 
 #ifdef __cplusplus
 }

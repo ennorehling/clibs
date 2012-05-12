@@ -57,22 +57,21 @@ struct critbit_node * make_internal_node(void)
   return node;
 }
 
-static void cb_free_node(void * ptr, void (*release_cb)(void *))
+static void cb_free_node(void * ptr)
 {
   if (decode_pointer(&ptr)==INTERNAL_NODE) {
     struct critbit_node * node = (struct critbit_node *)ptr;
-    cb_free_node(node->child[0], release_cb);
-    cb_free_node(node->child[1], release_cb);
+    cb_free_node(node->child[0]);
+    cb_free_node(node->child[1]);
     free(node);
-  } else if (release_cb) {
-    release_cb(ptr);
   }
 }
 
-void cb_free(critbit_tree * cb, void (*release_cb)(void *))
+void cb_clear(critbit_tree * cb)
 {
-  assert(cb);
-  if (cb->root) cb_free_node(cb->root, release_cb);
+  if (cb->root) {
+    cb_free_node(cb->root);
+  }
 }
 
 static int cb_less(const struct critbit_node * a, const struct critbit_node * b)

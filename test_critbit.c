@@ -9,7 +9,7 @@ static void test_empty(CuTest * tc)
 
   result = cb_find(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_ENOMORE, result);
-  cb_free(&cb, 0);
+  cb_clear(&cb);
   CuAssertPtrEquals(tc, 0, cb.root);
 }
 
@@ -27,7 +27,7 @@ static void test_insert(CuTest * tc)
 
   result = cb_find(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  cb_free(&cb, 0);
+  cb_clear(&cb);
 }
 
 static void test_insert_more(CuTest * tc)
@@ -49,7 +49,7 @@ static void test_insert_more(CuTest * tc)
   result = cb_find(&cb, "murp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
-  cb_free(&cb, 0);
+  cb_clear(&cb);
 }
 
 static void test_insert_reverse(CuTest * tc)
@@ -71,7 +71,7 @@ static void test_insert_reverse(CuTest * tc)
   result = cb_find(&cb, "hurp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
-  cb_free(&cb, 0);
+  cb_clear(&cb);
 }
 
 static void test_erase(CuTest * tc)
@@ -96,7 +96,7 @@ static void test_erase(CuTest * tc)
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   CuAssertPtrEquals(tc, 0, cb.root);
 
-  cb_free(&cb, 0);
+  cb_clear(&cb);
 }
 
 static void test_insert_duplicates(CuTest * tc)
@@ -111,7 +111,7 @@ static void test_insert_duplicates(CuTest * tc)
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   CuAssertPtrEquals(tc, 0, cb.root);
 
-  cb_free(&cb, 0);
+  cb_clear(&cb);
 }
 
 void add_suite_critbit(CuSuite *suite)
