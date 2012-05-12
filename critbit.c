@@ -23,7 +23,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 struct critbit_node {
   void * child[2];
   size_t byte;
-  char mask;
+  unsigned char mask;
 };
 
 #define EXTERNAL_NODE 0
@@ -42,14 +42,6 @@ static int decode_pointer(void ** ptr)
     return EXTERNAL_NODE;
   }
   return INTERNAL_NODE;
-}
-
-struct critbit_node * internal_node(void * ptr) {
-  if (ptr) {
-    ptrdiff_t numvalue = (char*)ptr - (char*)0;
-    if ((numvalue&1)==0) return (struct critbit_node *)ptr;
-  }
-  return 0;
 }
 
 void * make_external_node(const char * key)
@@ -83,42 +75,9 @@ void cb_free(critbit_tree * cb, void (*release_cb)(void *))
   if (cb->root) cb_free_node(cb->root, release_cb);
 }
 
-static int cb_insert_node(void ** iter, const char * key, size_t keylen)
+static int cb_less(const struct critbit_node * a, const struct critbit_node * b)
 {
-  void * ptr = *iter;
-  if (decode_pointer(&ptr)==INTERNAL_NODE) {
-    struct critbit_node * node = (struct critbit_node *)ptr;
-    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
-    return cb_insert_node(&node->child[branch], key, keylen);
-  } else {
-    const char * ikey = key;
-    const char * iptr = (const char *)ptr;
-    int mask, branch;
-    unsigned int byte = 0;
-    struct critbit_node * node = make_internal_node();
-
-    while (*ikey && *iptr && *ikey==*iptr) {
-      ++ikey;
-      ++iptr;
-      ++byte;
-    }
-
-    if (*ikey == *iptr) {
-      return CB_ENOMORE; /* duplicate entry */
-    }
-    node->byte = byte;
-    mask = *ikey ^ *iptr; /* these are all the bits that differ */
-    mask |= mask>>1;
-    mask |= mask>>2;
-    mask |= mask>>4; /* now, every bit up to the MSB is set to 1 */
-    mask = (mask&~(mask>>1))^0xFF;
-    node->mask = (char)mask;
-    branch = ((1+((*ikey|node->mask)&0xFF))>>8);
-    node->child[1-branch] = *iter;
-    node->child[branch] = make_external_node(key);
-    *iter = (void *)node;
-    return CB_SUCCESS;
-  }
+  return a->byte<b->byte || (a->byte==b->byte && a->mask < b->mask);
 }
 
 int cb_insert(critbit_tree * cb, const char * key)
@@ -129,7 +88,66 @@ int cb_insert(critbit_tree * cb, const char * key)
     cb->root = make_external_node(key);
     return 1;
   } else {
-    return cb_insert_node(&cb->root, key, strlen(key));
+    size_t keylen = strlen(key);
+    void ** iter = &cb->root;
+    struct critbit_node * prev = 0;
+    for (;;) {
+      void * ptr = *iter;
+      if (decode_pointer(&ptr)==INTERNAL_NODE) {
+        struct critbit_node * node = (struct critbit_node *)ptr;
+        int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
+        iter = &node->child[branch];
+        prev = node;
+      } else {
+        const char * ikey = key;
+        const char * iptr = (const char *)ptr;
+        unsigned int mask, branch;
+        unsigned int byte = 0;
+        struct critbit_node * node = make_internal_node();
+
+        while (*ikey && *iptr && *ikey==*iptr) {
+          ++ikey;
+          ++iptr;
+          ++byte;
+        }
+
+        if (*ikey == *iptr) {
+          return CB_ENOMORE; /* duplicate entry */
+        }
+        node->byte = byte;
+        mask = *ikey ^ *iptr; /* these are all the bits that differ */
+        mask |= mask>>1;
+        mask |= mask>>2;
+        mask |= mask>>4; /* now, every bit up to the MSB is set to 1 */
+        mask = (mask&~(mask>>1))^0xFF;
+        node->mask = (unsigned char)mask;
+
+        /* TODO: find the right place to insert, iff prev's crit-bit is later in the string than new crit-bit */
+        if (prev && cb_less(node, prev)) {
+          for (iter = &cb->root;;) {
+            ptr = *iter;
+            if (decode_pointer(&ptr)==INTERNAL_NODE) {
+              struct critbit_node * next = (struct critbit_node *)ptr;
+              if (cb_less(next, node)) {
+                branch = ((1+((key[next->byte]|next->mask)&0xFF))>>8);
+                iter = &next->child[branch];
+              } else {
+                break;
+              }
+            } else {
+              assert(!"should never get here");
+            }
+          }
+        }
+
+        branch = ((1+((*ikey|node->mask)&0xFF))>>8);
+        node->child[branch] = make_external_node(key);
+        node->child[1-branch] = *iter;
+        *iter = (void *)node;
+
+        return CB_SUCCESS;
+      }
+    }
   }
 }
 
