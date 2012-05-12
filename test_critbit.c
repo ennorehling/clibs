@@ -79,14 +79,23 @@ static void test_erase(CuTest * tc)
   critbit_tree cb = {0};
   int result;
 
-  cb_insert(&cb, "herpderp");
-  result = cb_find(&cb, "herpderp");
-  CuAssertIntEquals(tc, result, 1);
-  /*
-  cb_erase(&cb, "herpderp");
-  result = cb_find(&cb, "herpderp");
-  CuAssertIntEquals(tc, result, 0);
-  */
+  result = cb_erase(&cb, "herpderp");
+  CuAssertIntEquals(tc, 0, result);
+
+  result = cb_insert(&cb, "herp");
+  result = cb_insert(&cb, "derp");
+
+  result = cb_erase(&cb, "herp");
+  CuAssertIntEquals(tc, CB_SUCCESS, result);
+  result = cb_find(&cb, "herp");
+  CuAssertIntEquals(tc, CB_ENOMORE, result);
+  result = cb_find(&cb, "derp");
+  CuAssertIntEquals(tc, CB_SUCCESS, result);
+
+  result = cb_erase(&cb, "derp");
+  CuAssertIntEquals(tc, CB_SUCCESS, result);
+  CuAssertPtrEquals(tc, 0, cb.root);
+
   cb_free(&cb, 0);
 }
 

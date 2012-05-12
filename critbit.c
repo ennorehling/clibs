@@ -122,7 +122,7 @@ int cb_insert(critbit_tree * cb, const char * key)
         mask = (mask&~(mask>>1))^0xFF;
         node->mask = (unsigned char)mask;
 
-        /* TODO: find the right place to insert, iff prev's crit-bit is later in the string than new crit-bit */
+        /* find the right place to insert, iff prev's crit-bit is later in the string than new crit-bit */
         if (prev && cb_less(node, prev)) {
           for (iter = &cb->root;;) {
             ptr = *iter;
@@ -167,4 +167,38 @@ int cb_find(critbit_tree * cb, const char * key)
   assert(key);
   if (!cb->root) return CB_ENOMORE;
   return cb_find_node(cb->root, key, strlen(key));
+}
+
+int cb_erase(critbit_tree * cb, const char * key)
+{
+  size_t keylen = strlen(key);
+  void **iter = &cb->root;
+  void *ptr = *iter;
+  if (!cb->root) return 0;
+
+  if (decode_pointer(&ptr)==EXTERNAL_NODE) {
+    /* TODO: free cb->root? */
+    cb->root = 0;
+    return CB_SUCCESS;
+  }
+
+  for (;;) {
+    struct critbit_node *parent = (struct critbit_node *)ptr;
+    int branch, type;
+
+    branch = (keylen<=parent->byte) ? 0 : ((1+((key[parent->byte]|parent->mask)&0xFF))>>8);
+
+    ptr = parent->child[branch];
+    type = decode_pointer(&ptr);
+    if (type==INTERNAL_NODE) {
+      iter = &parent->child[branch];
+    } else {
+      if (strcmp(key, (const char *)ptr)==0) {
+        /* TODO: free ptr? */
+        *iter = parent->child[1-branch];
+        return CB_SUCCESS;
+      }
+      return 0;
+    }
+  }
 }
