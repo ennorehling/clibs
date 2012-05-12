@@ -4,6 +4,6 @@ Debug/
 ipch/
 Release/
 *.suo
-storage/test.dat
 *.sdf
 *.o
+*.opensdf
