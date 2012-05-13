@@ -48,7 +48,7 @@ void * make_external_node(const char * key, size_t keylen)
 {
   char * data = strcpy((char *)malloc(keylen + 1), key);
   ptrdiff_t numvalue = data - (const char*)0;
-  assert(numvalue^1);
+  assert((numvalue&1)==0);
   return (void*)(data+1);
 }
 
