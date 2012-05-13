@@ -114,6 +114,10 @@ static void test_find_prefix(CuTest * tc)
   result = cb_insert(&cb, "herp");
   result = cb_insert(&cb, "derp");
 
+  /* silly edge-case, we expect no results, even if there are matches */
+  result = cb_find_prefix(&cb, "herp", NULL, 0, 0);
+  CuAssertIntEquals(tc, 0, result);
+
   result = cb_find_prefix(&cb, "herp", matches, 4, 0);
   CuAssertIntEquals(tc, 3, result);
   CuAssertStrEquals(tc, "herp", matches[0]);

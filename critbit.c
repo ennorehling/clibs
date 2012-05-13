@@ -153,30 +153,41 @@ int cb_insert(critbit_tree * cb, const char * key)
   }
 }
 
+static int cb_find_prefix_i(void * ptr, const char * key, size_t keylen, const char ** results, int numresults, int offset, int next)
+{
+  if (next>=numresults) {
+    return numresults;
+  } else if (decode_pointer(&ptr)==INTERNAL_NODE) {
+    struct critbit_node * node = (struct critbit_node *)ptr;
+    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
+  } else {
+    /* reached an external node */
+  }
+  return CB_ENOMORE;
+}
+
 int cb_find_prefix(critbit_tree * cb, const char * key, const char ** results, int numresults, int offset)
 {
   if (!cb->root) {
     return CB_ENOMORE;
   }
-  return CB_ENOMORE;
-}
-
-static int cb_find_node(void * ptr, const char * key, size_t keylen)
-{
-  if (decode_pointer(&ptr)==INTERNAL_NODE) {
-    struct critbit_node * node = (struct critbit_node *)ptr;
-    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
-    return cb_find_node(node->child[branch], key, keylen);
-  }
-  return strcmp(key, (const char*)ptr)==0;
+  return cb_find_prefix_i(cb->root, key, strlen(key), results, numresults, offset, 0);
 }
 
 int cb_find(critbit_tree * cb, const char * key)
 {
+  void * ptr;
+  size_t keylen;
+
   assert(cb);
   assert(key);
   if (!cb->root) return CB_ENOMORE;
-  return cb_find_node(cb->root, key, strlen(key));
+  for (ptr=cb->root, keylen = strlen(key);decode_pointer(&ptr)==INTERNAL_NODE;) {
+    struct critbit_node * node = (struct critbit_node *)ptr;
+    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
+    ptr = node->child[branch];
+  }
+  return strcmp(key, (const char*)ptr)==0;
 }
 
 int cb_erase(critbit_tree * cb, const char * key)
