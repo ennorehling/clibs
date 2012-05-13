@@ -44,11 +44,12 @@ static int decode_pointer(void ** ptr)
   return INTERNAL_NODE;
 }
 
-void * make_external_node(const char * key)
+void * make_external_node(const char * key, size_t keylen)
 {
-  ptrdiff_t numvalue = key - (const char*)0;  
-  assert((numvalue&1) == 0);
-  return (void*)(numvalue+1);
+  char * data = strcpy((char *)malloc(keylen + 1), key);
+  ptrdiff_t numvalue = data - (const char*)0;
+  assert(numvalue^1);
+  return (void*)(data+1);
 }
 
 struct critbit_node * make_internal_node(void)
@@ -64,6 +65,8 @@ static void cb_free_node(void * ptr)
     cb_free_node(node->child[0]);
     cb_free_node(node->child[1]);
     free(node);
+  } else {
+    free(ptr);
   }
 }
 
@@ -81,13 +84,13 @@ static int cb_less(const struct critbit_node * a, const struct critbit_node * b)
 
 int cb_insert(critbit_tree * cb, const char * key)
 {
+  size_t keylen = strlen(key);
   assert(cb);
   assert(key);
   if (!cb->root) {
-    cb->root = make_external_node(key);
+    cb->root = make_external_node(key, keylen);
     return 1;
   } else {
-    size_t keylen = strlen(key);
     void ** iter = &cb->root;
     struct critbit_node * prev = 0;
     for (;;) {
@@ -140,7 +143,7 @@ int cb_insert(critbit_tree * cb, const char * key)
         }
 
         branch = ((1+((*ikey|node->mask)&0xFF))>>8);
-        node->child[branch] = make_external_node(key);
+        node->child[branch] = make_external_node(key, keylen);
         node->child[1-branch] = *iter;
         *iter = (void *)node;
 
@@ -176,7 +179,8 @@ int cb_erase(critbit_tree * cb, const char * key)
   if (!cb->root) return 0;
 
   if (decode_pointer(&ptr)==EXTERNAL_NODE) {
-    /* TODO: free cb->root? */
+   
+    free(ptr);
     cb->root = 0;
     return CB_SUCCESS;
   }
@@ -193,7 +197,7 @@ int cb_erase(critbit_tree * cb, const char * key)
       iter = &parent->child[branch];
     } else {
       if (strcmp(key, (const char *)ptr)==0) {
-        /* TODO: free ptr? */
+        free(ptr);
         *iter = parent->child[1-branch];
         return CB_SUCCESS;
       }
