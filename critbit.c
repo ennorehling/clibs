@@ -153,6 +153,14 @@ int cb_insert(critbit_tree * cb, const char * key)
   }
 }
 
+int cb_find_prefix(critbit_tree * cb, const char * key, const char ** results, int numresults, int offset)
+{
+  if (!cb->root) {
+    return CB_ENOMORE;
+  }
+  return CB_ENOMORE;
+}
+
 static int cb_find_node(void * ptr, const char * key, size_t keylen)
 {
   if (decode_pointer(&ptr)==INTERNAL_NODE) {

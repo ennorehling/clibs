@@ -34,6 +34,7 @@ void cb_init(critbit_tree * cb);
 int cb_insert(critbit_tree * cb, const char * key);
 int cb_find(critbit_tree * cb, const char * key);
 int cb_erase(critbit_tree * cb, const char * key);
+int cb_find_prefix(critbit_tree * cb, const char * key, const char ** results, int numresults, int offset);
 void cb_clear(critbit_tree * cb);
 
 #ifdef __cplusplus
