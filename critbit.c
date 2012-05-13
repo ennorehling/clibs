@@ -155,23 +155,59 @@ int cb_insert(critbit_tree * cb, const char * key)
 
 static int cb_find_prefix_i(void * ptr, const char * key, size_t keylen, const char ** results, int numresults, int offset, int next)
 {
-  if (next>=numresults) {
-    return numresults;
+  assert(next<=numresults);
+  if (next==numresults) {
+    return next;
   } else if (decode_pointer(&ptr)==INTERNAL_NODE) {
     struct critbit_node * node = (struct critbit_node *)ptr;
-    int branch = (keylen<=node->byte) ? 0 : ((1+((key[node->byte]|node->mask)&0xFF))>>8);
+    next = cb_find_prefix_i(node->child[0], key, keylen, results, numresults, offset, next);
+    if (next<numresults) {
+      next = cb_find_prefix_i(node->child[1], key, keylen, results, numresults, offset, next);
+    }
   } else {
+    const char * str = (const char *)ptr;
     /* reached an external node */
+    if (offset>0) --offset;
+    else {
+      size_t len = strlen(str);
+      if (len>=keylen && strncmp(key, str, keylen)==0) {
+        results[next++] = str;
+      }
+    }
   }
-  return CB_ENOMORE;
+  return next;
 }
 
 int cb_find_prefix(critbit_tree * cb, const char * key, const char ** results, int numresults, int offset)
 {
-  if (!cb->root) {
-    return CB_ENOMORE;
+  void *ptr;
+  struct critbit_node *top = 0;
+  size_t keylen;
+
+  if (!cb->root || !numresults) {
+    return 0;
   }
-  return cb_find_prefix_i(cb->root, key, strlen(key), results, numresults, offset, 0);
+  keylen = strlen(key);
+  for (ptr=cb->root;;) {
+    if (decode_pointer(&ptr)==INTERNAL_NODE) {
+      struct critbit_node * node = (struct critbit_node *)ptr;
+      int branch;
+      if (keylen<=node->byte) {
+        break;
+      }
+      top = node;
+      branch = (1+((key[node->byte]|node->mask)&0xFF))>>8;
+      ptr = node->child[branch];
+    } else {
+      /* we reached an external node before exhausting the key length */
+      break;
+    }
+  }
+  if (top) {
+    /* recursively add all children except the ones from [0-offset) of top to the results */
+    return cb_find_prefix_i(top, key, keylen, results, numresults, offset, 0);
+  }
+  return 0;
 }
 
 int cb_find(critbit_tree * cb, const char * key)

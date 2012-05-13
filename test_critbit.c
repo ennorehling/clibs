@@ -109,9 +109,14 @@ static void test_find_prefix(CuTest * tc)
   CuAssertIntEquals(tc, CB_ENOMORE, result);
   CuAssertStrEquals(tc, 0, matches[0]);
 
+  result = cb_insert(&cb, "herp");
+
+  /* try finding a string that is longer than any in the tree */
+  result = cb_find_prefix(&cb, "herpderp", NULL, 0, 0);
+  CuAssertIntEquals(tc, 0, result);
+
   result = cb_insert(&cb, "herpes");
   result = cb_insert(&cb, "herpderp");
-  result = cb_insert(&cb, "herp");
   result = cb_insert(&cb, "derp");
 
   /* silly edge-case, we expect no results, even if there are matches */
