@@ -5,3 +5,7 @@ quicklist:
 storage:
     An improvement over flat text files for simple serialization of data.
     Also, an experiment in writing interfaces in C.
+
+critbit:
+    Implementation of djb's critbit tre structure, a clever kind of trie
+    that allows fast search among a set of strings, including prefix-search.
