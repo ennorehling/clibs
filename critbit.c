@@ -153,7 +153,7 @@ int cb_insert(critbit_tree * cb, const char * key)
   }
 }
 
-static int cb_find_prefix_i(void * ptr, const char * key, size_t keylen, const char ** results, int numresults, int offset, int next)
+static int cb_find_prefix_i(void * ptr, const char * key, size_t keylen, const char ** results, int numresults, int * offset, int next)
 {
   assert(next<=numresults);
   if (next==numresults) {
@@ -165,12 +165,13 @@ static int cb_find_prefix_i(void * ptr, const char * key, size_t keylen, const c
       next = cb_find_prefix_i(node->child[1], key, keylen, results, numresults, offset, next);
     }
   } else {
-    const char * str = (const char *)ptr;
     /* reached an external node */
-    if (offset>0) --offset;
-    else {
-      size_t len = strlen(str);
-      if (len>=keylen && strncmp(key, str, keylen)==0) {
+    const char * str = (const char *)ptr;
+    size_t len = strlen(str);
+    if (len>=keylen && strncmp(key, str, keylen)==0) {
+      if (*offset>0) {
+        --*offset;
+      } else {
         results[next++] = str;
       }
     }
@@ -180,32 +181,33 @@ static int cb_find_prefix_i(void * ptr, const char * key, size_t keylen, const c
 
 int cb_find_prefix(critbit_tree * cb, const char * key, const char ** results, int numresults, int offset)
 {
-  void *ptr;
-  struct critbit_node *top = 0;
+  void *ptr, *top = 0;
   size_t keylen;
 
   if (!cb->root || !numresults) {
     return 0;
   }
   keylen = strlen(key);
-  for (ptr=cb->root;;) {
+  for (ptr=cb->root, top=cb->root;;) {
+    void * last = ptr;
     if (decode_pointer(&ptr)==INTERNAL_NODE) {
       struct critbit_node * node = (struct critbit_node *)ptr;
       int branch;
       if (keylen<=node->byte) {
         break;
       }
-      top = node;
+      top = last;
       branch = (1+((key[node->byte]|node->mask)&0xFF))>>8;
       ptr = node->child[branch];
     } else {
       /* we reached an external node before exhausting the key length */
+      top = last;
       break;
     }
   }
   if (top) {
     /* recursively add all children except the ones from [0-offset) of top to the results */
-    return cb_find_prefix_i(top, key, keylen, results, numresults, offset, 0);
+    return cb_find_prefix_i(top, key, keylen, results, numresults, &offset, 0);
   }
   return 0;
 }
