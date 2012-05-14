@@ -288,13 +288,13 @@ int cb_erase(critbit_tree * cb, const void * key, size_t keylen)
   }
 }
 
-void * cb_alloc_kv(const char *key, void * value, size_t *len)
+void cb_new_kv(const char *key, void * value, size_t len, void * dst)
 {
   size_t keylen = strlen(key)+1;
-  char * result = (char *)memcpy(malloc(keylen+*len), key, keylen);
-  memcpy(result+keylen, value, *len);
-  *len = keylen+*len;
-  return result;
+  if (dst!=key) {
+    memcpy(dst, key, keylen);
+  }
+  memcpy((char*)dst+keylen, value, len);
 }
 
 void cb_get_kv(const void *kv, void * value, size_t len)

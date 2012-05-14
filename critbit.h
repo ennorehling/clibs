@@ -46,10 +46,8 @@ void cb_clear(critbit_tree * cb);
 #define cb_find_prefix_str(cb, key, results, numresults, offset) \
   cb_find_prefix(cb, (void *)key, strlen(key), results, numresults, offset)
 
-void * cb_alloc_kv(const char *key, void * value, size_t *len);
+void cb_new_kv(const char *key, void * value, size_t len, void * dst);
 void cb_get_kv(const void *kv, void * value, size_t len);
-#define cb_free_kv(kv) \
-  free(kv)
 
 #ifdef __cplusplus
 }

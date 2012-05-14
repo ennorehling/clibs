@@ -175,34 +175,22 @@ static void test_insert_duplicates(CuTest * tc)
 static void test_keyvalue(CuTest * tc)
 {
   critbit_tree cb = CRITBIT_TREE();
-  int result, i;
+  int result, i = 0x0F0E0D0C;
+  char buffer[10];
+  const void * matches[2];
+  const char * key = "herp";
+  
+  cb_new_kv(key, &i, sizeof(int), buffer);
+  CuAssertStrEquals(tc, buffer, key);
+  cb_get_kv(buffer, &result, sizeof(int));
+  CuAssertIntEquals(tc, i, result);
 
-  for (i=0;i!=10;++i) {
-    size_t len = sizeof(int);
-    char key[20];
-    void * kv;
-
-    sprintf(key, "%d", i);
-    kv = cb_alloc_kv(key, &i, &len);
-    CuAssertIntEquals(tc, strlen(key)+1+sizeof(int), len);
-    result = cb_insert(&cb, kv, len);
-    cb_free_kv(kv);
-    CuAssertIntEquals(tc, CB_SUCCESS, result);
-  }
-
-  for (i=0;i!=10;++i) {
-    char key[20];
-    int value, result;
-    const void * match[2];
-
-    sprintf(key, "%d", i);
-    result = cb_find_prefix(&cb, key, strlen(key)+1, match, 2, 0);
-    CuAssertIntEquals(tc, 1, result);
-    CuAssertStrEquals(tc, key, (const char *)match[0]);
-
-    cb_get_kv(match[0], &value, sizeof(int));
-    CuAssertIntEquals(tc, i, value);
-  }
+  result = cb_insert(&cb, buffer, strlen(buffer)+1+sizeof(int));
+  CuAssertIntEquals(tc, CB_SUCCESS, result);
+  result = cb_find_prefix(&cb, key, strlen(key)+1, matches, 2, 0);
+  CuAssertIntEquals(tc, 1, result);
+  cb_get_kv(matches[0], &result, sizeof(int));
+  CuAssertIntEquals(tc, i, result);
 }
 
 void add_suite_critbit(CuSuite *suite)
