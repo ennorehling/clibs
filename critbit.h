@@ -27,27 +27,29 @@ typedef struct critbit_tree {
   void * root;
 } critbit_tree;
 
-#define CB_ENOMORE 0
 #define CB_SUCCESS 1
 
 #define CRITBIT_TREE() { 0 }
 
 int cb_insert(critbit_tree * cb, const void * key, size_t keylen);
-int cb_find(critbit_tree * cb, const void * key, size_t keylen);
+const void * cb_find(critbit_tree * cb, const void * key, size_t keylen);
 int cb_erase(critbit_tree * cb, const void * key, size_t keylen);
-int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const char ** results, int numresults, int offset);
+int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const void ** results, int numresults, int offset);
 void cb_clear(critbit_tree * cb);
 
 #define cb_insert_str(cb, key) \
   cb_insert(cb, (void *)key, strlen(key)+1)
 #define cb_find_str(cb, key) \
-  cb_find(cb, (void *)key, strlen(key)+1)
+  (const char *)cb_find(cb, (void *)key, strlen(key)+1)
 #define cb_erase_str(cb, key) \
   cb_erase(cb, (void *)key, strlen(key)+1)
 #define cb_find_prefix_str(cb, key, results, numresults, offset) \
   cb_find_prefix(cb, (void *)key, strlen(key), results, numresults, offset)
 
-
+void * cb_alloc_kv(const char *key, void * value, size_t *len);
+void cb_get_kv(const void *kv, void * value, size_t len);
+#define cb_free_kv(kv) \
+  free(kv)
 
 #ifdef __cplusplus
 }
