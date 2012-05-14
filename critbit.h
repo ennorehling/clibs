@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2010-2011, Enno Rehling <enno@eressea.de>
+Copyright (c) 2012, Enno Rehling <enno@eressea.de>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
