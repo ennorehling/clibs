@@ -1,6 +1,7 @@
 #include "critbit.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char** argv) {
   int e, n = 1000, o = 0;
@@ -16,10 +17,10 @@ int main(int argc, char** argv) {
   while (n--) {
     char str[20];
     sprintf(str, "%d", n);
-    cb_insert(&cb, str, strlen(prefix));
+    cb_insert_str(&cb, str);
   }
   do {
-    e = cb_find_prefix(&cb, prefix, strlen(prefix), results, 4, o);
+    e = cb_find_prefix_str(&cb, prefix, results, 4, o);
     o += e;
   } while (e);
   printf("matches: %d\n", o);

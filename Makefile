@@ -1,7 +1,7 @@
 # I am not very good at Makefiles.
 
 CFLAGS = -Wall -g
-CFLAGS = -Wall -O3
+#CFLAGS += -Wall -O3
 INCLUDES = -Istorage -I.
 
 all: benchmarks tests

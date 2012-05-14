@@ -32,10 +32,10 @@ typedef struct critbit_tree {
 
 #define CRITBIT_TREE() { 0 }
 
-int cb_insert(critbit_tree * cb, void * key, size_t keylen);
-int cb_find(critbit_tree * cb, void * key, size_t keylen);
-int cb_erase(critbit_tree * cb, void * key, size_t keylen);
-int cb_find_prefix(critbit_tree * cb, void * key, size_t keylen, const char ** results, int numresults, int offset);
+int cb_insert(critbit_tree * cb, const void * key, size_t keylen);
+int cb_find(critbit_tree * cb, const void * key, size_t keylen);
+int cb_erase(critbit_tree * cb, const void * key, size_t keylen);
+int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const char ** results, int numresults, int offset);
 void cb_clear(critbit_tree * cb);
 
 #define cb_insert_str(cb, key) \

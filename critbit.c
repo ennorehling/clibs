@@ -39,7 +39,7 @@ static int decode_pointer(void ** ptr)
   return INTERNAL_NODE;
 }
 
-void * make_external_node(void * key, size_t keylen)
+void * make_external_node(const void * key, size_t keylen)
 {
   char * data = (char *)malloc(sizeof(size_t) + keylen + 1);
 #ifndef NDEBUG
@@ -93,7 +93,7 @@ static int cb_less(const struct critbit_node * a, const struct critbit_node * b)
   return a->byte<b->byte || (a->byte==b->byte && a->mask < b->mask);
 }
 
-int cb_insert(critbit_tree * cb, void * key, size_t keylen)
+int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
 {
   assert(cb);
   assert(key);
@@ -166,7 +166,7 @@ int cb_insert(critbit_tree * cb, void * key, size_t keylen)
   }
 }
 
-static int cb_find_prefix_i(void * ptr, void * key, size_t keylen, const char ** results, int numresults, int * offset, int next)
+static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const char ** results, int numresults, int * offset, int next)
 {
   assert(next<=numresults);
   if (next==numresults) {
@@ -194,7 +194,7 @@ static int cb_find_prefix_i(void * ptr, void * key, size_t keylen, const char **
   return next;
 }
 
-int cb_find_prefix(critbit_tree * cb, void * key, size_t keylen, const char ** results, int numresults, int offset)
+int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const char ** results, int numresults, int offset)
 {
   void *ptr, *top = 0;
   assert(key);
@@ -228,7 +228,7 @@ int cb_find_prefix(critbit_tree * cb, void * key, size_t keylen, const char ** r
   return 0;
 }
 
-int cb_find(critbit_tree * cb, void * key, size_t keylen)
+int cb_find(critbit_tree * cb, const void * key, size_t keylen)
 {
   void * str;
   size_t len;
@@ -247,7 +247,7 @@ int cb_find(critbit_tree * cb, void * key, size_t keylen)
   return len==keylen && memcmp(key, str, keylen)==0;
 }
 
-int cb_erase(critbit_tree * cb, void * key, size_t keylen)
+int cb_erase(critbit_tree * cb, const void * key, size_t keylen)
 {
   void **iter = &cb->root;
   void *ptr = *iter;
