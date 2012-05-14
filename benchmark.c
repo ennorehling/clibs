@@ -16,10 +16,10 @@ int main(int argc, char** argv) {
   while (n--) {
     char str[20];
     sprintf(str, "%d", n);
-    cb_insert(&cb, str);
+    cb_insert(&cb, str, strlen(prefix));
   }
   do {
-    e = cb_find_prefix(&cb, prefix, results, 4, o);
+    e = cb_find_prefix(&cb, prefix, strlen(prefix), results, 4, o);
     o += e;
   } while (e);
   printf("matches: %d\n", o);

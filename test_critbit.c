@@ -1,5 +1,6 @@
 #include <cutest/CuTest.h>
 #include <stdlib.h>
+#include <string.h>
 #include "critbit.h"
 
 static void test_empty(CuTest * tc)
@@ -7,7 +8,7 @@ static void test_empty(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_find(&cb, "herpderp");
+  result = cb_find_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_ENOMORE, result);
   cb_clear(&cb);
   CuAssertPtrEquals(tc, 0, cb.root);
@@ -18,14 +19,14 @@ static void test_insert(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_insert(&cb, "herpderp");
+  result = cb_insert_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   CuAssertPtrNotNull(tc, cb.root);
 
-  result = cb_insert(&cb, "herpderp");
+  result = cb_insert_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_ENOMORE, result);
 
-  result = cb_find(&cb, "herpderp");
+  result = cb_find_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   cb_clear(&cb);
 }
@@ -35,18 +36,18 @@ static void test_insert_more(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_insert(&cb, "herp");
+  result = cb_insert_str(&cb, "herp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_insert(&cb, "derp");
+  result = cb_insert_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_insert(&cb, "murp");
+  result = cb_insert_str(&cb, "murp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
-  result = cb_find(&cb, "herp");
+  result = cb_find_str(&cb, "herp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_find(&cb, "derp");
+  result = cb_find_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_find(&cb, "murp");
+  result = cb_find_str(&cb, "murp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
   cb_clear(&cb);
@@ -57,18 +58,18 @@ static void test_insert_reverse(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_insert(&cb, "herp");
+  result = cb_insert_str(&cb, "herp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_insert(&cb, "hurp");
+  result = cb_insert_str(&cb, "hurp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_insert(&cb, "derp");
+  result = cb_insert_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
-  result = cb_find(&cb, "herp");
+  result = cb_find_str(&cb, "herp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_find(&cb, "derp");
+  result = cb_find_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_find(&cb, "hurp");
+  result = cb_find_str(&cb, "hurp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
   cb_clear(&cb);
@@ -79,20 +80,20 @@ static void test_erase(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_erase(&cb, "herpderp");
+  result = cb_erase_str(&cb, "herpderp");
   CuAssertIntEquals(tc, 0, result);
 
-  result = cb_insert(&cb, "herp");
-  result = cb_insert(&cb, "derp");
+  result = cb_insert_str(&cb, "herp");
+  result = cb_insert_str(&cb, "derp");
 
-  result = cb_erase(&cb, "herp");
+  result = cb_erase_str(&cb, "herp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  result = cb_find(&cb, "herp");
+  result = cb_find_str(&cb, "herp");
   CuAssertIntEquals(tc, CB_ENOMORE, result);
-  result = cb_find(&cb, "derp");
+  result = cb_find_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
-  result = cb_erase(&cb, "derp");
+  result = cb_erase_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   CuAssertPtrEquals(tc, 0, cb.root);
 
@@ -105,39 +106,39 @@ static void test_find_prefix(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_find_prefix(&cb, "herpderp", matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "herpderp", matches, 4, 0);
   CuAssertIntEquals(tc, CB_ENOMORE, result);
   CuAssertStrEquals(tc, 0, matches[0]);
 
-  result = cb_insert(&cb, "herp");
+  result = cb_insert_str(&cb, "herp");
 
   /* try finding a string that is longer than any in the tree */
-  result = cb_find_prefix(&cb, "herpderp", NULL, 0, 0);
+  result = cb_find_prefix_str(&cb, "herpderp", NULL, 0, 0);
   CuAssertIntEquals(tc, 0, result);
 
-  result = cb_find_prefix(&cb, "", matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 0);
   CuAssertIntEquals(tc, 1, result);
   CuAssertStrEquals(tc, "herp", matches[0]);
 
-  result = cb_find_prefix(&cb, "", matches, 4, 1);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 1);
   CuAssertIntEquals(tc, 0, result);
 
-  result = cb_insert(&cb, "herpes");
+  result = cb_insert_str(&cb, "herpes");
 
-  result = cb_find_prefix(&cb, "", matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 0);
   CuAssertIntEquals(tc, 2, result);
   
-  result = cb_insert(&cb, "herpderp");
-  result = cb_insert(&cb, "derp");
+  result = cb_insert_str(&cb, "herpderp");
+  result = cb_insert_str(&cb, "derp");
 
-  result = cb_find_prefix(&cb, "", matches, 4, 2);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 2);
   CuAssertIntEquals(tc, 2, result);
 
   /* silly edge-case, we expect no results, even if there are matches */
-  result = cb_find_prefix(&cb, "herp", NULL, 0, 0);
+  result = cb_find_prefix_str(&cb, "herp", NULL, 0, 0);
   CuAssertIntEquals(tc, 0, result);
 
-  result = cb_find_prefix(&cb, "herp", matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "herp", matches, 4, 0);
   CuAssertIntEquals(tc, 3, result);
   CuAssertStrEquals(tc, "herp", matches[0]);
   CuAssertStrEquals(tc, "herpderp", matches[1]);
@@ -145,7 +146,7 @@ static void test_find_prefix(CuTest * tc)
   CuAssertStrEquals(tc, 0, matches[3]);
 
   matches[0] = 0;
-  result = cb_find_prefix(&cb, "herp", matches, 4, 3);
+  result = cb_find_prefix_str(&cb, "herp", matches, 4, 3);
   CuAssertIntEquals(tc, CB_ENOMORE, result);
   CuAssertStrEquals(tc, 0, matches[0]);
 }
@@ -155,10 +156,10 @@ static void test_insert_duplicates(CuTest * tc)
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_insert(&cb, "herpderp");
-  result = cb_insert(&cb, "herpderp");
+  result = cb_insert_str(&cb, "herpderp");
+  result = cb_insert_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_ENOMORE, result);
-  result = cb_erase(&cb, "herpderp");
+  result = cb_erase_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   CuAssertPtrEquals(tc, 0, cb.root);
 
