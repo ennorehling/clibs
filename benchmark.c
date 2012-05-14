@@ -6,8 +6,8 @@
 int main(int argc, char** argv) {
   int e, n = 1000, o = 0;
   critbit_tree cb = { 0 };
-  const char* results[4];
-  const char * prefix = "";
+  const void *results[4];
+  const char *prefix = "";
   if (argc>1) {
     n = atoi(argv[1]);
     if (argc>2) {

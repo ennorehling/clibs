@@ -166,7 +166,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
   }
 }
 
-static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const char ** results, int numresults, int * offset, int next)
+static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const void ** results, int numresults, int * offset, int next)
 {
   assert(next<=numresults);
   if (next==numresults) {
@@ -194,7 +194,7 @@ static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const c
   return next;
 }
 
-int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const char ** results, int numresults, int offset)
+int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const void ** results, int numresults, int offset)
 {
   void *ptr, *top = 0;
   assert(key);
