@@ -1,34 +1,29 @@
+# I am not very good at Makefiles.
+
 CFLAGS = -Wall -g
 CFLAGS = -Wall -O3
 INCLUDES = -Istorage -I.
 
-all: bin benchmarks tests
+all: benchmarks tests
 
 bin:
 	mkdir -p $@
 
-tests: bin/test_ctools
-	@bin/test_ctools
-
 benchmarks: bin/benchmark
 	@bin/benchmark
 
-binarystore.o: storage/binarystore.c storage/binarystore.h storage/storage.h
-	$(CC) -c storage/binarystore.c $(INCLUDES) $(CFLAGS)
+tests: bin/test_ctools
+	@bin/test_ctools
 
-textstore.o: storage/textstore.c storage/textstore.h storage/storage.h
-	$(CC) -c storage/textstore.c $(INCLUDES) $(CFLAGS)
+bin/benchmark: benchmark.c critbit.c | bin
+	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $<
-
-bin/benchmark: benchmark.o critbit.o
-	$(CC) -o bin/benchmark benchmark.o critbit.o $(INCLUDES) $(CFLAGS) -lm
-
-bin/test_ctools: quicklist.o critbit.o binarystore.o textstore.o \
-test_ctools.c storage/test_storage.c test_quicklist.c test_critbit.c
-	$(CC) -o $@ textstore.o binarystore.o quicklist.o critbit.o test_ctools.c test_quicklist.c test_critbit.c cutest/CuTest.c storage/test_storage.c $(INCLUDES) $(CFLAGS) -lm
+bin/test_ctools: test_ctools.c \
+test_critbit.c critbit.c \
+test_quicklist.c quicklist.c \
+storage/test_storage.c storage/textstore.c storage/binarystore.c \
+cutest/CuTest.c | bin
+	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
 
 clean:
-	@rm -rf *.o *~ bin
-
+	@rm -rf *~ bin
