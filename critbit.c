@@ -29,11 +29,6 @@ struct critbit_node {
 #define EXTERNAL_NODE 0
 #define INTERNAL_NODE 1
 
-void cb_init(critbit_tree * cb)
-{
-  cb->root = 0;
-}
-
 static int decode_pointer(void ** ptr)
 {
   ptrdiff_t numvalue = (const char*)*ptr - (const char*)0;

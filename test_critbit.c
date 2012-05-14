@@ -4,7 +4,7 @@
 
 static void test_empty(CuTest * tc)
 {
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_find(&cb, "herpderp");
@@ -15,7 +15,7 @@ static void test_empty(CuTest * tc)
 
 static void test_insert(CuTest * tc)
 {
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_insert(&cb, "herpderp");
@@ -32,7 +32,7 @@ static void test_insert(CuTest * tc)
 
 static void test_insert_more(CuTest * tc)
 {
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_insert(&cb, "herp");
@@ -54,7 +54,7 @@ static void test_insert_more(CuTest * tc)
 
 static void test_insert_reverse(CuTest * tc)
 {
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_insert(&cb, "herp");
@@ -76,7 +76,7 @@ static void test_insert_reverse(CuTest * tc)
 
 static void test_erase(CuTest * tc)
 {
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_erase(&cb, "herpderp");
@@ -102,7 +102,7 @@ static void test_erase(CuTest * tc)
 static void test_find_prefix(CuTest * tc)
 {
   const char * matches[4] = { 0, 0, 0, 0 };
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_find_prefix(&cb, "herpderp", matches, 4, 0);
@@ -152,7 +152,7 @@ static void test_find_prefix(CuTest * tc)
 
 static void test_insert_duplicates(CuTest * tc)
 {
-  critbit_tree cb = {0};
+  critbit_tree cb = CRITBIT_TREE();
   int result;
 
   result = cb_insert(&cb, "herpderp");
