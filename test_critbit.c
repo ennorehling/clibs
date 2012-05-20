@@ -157,6 +157,73 @@ static void test_find_prefix(CuTest * tc)
   CuAssertStrEquals(tc, 0, matches[0]);
 }
 
+int count_cb(const void * match, const void * key, size_t keylen, void * cbdata)
+{
+  int * result = (int *)cbdata;
+  ++*result;
+  return memcmp(match, key, keylen);
+}
+
+int ordered_cb(const void * match, const void * key, size_t keylen, void * cbdata)
+{
+  const void ** prevptr = (const void **)cbdata;
+  const void * prev = *prevptr;
+
+  *prevptr = match;
+  if (!key) return -1;
+  if (memcmp(match, key, keylen)!=0) return -2;
+  if (prev) {
+    if (strcmp((const char *)match, (const char *)prev)<0) {
+      return -3;
+    }
+  }
+  return 0;
+}
+
+static void test_foreach(CuTest * tc)
+{
+  critbit_tree cb = CRITBIT_TREE();
+  int result, counter;
+  const char * prev;
+
+  counter = 0;
+  result = cb_foreach(&cb, "herpderp", strlen("herpderp"), count_cb, &counter);
+  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, 0, counter);
+
+  result = cb_insert_str(&cb, "herp");
+
+  /* try finding a string that is longer than any in the tree */
+  counter = 0;
+  result = cb_foreach(&cb, "herpderp", strlen("herpderp"), count_cb, &counter);
+  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, 0, counter);
+
+  counter = 0;
+  result = cb_foreach(&cb, "", 0, count_cb, &counter);
+  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, 1, counter);
+
+  result = cb_insert_str(&cb, "derp");
+  result = cb_insert_str(&cb, "herpes");
+  result = cb_insert_str(&cb, "herpderp");
+
+  counter = 0;
+  result = cb_foreach(&cb, "", 0, count_cb, &counter);
+  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, 4, counter);
+
+  counter = 0;
+  result = cb_foreach(&cb, "herp", 0, count_cb, &counter);
+  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, 4, counter);
+
+  /* keys should be processed in order */
+  prev = 0;
+  result = cb_foreach(&cb, "", 0, ordered_cb, (void *)&prev);
+  CuAssertIntEquals(tc, 0, result);
+}
+
 static void test_insert_duplicates(CuTest * tc)
 {
   critbit_tree cb = CRITBIT_TREE();
@@ -193,6 +260,18 @@ static void test_keyvalue(CuTest * tc)
   CuAssertIntEquals(tc, i, result);
 }
 
+static void test_clear(CuTest * tc)
+{
+  critbit_tree cb = CRITBIT_TREE();
+
+  CuAssertIntEquals(tc, 1, cb_insert_str(&cb, "herp"));
+  CuAssertPtrNotNull(tc, cb_find_str(&cb, "herp"));
+  cb_clear(&cb);
+  CuAssertStrEquals(tc, 0, cb_find_str(&cb, "herp"));
+  CuAssertIntEquals(tc, 1, cb_insert_str(&cb, "herp"));
+  CuAssertPtrNotNull(tc, cb_find_str(&cb, "herp"));
+}
+
 void add_suite_critbit(CuSuite *suite)
 {
   SUITE_ADD_TEST(suite, test_empty);
@@ -200,7 +279,9 @@ void add_suite_critbit(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_insert_more);
   SUITE_ADD_TEST(suite, test_insert_reverse);
   SUITE_ADD_TEST(suite, test_erase);
+  SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_find_prefix);
   SUITE_ADD_TEST(suite, test_insert_duplicates);
   SUITE_ADD_TEST(suite, test_keyvalue);
+  SUITE_ADD_TEST(suite, test_clear);
 }
