@@ -3,10 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+int count_cb(const void * match, const void * key, size_t keylen, void *result)
+{
+  int * ctr = (int*)result;
+  ++*ctr;
+  return 0;
+}
+
 int main(int argc, char** argv) {
-  int e, n = 1000, o = 0;
+  int n = 1000, o = 0;
   critbit_tree cb = { 0 };
-  const void *results[4];
   const char *prefix = "";
   if (argc>1) {
     n = atoi(argv[1]);
@@ -19,10 +25,7 @@ int main(int argc, char** argv) {
     sprintf(str, "%d", n);
     cb_insert_str(&cb, str);
   }
-  do {
-    e = cb_find_prefix_str(&cb, prefix, results, 4, o);
-    o += e;
-  } while (e);
+  cb_foreach(&cb, prefix, strlen(prefix), count_cb, &o);
   printf("matches: %d\n", o);
   return 0;
 }
