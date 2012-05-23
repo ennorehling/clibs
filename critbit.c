@@ -41,7 +41,7 @@ static int decode_pointer(void ** ptr)
 
 void * make_external_node(const void * key, size_t keylen)
 {
-  char * data = (char *)malloc(sizeof(size_t) + keylen + 1);
+  char * data = (char *)malloc(sizeof(size_t) + keylen);
 #ifndef NDEBUG
   ptrdiff_t numvalue = (char *)data - (char*)0;
   assert((numvalue&1)==0);
