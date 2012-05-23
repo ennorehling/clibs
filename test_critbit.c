@@ -246,13 +246,15 @@ static void test_keyvalue(CuTest * tc)
   char buffer[10];
   const void * matches[2];
   const char * key = "herp";
-  
-  cb_new_kv(key, &i, sizeof(int), buffer);
+  size_t len = strlen(key);
+
+  len = cb_new_kv(key, len, &i, sizeof(int), buffer);
+  CuAssertIntEquals(tc, strlen(buffer)+1+sizeof(int), len);
   CuAssertStrEquals(tc, buffer, key);
   cb_get_kv(buffer, &result, sizeof(int));
   CuAssertIntEquals(tc, i, result);
 
-  result = cb_insert(&cb, buffer, strlen(buffer)+1+sizeof(int));
+  result = cb_insert(&cb, buffer, len);
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   result = cb_find_prefix(&cb, key, strlen(key)+1, matches, 2, 0);
   CuAssertIntEquals(tc, 1, result);
