@@ -11,21 +11,20 @@ int count_cb(const void * match, const void * key, size_t keylen, void *result)
 }
 
 int main(int argc, char** argv) {
-  int n = 1000, o = 0;
+  int a, n = 1000, o = 0;
   critbit_tree cb = { 0 };
-  const char *prefix = "";
   if (argc>1) {
     n = atoi(argv[1]);
-    if (argc>2) {
-      prefix = argv[2];
-    }
   }
   while (n--) {
     char str[20];
     sprintf(str, "%d", n);
     cb_insert_str(&cb, str);
   }
-  cb_foreach(&cb, prefix, strlen(prefix), count_cb, &o);
-  printf("matches: %d\n", o);
+  for (a=2;a<argc;++a) {
+    const char * prefix = argv[a];
+    cb_foreach(&cb, prefix, strlen(prefix), count_cb, &o);
+    printf("%s matches: %d\n", prefix, o);
+  }
   return 0;
 }
