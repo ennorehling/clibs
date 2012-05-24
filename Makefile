@@ -9,14 +9,18 @@ all: benchmarks tests
 bin:
 	mkdir -p $@
 
-benchmarks: bin/benchmark
-	@bin/benchmark
+benchmarks: bin/benchmark bin/naive
+	@bin/benchmark 100 1
+	@bin/naive 100 1
 
 tests: bin/test_ctools
 	@bin/test_ctools
 
 bin/benchmark: benchmark.c critbit.c | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
+
+bin/naive: naive.c | bin
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
 bin/test_ctools: test_ctools.c \
 test_critbit.c critbit.c \
