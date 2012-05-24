@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv) {
   const char ** strings;
-  int a, i, n = 1000, o = 0;
+  int a, i, n = 1000;
 
   if (argc>1) {
     n = atoi(argv[1]);
@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
   }
   for (a=2;a<argc;++a) {
     const char * prefix = argv[a];
+    int o = 0;
     size_t len = strlen(prefix);
     for(i=0;i!=n;++i) {
       if (strncmp(prefix, strings[i], len)==0) ++o;
