@@ -8,7 +8,6 @@ int main(int argc, char ** argv)
 {
   CuString *output = CuStringNew();
   CuSuite *suite = CuSuiteNew();
-  int i;
 
   add_suite_critbit(suite);
 
