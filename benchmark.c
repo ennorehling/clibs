@@ -15,11 +15,16 @@ int count_cb(const void * match, const void * key, size_t keylen, void *result)
 
 int main(int argc, char** argv) {
   clock_t start, now;
-  long a, n = 1000;
+  long n = 1000;
+  int a, verbose = 0;
   critbit_tree cb = { 0 };
   
-  if (argc>1) {
-    n = strtolh(argv[1], 10);
+  for (a=1;argc>a;++a) {
+    if (strcmp(argv[a], "-v")==0) verbose = 1;
+    else {
+      n = strtolh(argv[a], 10);
+      break;
+    }
   }
   start = clock();
   while (n--) {
@@ -31,11 +36,11 @@ int main(int argc, char** argv) {
   printf("init: %f\n", (float)(now-start)/CLOCKS_PER_SEC);
 
   start = clock();
-  for (a=2;a<argc;++a) {
+  for (;a<argc;++a) {
     const char * prefix = argv[a];
     int o = 0;
     cb_foreach(&cb, prefix, strlen(prefix), count_cb, &o);
-    printf("%s matches: %d\n", prefix, o);
+    if (verbose) printf("%s matches: %d\n", prefix, o);
   }
   now = clock();
   printf("find: %f\n", (float)(now-start)/CLOCKS_PER_SEC);

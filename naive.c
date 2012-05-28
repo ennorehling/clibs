@@ -8,10 +8,15 @@
 int main(int argc, char** argv) {
   clock_t start, now;
   const char ** strings;
-  long a, i, n = 1000;
+  int a = 1, verbose = 0;
+  long i, n = 1000;
 
-  if (argc>1) {
-    n = strtolh(argv[1], 10);
+  for (a=1;argc>a;++a) {
+    if (strcmp(argv[a], "-v")==0) verbose = 1;
+    else {
+      n = strtolh(argv[a], 10);
+      break;
+    }
   }
   start = clock();
   strings = (const char**)malloc(sizeof(const char *)*n);
@@ -24,14 +29,14 @@ int main(int argc, char** argv) {
   printf("init: %f\n", (float)(now-start)/CLOCKS_PER_SEC);
 
   start = clock();
-  for (a=2;a<argc;++a) {
+  for (;a<argc;++a) {
     const char * prefix = argv[a];
     int o = 0;
     size_t len = strlen(prefix);
     for(i=0;i!=n;++i) {
       if (strncmp(prefix, strings[i], len)==0) ++o;
     }
-    printf("%s matches: %d\n", prefix, o);
+    if (verbose) printf("%s matches: %d\n", prefix, o);
   }
   now = clock();
   printf("find: %f\n", (float)(now-start)/CLOCKS_PER_SEC);
