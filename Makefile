@@ -16,10 +16,10 @@ benchmarks: bin/benchmark bin/naive
 tests: bin/test_ctools
 	@bin/test_ctools
 
-bin/benchmark: benchmark.c critbit.c | bin
+bin/benchmark: benchmark.c strtolh.c critbit.c | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
 
-bin/naive: naive.c | bin
+bin/naive: naive.c strtolh.c | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
 bin/test_ctools: test_ctools.c \
