@@ -1,8 +1,12 @@
 # I am not very good at Makefiles.
 
-INCLUDES = -I.
-CFLAGS = -Wall -O3 $(INCLUDES)
-CPPFLAGS = -Wall -O3 $(INCLUDES)
+INCLUDES += -I.
+CFLAGS += -Wall -O3 $(INCLUDES)
+CPPFLAGS += -Wall -O3 $(INCLUDES)
+
+ifdef DLMALLOC
+LIBS += ${DLMALLOC}/lib/libmalloc.a
+endif
 
 all: benchmarks tests
 
@@ -24,18 +28,18 @@ obj/%.cpp.o: %.cpp | obj
 	$(CXX) -o $@ -c $^ $(CPPFLAGS)
 
 bin/benchmark: obj/benchmark.c.o obj/critbit.c.o obj/strtolh.c.o | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 bin/naive: obj/naive.c.o obj/strtolh.c.o | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 bin/james: obj/james.cpp.o obj/strtolh.c.o | bin
-	$(CXX) -o $@ $^
+	$(CXX) -o $@ $^ $(LIBS)
 
 bin/tests: tests.c \
  test_critbit.c critbit.c \
  cutest/CuTest.c | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
+	$(CC) $(CFLAGS) -lm -o $@ $^ $(LIBS)
 
 clean:
 	@rm -rf *~ bin obj
