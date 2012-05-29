@@ -1,4 +1,4 @@
 critbit:
-    Implementation of djb's critbit tre structure, a clever kind of trie
+    Implementation of djb's critbit tree structure, a clever kind of trie
     that allows fast search among a set of strings, including prefix-search.
     See http://cr.yp.to/critbit.html
