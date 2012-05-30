@@ -1,0 +1,3 @@
+[submodule "cutest"]
+	path = cutest
+	url = git@github.com:badgerman/cutest.git
