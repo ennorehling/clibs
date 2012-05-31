@@ -1,20 +1,23 @@
 # I am not very good at Makefiles.
 
-#CFLAGS = -Wall -g
+ifndef CUTEST
+CUTEST = cutest
+endif
+
 CFLAGS += -Wall -O3
-INCLUDES = -Istorage -I.
+INCLUDES = -I$(CUTEST) -I.
 
 all: tests
 
 bin:
 	mkdir -p $@
 
-tests: bin/tests
-	@bin/tests
+tests: bin/quicklist_tests
+	@bin/quicklist_tests
 
-bin/tests: tests.c \
+bin/quicklist_tests: quicklist_tests.c \
 test_quicklist.c quicklist.c \
-cutest/CuTest.c | bin
+$(CUTEST)/CuTest.c | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
 
 clean:

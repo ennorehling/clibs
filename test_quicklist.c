@@ -1,6 +1,6 @@
-#include <cutest/CuTest.h>
 #include <stdio.h>
 #include <string.h>
+#include <CuTest.h>
 #include "quicklist.h"
 
 static const char *hello = "Hello World";

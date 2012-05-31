@@ -1,6 +1,6 @@
-#include <cutest/CuTest.h>
 #include <stdio.h>
 #include <string.h>
+#include <CuTest.h>
 
 void add_suite_quicklist(CuSuite *suite);
 
