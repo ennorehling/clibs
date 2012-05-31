@@ -40,7 +40,7 @@ bin/naive: obj/naive.c.o obj/strtolh.c.o | bin
 bin/james: obj/james.cpp.o obj/strtolh.c.o | bin
 	$(CXX) -o $@ $^ $(LIBS)
 
-bin/tests: tests.c \
+bin/tests: critbit_tests.c \
  test_critbit.c critbit.c \
  $(CUTEST)/CuTest.c | bin
 	$(CC) $(CFLAGS) -lm -o $@ $^ $(LIBS)
