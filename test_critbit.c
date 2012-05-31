@@ -1,7 +1,7 @@
-#include <cutest/CuTest.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <CuTest.h>
 #include "critbit.h"
 
 static void test_empty(CuTest * tc)

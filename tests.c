@@ -1,4 +1,4 @@
-#include <cutest/CuTest.h>
+#include <CuTest.h>
 #include <stdio.h>
 #include <string.h>
 

@@ -1,6 +1,10 @@
 # I am not very good at Makefiles.
 
-INCLUDES += -I.
+ifndef CUTEST
+CUTEST = cutest
+endif
+
+INCLUDES += -I. -I$(CUTEST)
 CFLAGS += -Wall -O3 $(INCLUDES)
 CPPFLAGS += -Wall -O3 $(INCLUDES)
 
@@ -38,7 +42,7 @@ bin/james: obj/james.cpp.o obj/strtolh.c.o | bin
 
 bin/tests: tests.c \
  test_critbit.c critbit.c \
- cutest/CuTest.c | bin
+ $(CUTEST)/CuTest.c | bin
 	$(CC) $(CFLAGS) -lm -o $@ $^ $(LIBS)
 
 clean:
