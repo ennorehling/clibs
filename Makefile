@@ -5,7 +5,7 @@ CUTEST = cutest
 endif
 
 INCLUDES += -I. -I$(CUTEST)
-CFLAGS += -Wall -O3 $(INCLUDES)
+CFLAGS += -Wall -Wstrict-aliasing=2 -O3 $(INCLUDES)
 CPPFLAGS += -Wall -O3 $(INCLUDES)
 
 ifdef DLMALLOC
