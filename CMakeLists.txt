@@ -11,3 +11,5 @@ target_link_libraries (critbit_tests critbit cutest)
 
 enable_testing()
 add_test (critbit critbit_tests)
+
+set (CRITBIT_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "CritBit headers")
