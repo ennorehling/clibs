@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.4)
 project (critbit C)
-
-find_package (MSVC)
 include_directories (../cutest)
 
 add_library (critbit critbit.c)
