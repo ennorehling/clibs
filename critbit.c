@@ -115,14 +115,15 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
         prev = node;
       } else {
         unsigned char *iptr, *bytes = (unsigned char *)key, *ikey = bytes;
+        void * vptr;
         unsigned int mask, branch;
         unsigned int byte = 0;
         size_t len;
         struct critbit_node * node = make_internal_node();
 
-        from_external_node(ptr, (void**)&iptr, &len);
+        from_external_node(ptr, &vptr, &len);
 
-        while (byte<keylen && byte<len && *ikey==*iptr) {
+        for (iptr=vptr;byte<keylen && byte<len && *ikey==*iptr;) {
           ++ikey;
           ++iptr;
           ++byte;
@@ -212,9 +213,11 @@ static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const v
   } else {
     /* reached an external node */
     const char * str;
+    void * vptr;
     size_t len;
 
-    from_external_node(ptr, (void**)&str, &len);
+    from_external_node(ptr, &vptr, &len);
+    str = vptr;
     if (len>=keylen && memcmp(key, str, keylen)==0) {
       if (*offset>0) {
         --*offset;
