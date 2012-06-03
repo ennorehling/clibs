@@ -8,3 +8,5 @@ target_link_libraries (quicklist_tests quicklist cutest)
 
 enable_testing()
 add_test (quicklist quicklist_tests)
+
+set (QUICKLIST_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "QuickList headers")
