@@ -8,3 +8,4 @@ bin/
 *.sdf
 *.o
 *.opensdf
+config
