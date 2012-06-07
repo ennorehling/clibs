@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 project (critbit C)
 include_directories (../cutest)
 
-add_library (${PROJECT_NAME} critbit.c)
+FILE (GLOB LIB_HDR *.h)
+add_library (${PROJECT_NAME} critbit.c ${LIB_HDR})
 
 add_executable (benchmark benchmark.c strtolh.c)
 target_link_libraries (benchmark critbit)
