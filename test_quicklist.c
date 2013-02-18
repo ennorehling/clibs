@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <CuTest.h>
 #include "quicklist.h"
 
-static const char *hello = "Hello World";
+static void * data;
 
 static void test_insert(CuTest * tc)
 {
@@ -11,10 +12,10 @@ static void test_insert(CuTest * tc)
   int i;
   for (i = 0; i != 32; ++i) {
     CuAssertIntEquals(tc, i, ql_length(ql));
-    ql_insert(&ql, 0, (void *)i);
+    ql_insert(&ql, 0, data+31-i);
   }
   for (i = 0; i != 32; ++i) {
-    CuAssertIntEquals(tc, 31 - i, (int)ql_get(ql, i));
+    CuAssertPtrEquals(tc, data+i, ql_get(ql, i));
   }
 }
 
@@ -22,7 +23,7 @@ static void test_insert_delete_gives_null(CuTest * tc)
 {
   struct quicklist *ql = NULL;
   CuAssertIntEquals(tc, 1, ql_empty(ql));
-  ql_push(&ql, (void *)42);
+  ql_push(&ql, data);
   CuAssertIntEquals(tc, 0, ql_empty(ql));
   ql_delete(&ql, 0);
   CuAssertPtrEquals(tc, 0, ql);
@@ -31,38 +32,38 @@ static void test_insert_delete_gives_null(CuTest * tc)
 static void test_replace(CuTest * tc)
 {
   struct quicklist *ql = NULL;
-  int a;
-  ql_push(&ql, (void *)42);
-  a = (int)ql_replace(ql, 0, (void *)43);
-  CuAssertIntEquals(tc, 42, a);
-  CuAssertIntEquals(tc, 43, (int)ql_get(ql, 0));
+  void * a;
+  ql_push(&ql, data);
+  a = ql_replace(ql, 0, data+1);
+  CuAssertPtrEquals(tc, data, a);
+  CuAssertPtrEquals(tc, data+1, ql_get(ql, 0));
 }
 
 static void test_set_insert(CuTest * tc)
 {
   struct quicklist *ql = NULL;
   int a, qi;
-  a = ql_set_insert(&ql, (void *)42);
+  a = ql_set_insert(&ql, data);
   CuAssertIntEquals(tc, 1, ql_length(ql));
   CuAssertIntEquals(tc, 0, a);
-  a = ql_set_insert(&ql, (void *)43);
+  a = ql_set_insert(&ql, data+1);
   CuAssertIntEquals(tc, 2, ql_length(ql));
   CuAssertIntEquals(tc, 0, a);
-  a = ql_set_insert(&ql, (void *)42);
+  a = ql_set_insert(&ql, data);
   CuAssertIntEquals(tc, 2, ql_length(ql));
   CuAssertIntEquals(tc, 1, a);
-  a = ql_set_insert(&ql, (void *)41);
+  a = ql_set_insert(&ql, data+2);
   CuAssertIntEquals(tc, 0, a);
   CuAssertIntEquals(tc, 3, ql_length(ql));
-  CuAssertIntEquals(tc, 41, (int)ql_get(ql, 0));
-  CuAssertIntEquals(tc, 42, (int)ql_get(ql, 1));
-  CuAssertIntEquals(tc, 43, (int)ql_get(ql, 2));
+  CuAssertPtrEquals(tc, data, ql_get(ql, 0));
+  CuAssertPtrEquals(tc, data+1, ql_get(ql, 1));
+  CuAssertPtrEquals(tc, data+2, ql_get(ql, 2));
 
-  a = ql_set_find(&ql, &qi, (void *)49);
+  a = ql_set_find(&ql, &qi, data+3);
   CuAssertIntEquals(tc, 0, a);
-  a = ql_set_find(&ql, &qi, (void *)42);
+  a = ql_set_find(&ql, &qi, data);
   CuAssertIntEquals(tc, 1, a);
-  CuAssertIntEquals(tc, 42, (int)ql_get(ql, qi));
+  CuAssertPtrEquals(tc, data, ql_get(ql, qi));
 }
 
 static void test_set_remove(CuTest * tc)
@@ -70,25 +71,25 @@ static void test_set_remove(CuTest * tc)
   struct quicklist *ql = NULL, *q2;
   int a;
 
-  ql_set_insert(&ql, (void *)41);
-  ql_set_insert(&ql, (void *)42);
-  ql_set_insert(&ql, (void *)43);
+  ql_set_insert(&ql, data);
+  ql_set_insert(&ql, data+1);
+  ql_set_insert(&ql, data+2);
 
   q2 = ql;
 
-  a = ql_set_remove(&ql, (void *)42);
+  a = ql_set_remove(&ql, data+1);
   CuAssertPtrEquals(tc, q2, ql);
   CuAssertIntEquals(tc, 1, a);
-  CuAssertIntEquals(tc, 41, (int)ql_get(ql, 0));
-  CuAssertIntEquals(tc, 43, (int)ql_get(ql, 1));
+  CuAssertPtrEquals(tc, data, ql_get(ql, 0));
+  CuAssertPtrEquals(tc, data+2, ql_get(ql, 1));
   CuAssertIntEquals(tc, 2, ql_length(ql));
 
-  a = ql_set_remove(&ql, (void *)42);
+  a = ql_set_remove(&ql, data+1);
   CuAssertPtrEquals(tc, q2, ql);
   CuAssertIntEquals(tc, 0, a);
 
-  ql_set_remove(&ql, (void *)41);
-  ql_set_remove(&ql, (void *)43);
+  ql_set_remove(&ql, data);
+  ql_set_remove(&ql, data+2);
   CuAssertPtrEquals(tc, 0, ql);
 }
 
@@ -98,24 +99,24 @@ static void test_set_find(CuTest * tc)
   int a, qi;
 
   for (a = 0; a != 32; ++a) {
-    ql_set_insert(&ql, (void *)a);
+    ql_set_insert(&ql, data + a);
   }
 
   q2 = ql;
-  a = ql_set_find(&q2, 0, (void *)31);
+  a = ql_set_find(&q2, 0, data + 31);
   CuAssertIntEquals(tc, 1, a);
   CuAssertPtrEquals(tc, ql, q2);
 
   q2 = ql;
-  a = ql_set_find(&ql, &qi, (void *)0);
+  a = ql_set_find(&ql, &qi, data);
   CuAssertIntEquals(tc, 1, a);
   CuAssertIntEquals(tc, 0, qi);
   CuAssertPtrEquals(tc, ql, q2);
 
   q2 = ql;
-  a = ql_set_find(&ql, &qi, (void *)31);
+  a = ql_set_find(&ql, &qi, data + 31);
   CuAssertIntEquals(tc, 1, a);
-  CuAssertIntEquals(tc, 31, (int)ql_get(ql, qi));
+  CuAssertPtrEquals(tc, data + 31, ql_get(ql, qi));
   CuAssertTrue(tc, ql != q2);
 }
 
@@ -124,11 +125,11 @@ static void test_advance(CuTest * tc)
   struct quicklist *ql = NULL, *qli;
   int i, n = 31;
   for (i = 0; i != 32; ++i) {
-    ql_insert(&ql, 0, (void *)i);
+    ql_insert(&ql, 0, data + i);
   }
   for (i = 0, qli = ql; qli; ql_advance(&qli, &i, 1), n--) {
-    int g = (int)ql_get(qli, i);
-    CuAssertIntEquals(tc, n, g);
+    void * g = ql_get(qli, i);
+    CuAssertPtrEquals(tc, data + n, g);
   }
 }
 
@@ -136,10 +137,10 @@ static void test_push(CuTest * tc)
 {
   struct quicklist *result, *ql = NULL;
   CuAssertIntEquals(tc, 0, ql_length(ql));
-  result = ql_push(&ql, (void *)hello);
+  result = ql_push(&ql, data);
   CuAssertPtrEquals(tc, result, ql);
   CuAssertIntEquals(tc, 1, ql_length(ql));
-  CuAssertStrEquals(tc, "Hello World", (const char *)ql_get(ql, 0));
+  CuAssertPtrEquals(tc, data, ql_get(ql, 0));
   ql_delete(&ql, 0);
   CuAssertPtrEquals(tc, 0, ql);
 }
@@ -159,14 +160,15 @@ static void test_push_returns_end(CuTest * tc)
 static void test_push_doesnt_invalidate_iterator(CuTest * tc)
 {
   struct quicklist *list=NULL, *ql = NULL;
-  int n, i, qi=0;
+  int i, qi=0;
   ql_push(&list, 0);
   ql = list;
   for (i=1;i!=42;++i) {
-    ql_push(&list, (void*)(i*2-1));
-    ql_push(&list, (void*)(i*2));
-    n = (int)ql_get(ql, qi);
-    CuAssertIntEquals(tc, i-1, n);
+    void * n;
+    ql_push(&list, data + (i*2-1));
+    ql_push(&list, data + (i*2));
+    n = ql_get(ql, qi);
+    CuAssertPtrEquals(tc, data + i-1, n);
     ql_advance(&ql, &qi, 1);
   }
 }
@@ -176,7 +178,7 @@ static void test_delete_edgecases(CuTest * tc)
   struct quicklist *ql = NULL;
   ql_delete(&ql, 0);
   CuAssertPtrEquals(tc, 0, ql);
-  ql_push(&ql, (void *)hello);
+  ql_push(&ql, (void *)data);
   ql_delete(&ql, -1);
   ql_delete(&ql, 32);
   CuAssertIntEquals(tc, 1, ql_length(ql));
@@ -187,12 +189,12 @@ static void test_insert_many(CuTest * tc)
   struct quicklist *ql = NULL;
   int i;
   for (i = 0; i != 32; ++i) {
-    ql_push(&ql, (void *)i);
+    ql_push(&ql, data+i);
   }
   for (i = 0; i != 32; ++i) {
     CuAssertIntEquals(tc, 32 - i, ql_length(ql));
-    CuAssertIntEquals(tc, i, (int)ql_get(ql, 0));
-    CuAssertIntEquals(tc, 31, (int)ql_get(ql, ql_length(ql) - 1));
+    CuAssertPtrEquals(tc, data + i, ql_get(ql, 0));
+    CuAssertPtrEquals(tc, data + 31, ql_get(ql, ql_length(ql) - 1));
     ql_delete(&ql, 0);
   }
   CuAssertPtrEquals(tc, 0, ql);
@@ -203,11 +205,11 @@ static void test_delete_rand(CuTest * tc)
   struct quicklist *ql = NULL;
   int i;
   for (i = 0; i != 32; ++i) {
-    ql_push(&ql, (void *)i);
+    ql_push(&ql, data + i);
   }
   CuAssertIntEquals(tc, 32, ql_length(ql));
   ql_delete(&ql, 0);
-  CuAssertIntEquals(tc, 1, (int)ql_get(ql, 0));
+  CuAssertPtrEquals(tc, data + 1, ql_get(ql, 0));
   CuAssertIntEquals(tc, 31, ql_length(ql));
   ql_delete(&ql, 30);
   CuAssertIntEquals(tc, 30, ql_length(ql));
