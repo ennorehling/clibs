@@ -3,7 +3,9 @@
 #include <CuTest.h>
 #include "quicklist.h"
 
-static const char * data = "Hello World";
+static const char * data = "Lorem ipsum dolor sit amet, "
+  "consectetur adipisicing elit, sed do eiusmod tempor "
+  "incididunt ut labore et dolore magna aliqua.";
 
 static void test_insert(CuTest * tc)
 {
@@ -160,15 +162,15 @@ static void test_push_doesnt_invalidate_iterator(CuTest * tc)
 {
   struct quicklist *list=NULL, *ql = NULL;
   int i, qi=0;
-  ql_push(&list, 0);
+  ql_push(&list, (void*)data);
   ql = list;
-  for (i=1;i!=42;++i) {
+  for (i=0;i!=42;++i) {
     void * n;
-    ql_push(&list, (void *)(data + (i*2-1)));
-    ql_push(&list, (void *)(data + (i*2)));
     n = ql_get(ql, qi);
-    CuAssertPtrEquals(tc, (void *)(data + i-1), n);
+    CuAssertPtrEquals(tc, (void *)(data + i), n);
+    ql_push(&list, (void *)(data + (i*2+1)));
     ql_advance(&ql, &qi, 1);
+    ql_push(&list, (void *)(data + (i*2+2)));
   }
 }
 
