@@ -1,7 +1,0 @@
-quicklist:
-    A simple list that is better than (value, next) tuples in performance
-    and memory usage.
-
-This repository depends on the cutest submodule. After cloning the
-repository, make sure to initialize submodules with
-$ git submodule update --init
