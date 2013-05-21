@@ -232,3 +232,18 @@ void add_suite_quicklist(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_set_insert);
   SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
 }
+
+int main(int argc, char ** argv)
+{
+  CuString *output = CuStringNew();
+  CuSuite *suite = CuSuiteNew();
+
+  add_suite_quicklist(suite);
+
+  CuSuiteRun(suite);
+  CuSuiteSummary(suite, output);
+  CuSuiteDetails(suite, output);
+  printf("%s\n", output->buffer);
+  return suite->failCount;
+}
+
