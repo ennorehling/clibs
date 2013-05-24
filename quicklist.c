@@ -155,6 +155,16 @@ void ql_foreach(struct quicklist *ql, void (*cb) (void *))
   }
 }
 
+void ql_foreachx(struct quicklist *ql, void (*cb) (void *, void *), void *x)
+{
+  for (; ql; ql = ql->next) {
+    int i;
+    for (i = 0; i != ql->num_elements; ++i) {
+      cb(ql->elements[i], x);
+    }
+  }
+}
+
 int ql_advance(struct quicklist **iterator, int *index, int stride)
 {
   quicklist *ql = *iterator;

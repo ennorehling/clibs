@@ -53,6 +53,7 @@ extern "C" {
     int ql_delete(struct quicklist **qlp, int index);
     int ql_insert(struct quicklist **qlp, int index, void *data);
     void ql_foreach(struct quicklist *ql, void (*cb) (void *));
+    void ql_foreachx(struct quicklist *ql, void (*cb) (void *, void *), void *);
     int ql_advance(struct quicklist **iterator, int *index, int stride);
     void *ql_replace(struct quicklist *ql, int index, void *data);
     

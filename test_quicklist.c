@@ -30,6 +30,29 @@ static void test_mapreduce(CuTest * tc)
   ql_free(ql);
 }
 
+static void my_callbackx(void *entry, void *x) {
+    const char * str = (const char *)entry;
+    *(int *)x += str[0];
+}
+
+static int gtotal = 0;
+static void my_callback(void *entry) {
+    const char * str = (const char *)entry;
+    gtotal += str[0];
+}
+
+static void test_foreach(CuTest *tc) {
+    int total = 0;
+    struct quicklist *ql = 0;
+    ql_push(&ql, (void *)data);
+    ql_push(&ql, (void *)data);
+    ql_foreach(ql, my_callback);
+    CuAssertIntEquals(tc, 152, gtotal);
+    ql_foreachx(ql, my_callbackx, &total);
+    CuAssertIntEquals(tc, 152, total);
+    ql_free(ql);
+}
+
 static void test_iter(CuTest * tc)
 {
   ql_iter iter;
@@ -282,6 +305,7 @@ static void test_delete_rand(CuTest * tc)
 void add_suite_quicklist(CuSuite *suite)
 {
   SUITE_ADD_TEST(suite, test_iter);
+  SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_mapreduce);
   SUITE_ADD_TEST(suite, test_advance);
   SUITE_ADD_TEST(suite, test_replace);
