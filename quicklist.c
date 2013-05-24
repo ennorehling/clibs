@@ -31,22 +31,21 @@ struct quicklist {
   void *elements[QL_MAXSIZE];
 };
 
-void *ql_get(const quicklist * ql, int index)
+void *ql_get(const quicklist * ql, int i)
 {
-  return (ql
-    && index < ql->num_elements) ? ql->elements[index] : ql_get(ql->next,
-    index - ql->num_elements);
+  return ql ? ((i < ql->num_elements) ? ql->elements[i] : ql_get(ql->next, i - ql->num_elements)) : 0;
 }
 
-void *ql_replace(quicklist * ql, int index, void *data)
+void *ql_replace(quicklist * ql, int i, void *data)
 {
-  if (ql && index < ql->num_elements) {
-    void *orig = ql->elements[index];
-    ql->elements[index] = data;
+  if (ql && i < ql->num_elements) {
+    void *orig = ql->elements[i];
+    ql->elements[i] = data;
     return orig;
-  } else {
-    return ql_replace(ql->next, index - ql->num_elements, data);
+  } else if (ql) {
+    return ql_replace(ql->next, i - ql->num_elements, data);
   }
+  return 0;
 }
 
 int ql_length(const quicklist * ql)
@@ -77,17 +76,17 @@ quicklist * ql_push(quicklist ** qlp, void *data)
   return ql;
 }
 
-int ql_delete(quicklist ** qlp, int index)
+int ql_delete(quicklist ** qlp, int i)
 {
   quicklist *ql = *qlp;
-  if (index < 0)
+  if (i < 0)
     return EINVAL;
-  if (ql && index >= ql->num_elements) {
-    return ql_delete(&ql->next, index - ql->num_elements);
+  if (ql && i >= ql->num_elements) {
+    return ql_delete(&ql->next, i - ql->num_elements);
   } else if (ql) {
-    if (index + 1 < ql->num_elements) {
-      memmove(ql->elements + index, ql->elements + index + 1,
-        (ql->num_elements - index - 1) * sizeof(void *));
+    if (i + 1 < ql->num_elements) {
+      memmove(ql->elements + i, ql->elements + i + 1,
+        (ql->num_elements - i - 1) * sizeof(void *));
     }
     --ql->num_elements;
     if (ql->num_elements == 0) {
@@ -113,16 +112,16 @@ int ql_delete(quicklist ** qlp, int index)
   return 0;
 }
 
-int ql_insert(quicklist ** qlp, int index, void *data)
+int ql_insert(quicklist ** qlp, int i, void *data)
 {
   quicklist *ql = *qlp;
   if (ql) {
-    if (index >= QL_MAXSIZE) {
-      return ql_insert(&ql->next, index - ql->num_elements, data);
+    if (i >= QL_MAXSIZE) {
+      return ql_insert(&ql->next, i - ql->num_elements, data);
     } else if (ql->num_elements < QL_MAXSIZE) {
-      memmove(ql->elements + index + 1, ql->elements + index,
-        (ql->num_elements - index) * sizeof(void *));
-      ql->elements[index] = data;
+      memmove(ql->elements + i + 1, ql->elements + i,
+        (ql->num_elements - i) * sizeof(void *));
+      ql->elements[i] = data;
       ++ql->num_elements;
     } else {
       quicklist *qn = (quicklist *) malloc(sizeof(quicklist));
@@ -132,13 +131,13 @@ int ql_insert(quicklist ** qlp, int index, void *data)
       ql->num_elements = QL_LIMIT;
       memcpy(qn->elements, ql->elements + ql->num_elements,
         QL_LIMIT * sizeof(void *));
-      if (index <= ql->num_elements) {
-        return ql_insert(qlp, index, data);
+      if (i <= ql->num_elements) {
+        return ql_insert(qlp, i, data);
       } else {
-        return ql_insert(&ql->next, index - ql->num_elements, data);
+        return ql_insert(&ql->next, i - ql->num_elements, data);
       }
     }
-  } else if (index == 0) {
+  } else if (i == 0) {
     ql_push(qlp, data);
   } else {
     return EINVAL;
