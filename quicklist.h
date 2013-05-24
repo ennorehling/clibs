@@ -42,6 +42,8 @@ extern "C" {
     void qli_incr(struct ql_iter *iter);
     void * qli_get(const struct ql_iter iter);
 
+    void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
+    
     void * ql_get(const struct quicklist *ql, int qi);
     int ql_length(const struct quicklist *ql);
     void ql_free(struct quicklist *ql);

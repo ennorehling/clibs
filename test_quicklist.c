@@ -7,6 +7,29 @@ static const char * data = "Lorem ipsum dolor sit amet, "
   "consectetur adipisicing elit, sed do eiusmod tempor "
   "incididunt ut labore et dolore magna aliqua.";
 
+static void my_map(void *entry, void *data) {
+  const char * str = (const char *)entry;
+  *(int *)data = *str;
+}
+
+static void my_reduce(void *data, void *result) {
+  int * d = (int *)data;
+  int * r = (int *)result;
+  *r += *d;
+}
+
+static void test_mapreduce(CuTest * tc)
+{
+  int buffer;
+  int result = 0;
+  struct quicklist *ql = 0;
+  ql_push(&ql, (void *)data);
+  ql_push(&ql, (void *)data);
+  ql_map_reduce(ql, my_map, my_reduce, &buffer, &result);
+  CuAssertIntEquals(tc, 152, result);
+  ql_free(ql);
+}
+
 static void test_iter(CuTest * tc)
 {
   ql_iter iter;
@@ -20,6 +43,7 @@ static void test_iter(CuTest * tc)
   qli_incr(&iter);
   CuAssertPtrEquals(tc, 0, qli_get(iter));
   CuAssertTrue(tc, qli_equal(iter, qli_end(ql)));
+  ql_free(ql);
 }
 
 static void test_insert(CuTest * tc)
@@ -33,6 +57,7 @@ static void test_insert(CuTest * tc)
   for (i = 0; i != 32; ++i) {
     CuAssertPtrEquals(tc, (void *)(data+i), ql_get(ql, i));
   }
+  ql_free(ql);
 }
 
 static void test_empty_list(CuTest * tc)
@@ -51,6 +76,7 @@ static void test_insert_delete_gives_null(CuTest * tc)
   CuAssertIntEquals(tc, 0, ql_empty(ql));
   ql_delete(&ql, 0);
   CuAssertPtrEquals(tc, 0, ql);
+  ql_free(ql);
 }
 
 static void test_replace(CuTest * tc)
@@ -62,6 +88,7 @@ static void test_replace(CuTest * tc)
   CuAssertPtrEquals(tc, (void *)data, a);
   CuAssertPtrEquals(tc, (void *)(data+1), ql_get(ql, 0));
   CuAssertPtrEquals(tc, 0, ql_replace(0, 0, (void *)data));
+  ql_free(ql);
 }
 
 static void test_set_insert(CuTest * tc)
@@ -89,6 +116,7 @@ static void test_set_insert(CuTest * tc)
   a = ql_set_find(&ql, &qi, (void *)data);
   CuAssertIntEquals(tc, 1, a);
   CuAssertPtrEquals(tc, (void *)data, ql_get(ql, qi));
+  ql_free(ql);
 }
 
 static void test_set_remove(CuTest * tc)
@@ -116,6 +144,8 @@ static void test_set_remove(CuTest * tc)
   ql_set_remove(&ql, (void *)data);
   ql_set_remove(&ql, (void *)(data+2));
   CuAssertPtrEquals(tc, 0, ql);
+
+  ql_free(ql);
 }
 
 static void test_set_find(CuTest * tc)
@@ -143,6 +173,8 @@ static void test_set_find(CuTest * tc)
   CuAssertIntEquals(tc, 1, a);
   CuAssertPtrEquals(tc, (void *)(data + 31), ql_get(ql, qi));
   CuAssertTrue(tc, ql != q2);
+
+  ql_free(ql);
 }
 
 static void test_advance(CuTest * tc)
@@ -156,6 +188,8 @@ static void test_advance(CuTest * tc)
     void * g = ql_get(qli, i);
     CuAssertPtrEquals(tc, (void *)(data + n), g);
   }
+
+  ql_free(ql);
 }
 
 static void test_push(CuTest * tc)
@@ -180,6 +214,7 @@ static void test_push_returns_end(CuTest * tc)
   } while (result==ql);
   ql_advance(&ql, &qi, i-1);
   CuAssertPtrEquals(tc, result, ql);
+  ql_free(ql);
 }
 
 static void test_push_doesnt_invalidate_iterator(CuTest * tc)
@@ -196,6 +231,7 @@ static void test_push_doesnt_invalidate_iterator(CuTest * tc)
     ql_advance(&ql, &qi, 1);
     ql_push(&list, (void *)(data + (i*2+2)));
   }
+  ql_free(ql);
 }
 
 static void test_delete_edgecases(CuTest * tc)
@@ -207,6 +243,7 @@ static void test_delete_edgecases(CuTest * tc)
   ql_delete(&ql, -1);
   ql_delete(&ql, 32);
   CuAssertIntEquals(tc, 1, ql_length(ql));
+  ql_free(ql);
 }
 
 static void test_insert_many(CuTest * tc)
@@ -223,6 +260,7 @@ static void test_insert_many(CuTest * tc)
     ql_delete(&ql, 0);
   }
   CuAssertPtrEquals(tc, 0, ql);
+  ql_free(ql);
 }
 
 static void test_delete_rand(CuTest * tc)
@@ -238,11 +276,13 @@ static void test_delete_rand(CuTest * tc)
   CuAssertIntEquals(tc, 31, ql_length(ql));
   ql_delete(&ql, 30);
   CuAssertIntEquals(tc, 30, ql_length(ql));
+  ql_free(ql);
 }
 
 void add_suite_quicklist(CuSuite *suite)
 {
   SUITE_ADD_TEST(suite, test_iter);
+  SUITE_ADD_TEST(suite, test_mapreduce);
   SUITE_ADD_TEST(suite, test_advance);
   SUITE_ADD_TEST(suite, test_replace);
   SUITE_ADD_TEST(suite, test_push);
@@ -261,6 +301,7 @@ void add_suite_quicklist(CuSuite *suite)
 
 int main(int argc, char ** argv)
 {
+  int result;
   CuString *output = CuStringNew();
   CuSuite *suite = CuSuiteNew();
 
@@ -269,7 +310,10 @@ int main(int argc, char ** argv)
   CuSuiteRun(suite);
   CuSuiteSummary(suite, output);
   CuSuiteDetails(suite, output);
+  result = suite->failCount;
   printf("%s\n", output->buffer);
-  return suite->failCount;
+  CuSuiteDelete(suite);
+  CuStringDelete(output);
+  return result;
 }
 

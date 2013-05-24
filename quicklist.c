@@ -276,3 +276,12 @@ void * qli_get(const struct ql_iter iter) {
 ql_bool qli_equal(struct ql_iter a, struct ql_iter b) {
   return a.i==b.i && a.l==b.l;
 }
+
+void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result)
+{
+  int qi;
+  for (qi = 0; ql; ql_advance(&ql, &qi, 1)) {
+    mapfunc(ql_get(ql, qi), data);
+    reducefunc(data, result);
+  }
+}
