@@ -7,6 +7,21 @@ static const char * data = "Lorem ipsum dolor sit amet, "
   "consectetur adipisicing elit, sed do eiusmod tempor "
   "incididunt ut labore et dolore magna aliqua.";
 
+static void test_loop(CuTest * tc)
+{
+    ql_iter iter;
+    quicklist * ql = 0;
+    int result = 0;
+
+    ql_push(&ql, (void *)data);
+    ql_push(&ql, (void *)data+1);
+    for (iter = qli_init(ql);qli_more(&iter);) {
+        const char * c = (const char *)qli_next(&iter);
+        result += *c;
+    }
+    CuAssertIntEquals(tc, data[0]+data[1], result);
+}
+
 static void my_map(void *entry, void *data) {
   const char * str = (const char *)entry;
   *(int *)data = *str;
@@ -51,22 +66,6 @@ static void test_foreach(CuTest *tc) {
     ql_foreachx(ql, my_callbackx, &total);
     CuAssertIntEquals(tc, 152, total);
     ql_free(ql);
-}
-
-static void test_iter(CuTest * tc)
-{
-  ql_iter iter;
-  struct quicklist *ql = 0;
- 
-  CuAssertTrue(tc, qli_equal(qli_begin(ql), qli_end(ql)));
-  ql_push(&ql, (void *)data);
-  CuAssertTrue(tc, !qli_equal(qli_begin(ql), qli_end(ql)));
-  iter = qli_begin(ql);
-  CuAssertPtrEquals(tc, (void *)data, qli_get(iter));
-  qli_incr(&iter);
-  CuAssertPtrEquals(tc, 0, qli_get(iter));
-  CuAssertTrue(tc, qli_equal(iter, qli_end(ql)));
-  ql_free(ql);
 }
 
 static void test_insert(CuTest * tc)
@@ -304,7 +303,7 @@ static void test_delete_rand(CuTest * tc)
 
 void add_suite_quicklist(CuSuite *suite)
 {
-  SUITE_ADD_TEST(suite, test_iter);
+  SUITE_ADD_TEST(suite, test_loop);
   SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_mapreduce);
   SUITE_ADD_TEST(suite, test_advance);

@@ -265,26 +265,19 @@ ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data)
   return 0;
 }
 
-struct ql_iter qli_begin(struct quicklist *ql) {
+struct ql_iter qli_init(struct quicklist *ql) {
   ql_iter iter = { ql, 0 };
   return iter;
 }
 
-struct ql_iter qli_end(struct quicklist *ql) {
-  ql_iter iter = { 0, 0 };
-  return iter;
+ql_bool qli_more(ql_iter *iter) {
+    return iter->l!=0;
 }
 
-void qli_incr(struct ql_iter *iter) {
-  ql_advance(&iter->l, &iter->i, 1);
-}
-
-void * qli_get(const struct ql_iter iter) {
-  return ql_get(iter.l, iter.i);
-}
-
-ql_bool qli_equal(struct ql_iter a, struct ql_iter b) {
-  return a.i==b.i && a.l==b.l;
+void * qli_next(struct ql_iter *iter) {
+    void * result = ql_get(iter->l, iter->i);
+    ql_advance(&iter->l, &iter->i, 1);
+    return result;
 }
 
 void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result)

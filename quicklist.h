@@ -38,11 +38,9 @@ extern "C" {
     typedef void (*ql_cbx)(void *entry, void *more);
     typedef void (*ql_cb)(void *entry);
     
-    ql_bool qli_equal(struct ql_iter a, struct ql_iter b);
-    ql_iter qli_begin(struct quicklist *ql);
-    ql_iter qli_end(struct quicklist *ql);
-    void qli_incr(struct ql_iter *iter);
-    void * qli_get(const struct ql_iter iter);
+    ql_iter qli_init(struct quicklist *ql);
+    ql_bool qli_more(struct ql_iter *iter);
+    void * qli_next(struct ql_iter *iter);
 
     void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
     
