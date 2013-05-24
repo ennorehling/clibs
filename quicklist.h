@@ -35,6 +35,8 @@ extern "C" {
         struct quicklist *l;
         int i;
     } ql_iter;
+    typedef void (*ql_cbx)(void *entry, void *more);
+    typedef void (*ql_cb)(void *entry);
     
     ql_bool qli_equal(struct ql_iter a, struct ql_iter b);
     ql_iter qli_begin(struct quicklist *ql);
@@ -52,8 +54,8 @@ extern "C" {
     struct quicklist * ql_push(struct quicklist **qlp, void *data);
     int ql_delete(struct quicklist **qlp, int index);
     int ql_insert(struct quicklist **qlp, int index, void *data);
-    void ql_foreach(struct quicklist *ql, void (*cb) (void *));
-    void ql_foreachx(struct quicklist *ql, void (*cb) (void *, void *), void *);
+    void ql_foreach(struct quicklist *ql, ql_cb cb);
+    void ql_foreachx(struct quicklist *ql, ql_cbx cb, void *);
     int ql_advance(struct quicklist **iterator, int *index, int stride);
     void *ql_replace(struct quicklist *ql, int index, void *data);
     
