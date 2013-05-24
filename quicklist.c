@@ -53,7 +53,7 @@ int ql_length(const quicklist * ql)
   return ql ? ql->num_elements + ql_length(ql->next) : 0;
 }
 
-int ql_empty(const quicklist * ql)
+ql_bool ql_empty(const quicklist * ql)
 {
   return !ql;
 }
@@ -227,7 +227,7 @@ int ql_set_insert(struct quicklist **qlp, void *data)
   return 0;
 }
 
-int ql_set_find(struct quicklist **qlp, int *qip, const void *data)
+ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data)
 {
   quicklist *ql = *qlp;
   int qi;
@@ -253,4 +253,26 @@ int ql_set_find(struct quicklist **qlp, int *qip, const void *data)
     }
   }
   return 0;
+}
+
+struct ql_iter qli_begin(struct quicklist *ql) {
+  ql_iter iter = { ql, 0 };
+  return iter;
+}
+
+struct ql_iter qli_end(struct quicklist *ql) {
+  ql_iter iter = { 0, 0 };
+  return iter;
+}
+
+void qli_incr(struct ql_iter *iter) {
+  ql_advance(&iter->l, &iter->i, 1);
+}
+
+void * qli_get(const struct ql_iter iter) {
+  return ql_get(iter.l, iter.i);
+}
+
+ql_bool qli_equal(struct ql_iter a, struct ql_iter b) {
+  return a.i==b.i && a.l==b.l;
 }

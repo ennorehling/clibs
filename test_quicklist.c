@@ -7,6 +7,21 @@ static const char * data = "Lorem ipsum dolor sit amet, "
   "consectetur adipisicing elit, sed do eiusmod tempor "
   "incididunt ut labore et dolore magna aliqua.";
 
+static void test_iter(CuTest * tc)
+{
+  ql_iter iter;
+  struct quicklist *ql = 0;
+ 
+  CuAssertTrue(tc, qli_equal(qli_begin(ql), qli_end(ql)));
+  ql_push(&ql, (void *)data);
+  CuAssertTrue(tc, !qli_equal(qli_begin(ql), qli_end(ql)));
+  iter = qli_begin(ql);
+  CuAssertPtrEquals(tc, (void *)data, qli_get(iter));
+  qli_incr(&iter);
+  CuAssertPtrEquals(tc, 0, qli_get(iter));
+  CuAssertTrue(tc, qli_equal(iter, qli_end(ql)));
+}
+
 static void test_insert(CuTest * tc)
 {
   struct quicklist *ql = NULL;
@@ -227,6 +242,7 @@ static void test_delete_rand(CuTest * tc)
 
 void add_suite_quicklist(CuSuite *suite)
 {
+  SUITE_ADD_TEST(suite, test_iter);
   SUITE_ADD_TEST(suite, test_advance);
   SUITE_ADD_TEST(suite, test_replace);
   SUITE_ADD_TEST(suite, test_push);

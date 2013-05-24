@@ -17,27 +17,47 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _QUICKLIST_H
 #define _QUICKLIST_H
 
+/* From http://en.wikipedia.org/wiki/Unrolled_linked_list
+ * In computer programming, an unrolled linked list is a variation on the
+ * linked list which stores multiple elements in each node. It can
+ * dramatically increase cache performance, while decreasing the memory
+ * overhead associated with storing list metadata such as references. It
+ * is related to the B-tree.
+*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* see http://en.wikipedia.org/wiki/Unrolled_linked_list */
-  typedef struct quicklist quicklist;
-  void *ql_get(const struct quicklist *ql, int index);
-  int ql_length(const struct quicklist *ql);
-  int ql_empty(const struct quicklist *ql);
-  struct quicklist * ql_push(struct quicklist **qlp, void *data);
-  int ql_delete(struct quicklist **qlp, int index);
-  int ql_insert(struct quicklist **qlp, int index, void *data);
-  void ql_foreach(struct quicklist *ql, void (*cb) (void *));
-  int ql_advance(struct quicklist **iterator, int *index, int stride);
-  void ql_free(struct quicklist *ql);
-  void *ql_replace(struct quicklist *ql, int index, void *data);
+    typedef int ql_bool;
+    typedef struct quicklist quicklist;
+    typedef struct ql_iter {
+        struct quicklist *l;
+        int i;
+    } ql_iter;
+    
+    ql_bool qli_equal(struct ql_iter a, struct ql_iter b);
+    ql_iter qli_begin(struct quicklist *ql);
+    ql_iter qli_end(struct quicklist *ql);
+    void qli_incr(struct ql_iter *iter);
+    void * qli_get(const struct ql_iter iter);
 
-/* you can use it as a set (sorted pointers)*/
-  int ql_set_insert(struct quicklist **qlp, void *data);
-  int ql_set_find(struct quicklist **qlp, int *qip, const void *data);
-  int ql_set_remove(struct quicklist **qlp, void *data);
+    void * ql_get(const struct quicklist *ql, int qi);
+    int ql_length(const struct quicklist *ql);
+    void ql_free(struct quicklist *ql);
+    ql_bool ql_empty(const struct quicklist *ql);
+
+    struct quicklist * ql_push(struct quicklist **qlp, void *data);
+    int ql_delete(struct quicklist **qlp, int index);
+    int ql_insert(struct quicklist **qlp, int index, void *data);
+    void ql_foreach(struct quicklist *ql, void (*cb) (void *));
+    int ql_advance(struct quicklist **iterator, int *index, int stride);
+    void *ql_replace(struct quicklist *ql, int index, void *data);
+    
+    /* you can use it as a set (sorted pointers)*/
+    int ql_set_insert(struct quicklist **qlp, void *data);
+    ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data);
+    int ql_set_remove(struct quicklist **qlp, void *data);
 
 #ifdef __cplusplus
 }
