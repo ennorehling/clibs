@@ -15,9 +15,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **/
 
 #include "quicklist.h"
+
+#include <assert.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
 #define QL_LIMIT 7 /* this many or fewer number in a node => attempt merge */
@@ -33,29 +35,30 @@ struct quicklist {
 
 void *ql_get(const quicklist * ql, int i)
 {
-  return ql ? ((i < ql->num_elements) ? ql->elements[i] : ql_get(ql->next, i - ql->num_elements)) : 0;
+    assert(ql);
+    return (i < ql->num_elements) ? ql->elements[i] : ql_get(ql->next, i - ql->num_elements);
 }
 
 void *ql_replace(quicklist * ql, int i, void *data)
 {
-  if (ql && i < ql->num_elements) {
-    void *orig = ql->elements[i];
-    ql->elements[i] = data;
-    return orig;
-  } else if (ql) {
-    return ql_replace(ql->next, i - ql->num_elements, data);
-  }
-  return 0;
+    assert(ql);
+    if (i < ql->num_elements) {
+        void *orig = ql->elements[i];
+        ql->elements[i] = data;
+        return orig;
+    } else {
+        return ql_replace(ql->next, i - ql->num_elements, data);
+    }
 }
 
 int ql_length(const quicklist * ql)
 {
-  return ql ? ql->num_elements + ql_length(ql->next) : 0;
+    return ql ? ql->num_elements + ql_length(ql->next) : 0;
 }
 
 ql_bool ql_empty(const quicklist * ql)
 {
-  return !ql;
+    return !ql;
 }
 
 quicklist * ql_push(quicklist ** qlp, void *data)

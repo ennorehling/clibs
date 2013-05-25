@@ -84,9 +84,6 @@ static void test_insert(CuTest * tc)
 
 static void test_empty_list(CuTest * tc)
 {
-  CuAssertPtrEquals(tc, 0, ql_replace(0, 0, (void *)data));
-  CuAssertPtrEquals(tc, 0, ql_get(0, 0));
-  CuAssertPtrEquals(tc, 0, ql_get(0, 1));
   CuAssertIntEquals(tc, 0, ql_length(0));
 }
 
@@ -109,7 +106,6 @@ static void test_replace(CuTest * tc)
   a = ql_replace(ql, 0, (void *)(data+1));
   CuAssertPtrEquals(tc, (void *)data, a);
   CuAssertPtrEquals(tc, (void *)(data+1), ql_get(ql, 0));
-  CuAssertPtrEquals(tc, 0, ql_replace(0, 0, (void *)data));
   ql_free(ql);
 }
 
