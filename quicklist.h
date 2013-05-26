@@ -29,6 +29,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 extern "C" {
 #endif
 
+#define ql_true 1
+#define ql_false 0
+
     typedef int ql_bool;
     typedef struct quicklist quicklist;
     typedef struct ql_iter {
@@ -58,9 +61,9 @@ extern "C" {
     void *ql_replace(struct quicklist *ql, int index, void *data);
     
     /* you can use it as a set (sorted pointers)*/
-    int ql_set_insert(struct quicklist **qlp, void *data);
+    ql_bool ql_set_insert(struct quicklist **qlp, void *data);
     ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data);
-    int ql_set_remove(struct quicklist **qlp, void *data);
+    ql_bool ql_set_remove(struct quicklist **qlp, void *data);
 
 #ifdef __cplusplus
 }

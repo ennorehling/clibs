@@ -115,15 +115,15 @@ static void test_set_insert(CuTest * tc)
   int a, qi;
   a = ql_set_insert(&ql, (void *)data);
   CuAssertIntEquals(tc, 1, ql_length(ql));
-  CuAssertIntEquals(tc, 0, a);
+  CuAssertIntEquals(tc, ql_true, a);
   a = ql_set_insert(&ql, (void *)(data+1));
   CuAssertIntEquals(tc, 2, ql_length(ql));
-  CuAssertIntEquals(tc, 0, a);
+  CuAssertIntEquals(tc, ql_true, a);
   a = ql_set_insert(&ql, (void *)data);
   CuAssertIntEquals(tc, 2, ql_length(ql));
-  CuAssertIntEquals(tc, 1, a);
+  CuAssertIntEquals(tc, ql_false, a);
   a = ql_set_insert(&ql, (void *)(data+2));
-  CuAssertIntEquals(tc, 0, a);
+  CuAssertIntEquals(tc, ql_true, a);
   CuAssertIntEquals(tc, 3, ql_length(ql));
   CuAssertPtrEquals(tc, (void *)data, ql_get(ql, 0));
   CuAssertPtrEquals(tc, (void *)(data+1), ql_get(ql, 1));
@@ -149,18 +149,20 @@ static void test_set_remove(CuTest * tc)
   q2 = ql;
 
   a = ql_set_remove(&ql, (void *)(data+1));
+  CuAssertIntEquals(tc, ql_true, a);
   CuAssertPtrEquals(tc, q2, ql);
-  CuAssertIntEquals(tc, 1, a);
   CuAssertPtrEquals(tc, (void *)data, ql_get(ql, 0));
   CuAssertPtrEquals(tc, (void *)(data+2), ql_get(ql, 1));
   CuAssertIntEquals(tc, 2, ql_length(ql));
 
   a = ql_set_remove(&ql, (void *)(data+1));
+  CuAssertIntEquals(tc, ql_false, a);
   CuAssertPtrEquals(tc, q2, ql);
-  CuAssertIntEquals(tc, 0, a);
 
-  ql_set_remove(&ql, (void *)data);
-  ql_set_remove(&ql, (void *)(data+2));
+  a = ql_set_remove(&ql, (void *)data);
+  CuAssertIntEquals(tc, ql_true, a);
+  a = ql_set_remove(&ql, (void *)(data+2));
+  CuAssertIntEquals(tc, ql_true, a);
   CuAssertPtrEquals(tc, 0, ql);
 
   ql_free(ql);
@@ -168,8 +170,13 @@ static void test_set_remove(CuTest * tc)
 
 static void test_set_find(CuTest * tc)
 {
-  struct quicklist *ql = NULL, *q2;
+  struct quicklist *ql = 0, *q2;
   int a, qi;
+
+  q2 = ql;
+  a = ql_set_find(&q2, 0, (void *)data);
+  CuAssertIntEquals(tc, ql_false, a);
+  CuAssertPtrEquals(tc, ql, q2);
 
   for (a = 0; a != 32; ++a) {
     ql_set_insert(&ql, (void *)(data + a));
@@ -177,18 +184,18 @@ static void test_set_find(CuTest * tc)
 
   q2 = ql;
   a = ql_set_find(&q2, 0, (void *)(data + 31));
-  CuAssertIntEquals(tc, 1, a);
+  CuAssertIntEquals(tc, ql_true, a);
   CuAssertPtrEquals(tc, ql, q2);
 
   q2 = ql;
   a = ql_set_find(&ql, &qi, (void *)data);
-  CuAssertIntEquals(tc, 1, a);
+  CuAssertIntEquals(tc, ql_true, a);
   CuAssertIntEquals(tc, 0, qi);
   CuAssertPtrEquals(tc, ql, q2);
 
   q2 = ql;
   a = ql_set_find(&ql, &qi, (void *)(data + 31));
-  CuAssertIntEquals(tc, 1, a);
+  CuAssertIntEquals(tc, ql_true, a);
   CuAssertPtrEquals(tc, (void *)(data + 31), ql_get(ql, qi));
   CuAssertTrue(tc, ql != q2);
 
