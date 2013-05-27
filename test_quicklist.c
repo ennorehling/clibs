@@ -14,7 +14,7 @@ static void test_loop(CuTest * tc)
     int result = 0;
 
     ql_push(&ql, (void *)data);
-    ql_push(&ql, (void *)data+1);
+    ql_push(&ql, (void *)(data+1));
     for (iter = qli_init(ql);qli_more(&iter);) {
         const char * c = (const char *)qli_next(&iter);
         result += *c;
@@ -325,11 +325,12 @@ void add_suite_quicklist(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
 }
 
-int main(int argc, char ** argv)
+int main(void)
 {
   int result;
   CuString *output = CuStringNew();
   CuSuite *suite = CuSuiteNew();
+
 
   add_suite_quicklist(suite);
 

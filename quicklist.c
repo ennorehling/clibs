@@ -269,7 +269,8 @@ ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data)
 }
 
 struct ql_iter qli_init(struct quicklist *ql) {
-  ql_iter iter = { ql, 0 };
+  ql_iter iter = { 0 };
+  iter.l = ql;
   return iter;
 }
 

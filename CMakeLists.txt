@@ -1,14 +1,14 @@
-project (quicklist C)
-include_directories (../cutest)
+PROJECT (quicklist C)
 
-enable_testing()
+ENABLE_TESTING()
 
 INCLUDE_DIRECTORIES (${CUTEST_INCLUDE_DIR})
-add_library (${PROJECT_NAME} quicklist.c quicklist.h)
 
-add_executable (test_quicklist test_quicklist.c)
-target_link_libraries (test_quicklist quicklist ${CUTEST_LIBRARIES})
-add_test (quicklist test_quicklist)
+ADD_LIBRARY (${PROJECT_NAME} quicklist.c quicklist.h)
 
-set (QUICKLIST_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "QuickList headers")
-set (QUICKLIST_LIBRARIES quicklist CACHE INTERNAL "QuickList libraries")
+ADD_EXECUTABLE (test_quicklist test_quicklist.c)
+TARGET_LINK_LIBRARIES (test_quicklist quicklist ${CUTEST_LIBRARIES})
+ADD_TEST (quicklist test_quicklist)
+
+SET (QUICKLIST_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "QuickList headers")
+SET (QUICKLIST_LIBRARIES quicklist CACHE INTERNAL "QuickList libraries")
