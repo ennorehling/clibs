@@ -42,7 +42,7 @@ extern "C" {
     typedef void (*ql_cb)(void *entry);
     
     ql_iter qli_init(struct quicklist *ql);
-    ql_bool qli_more(struct ql_iter *iter);
+    ql_bool qli_more(ql_iter iter);
     void * qli_next(struct ql_iter *iter);
 
     void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);

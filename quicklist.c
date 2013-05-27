@@ -274,8 +274,8 @@ struct ql_iter qli_init(struct quicklist *ql) {
   return iter;
 }
 
-ql_bool qli_more(ql_iter *iter) {
-    return iter->l!=0;
+ql_bool qli_more(ql_iter iter) {
+    return iter.l!=0;
 }
 
 void * qli_next(struct ql_iter *iter) {

@@ -15,7 +15,7 @@ static void test_loop(CuTest * tc)
 
     ql_push(&ql, (void *)data);
     ql_push(&ql, (void *)(data+1));
-    for (iter = qli_init(ql);qli_more(&iter);) {
+    for (iter = qli_init(ql);qli_more(iter);) {
         const char * c = (const char *)qli_next(&iter);
         result += *c;
     }
