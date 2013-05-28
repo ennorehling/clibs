@@ -22,6 +22,18 @@ static void test_loop(CuTest * tc)
     CuAssertIntEquals(tc, data[0]+data[1], result);
 }
 
+static void test_more(CuTest * tc)
+{
+    ql_iter iter;
+    quicklist * ql = 0;
+
+    ql_push(&ql, (void *)data);
+    iter = qli_init(ql);
+    CuAssertTrue(tc, qli_more(iter));
+    ql_delete(&iter.l, iter.i);
+    CuAssertTrue(tc, !qli_more(iter));
+}
+
 static void my_map(void *entry, void *data) {
   const char * str = (const char *)entry;
   *(int *)data = *str;
@@ -307,6 +319,7 @@ static void test_delete_rand(CuTest * tc)
 void add_suite_quicklist(CuSuite *suite)
 {
   SUITE_ADD_TEST(suite, test_loop);
+  SUITE_ADD_TEST(suite, test_more);
   SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_mapreduce);
   SUITE_ADD_TEST(suite, test_advance);

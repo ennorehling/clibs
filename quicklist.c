@@ -275,7 +275,17 @@ struct ql_iter qli_init(struct quicklist *ql) {
 }
 
 ql_bool qli_more(ql_iter iter) {
-    return iter.l!=0;
+    quicklist * ql = iter.l;
+    int qi = iter.i;
+    if (ql) {
+        if (qi>=ql->num_elements) {
+            iter.l = ql->next;
+            iter.i = qi - ql->num_elements;
+            return qli_more(iter);
+        }
+        return qi<ql->num_elements;
+    }
+    return ql_false;
 }
 
 void * qli_next(struct ql_iter *iter) {
