@@ -69,13 +69,17 @@ quicklist * ql_push(quicklist ** qlp, void *data)
   }
   if (!*qlp) {
     ql = (quicklist *) malloc(sizeof(quicklist));
-    ql->num_elements = 0;
-    ql->next = 0;
-    *qlp = ql;
+    if (ql) {
+        ql->num_elements = 0;
+        ql->next = 0;
+        *qlp = ql;
+    }
   } else {
     ql = *qlp;
   }
-  ql->elements[ql->num_elements++] = data;
+  if (ql) {
+      ql->elements[ql->num_elements++] = data;
+  }
   return ql;
 }
 
@@ -128,12 +132,14 @@ int ql_insert(quicklist ** qlp, int i, void *data)
       ++ql->num_elements;
     } else {
       quicklist *qn = (quicklist *) malloc(sizeof(quicklist));
-      qn->next = ql->next;
-      ql->next = qn;
-      qn->num_elements = ql->num_elements-QL_LIMIT;
-      ql->num_elements = QL_LIMIT;
-      memcpy(qn->elements, ql->elements + ql->num_elements,
-        QL_LIMIT * sizeof(void *));
+      if (qn) {
+          qn->next = ql->next;
+          ql->next = qn;
+          qn->num_elements = ql->num_elements-QL_LIMIT;
+          ql->num_elements = QL_LIMIT;
+          memcpy(qn->elements, ql->elements + ql->num_elements,
+            QL_LIMIT * sizeof(void *));
+      }
       if (i <= ql->num_elements) {
         return ql_insert(qlp, i, data);
       } else {
