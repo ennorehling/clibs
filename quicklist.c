@@ -199,7 +199,7 @@ void ql_free(struct quicklist *ql)
   }
 }
 
-ql_bool ql_set_remove(struct quicklist **qlp, void *data)
+ql_bool ql_set_remove(struct quicklist **qlp, const void *data)
 {
   int qi;
   quicklist *ql = *qlp;
@@ -274,9 +274,10 @@ ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data)
   return ql_false;
 }
 
-struct ql_iter qli_init(struct quicklist *ql) {
+struct ql_iter qli_init(struct quicklist **qlp) {
   ql_iter iter = { 0 };
-  iter.l = ql;
+  iter.l = *qlp;
+  iter.lp = qlp;
   return iter;
 }
 
@@ -298,6 +299,14 @@ void * qli_next(struct ql_iter *iter) {
     void * result = ql_get(iter->l, iter->i);
     ql_advance(&iter->l, &iter->i, 1);
     return result;
+}
+
+void qli_delete(struct ql_iter *iter) {
+    quicklist * ql = iter->l;
+    ql_delete(&iter->l, iter->i);
+    if (iter->l!=ql && *(iter->lp)==ql) {
+        *(iter->lp) = iter->l;
+    }
 }
 
 void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result)

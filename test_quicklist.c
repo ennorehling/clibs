@@ -7,6 +7,17 @@ static const char * data = "Lorem ipsum dolor sit amet, "
   "consectetur adipisicing elit, sed do eiusmod tempor "
   "incididunt ut labore et dolore magna aliqua.";
 
+static void test_iter_delete_all(CuTest * tc)
+{
+    quicklist * ql = 0;
+    ql_iter iter;
+
+    ql_push(&ql, (void *)data);
+    iter = qli_init(&ql);
+    qli_delete(&iter);
+    CuAssertPtrEquals(tc, 0, ql);
+}
+
 static void test_loop(CuTest * tc)
 {
     ql_iter iter;
@@ -15,7 +26,7 @@ static void test_loop(CuTest * tc)
 
     ql_push(&ql, (void *)data);
     ql_push(&ql, (void *)(data+1));
-    for (iter = qli_init(ql);qli_more(iter);) {
+    for (iter = qli_init(&ql);qli_more(iter);) {
         const char * c = (const char *)qli_next(&iter);
         result += *c;
     }
@@ -28,7 +39,7 @@ static void test_more(CuTest * tc)
     quicklist * ql = 0;
 
     ql_push(&ql, (void *)data);
-    iter = qli_init(ql);
+    iter = qli_init(&ql);
     CuAssertTrue(tc, qli_more(iter));
     ql_delete(&iter.l, iter.i);
     CuAssertTrue(tc, !qli_more(iter));
@@ -319,6 +330,7 @@ static void test_delete_rand(CuTest * tc)
 void add_suite_quicklist(CuSuite *suite)
 {
   SUITE_ADD_TEST(suite, test_loop);
+  SUITE_ADD_TEST(suite, test_iter_delete_all);
   SUITE_ADD_TEST(suite, test_more);
   SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_mapreduce);

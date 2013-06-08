@@ -35,15 +35,16 @@ extern "C" {
     typedef int ql_bool;
     typedef struct quicklist quicklist;
     typedef struct ql_iter {
-        struct quicklist *l;
+        struct quicklist *l, **lp;
         int i;
     } ql_iter;
     typedef void (*ql_cbx)(void *entry, void *more);
     typedef void (*ql_cb)(void *entry);
     
-    ql_iter qli_init(struct quicklist *ql);
+    ql_iter qli_init(struct quicklist **qlp);
     ql_bool qli_more(ql_iter iter);
     void * qli_next(struct ql_iter *iter);
+    void qli_delete(struct ql_iter *iter);
 
     void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
     
@@ -63,7 +64,7 @@ extern "C" {
     /* you can use it as a set (sorted pointers)*/
     ql_bool ql_set_insert(struct quicklist **qlp, void *data);
     ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data);
-    ql_bool ql_set_remove(struct quicklist **qlp, void *data);
+    ql_bool ql_set_remove(struct quicklist **qlp, const void *data);
 
 #ifdef __cplusplus
 }
