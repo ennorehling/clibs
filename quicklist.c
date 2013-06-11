@@ -301,6 +301,10 @@ void * qli_next(struct ql_iter *iter) {
     return result;
 }
 
+void * qli_get(struct ql_iter iter) {
+    return ql_get(iter.l, iter.i);
+}
+
 void qli_delete(struct ql_iter *iter) {
     quicklist * ql = iter->l;
     ql_delete(&iter->l, iter->i);

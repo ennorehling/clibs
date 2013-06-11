@@ -43,6 +43,7 @@ extern "C" {
     
     ql_iter qli_init(struct quicklist **qlp);
     ql_bool qli_more(ql_iter iter);
+    void * qli_get(ql_iter iter);
     void * qli_next(struct ql_iter *iter);
     void qli_delete(struct ql_iter *iter);
 
