@@ -33,6 +33,17 @@ struct quicklist {
   void *elements[QL_MAXSIZE];
 };
 
+ql_bool ql_find(struct quicklist **qlp, int *index, const void *value, ql_bool(*match)(const void *, const void *))
+{
+    for (;*qlp;ql_advance(qlp, index, 1)) {
+        void *x = ql_get(*qlp, *index);
+        if (match ? match(value, x) : value==x) {
+            return ql_true;
+        }
+    }
+    return ql_false;
+}
+
 void *ql_get(const quicklist * ql, int i)
 {
     assert(ql);

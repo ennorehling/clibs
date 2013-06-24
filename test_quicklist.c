@@ -91,6 +91,57 @@ static void test_foreach(CuTest *tc) {
     ql_free(ql);
 }
 
+static ql_bool cb_match_int(const void*a, const void*b) {
+    return *(const int *)a == *(const int *)b;
+}
+
+static void test_find_cb(CuTest *tc) {
+    int a = 42;
+    int b = 23;
+    int c = 42;
+    struct quicklist *ql = 0;
+    struct quicklist *il;
+    int i;
+
+    ql_push(&ql, (void *)&a);
+    ql_push(&ql, (void *)&b);
+    ql_push(&ql, (void *)&c);
+
+    il = ql; i = 0;
+    CuAssertIntEquals(tc, ql_true, ql_find(&il, &i, (void *)&a, cb_match_int));
+    CuAssertIntEquals(tc, 0, i);
+
+    ql_advance(&il, &i, 1);
+    CuAssertIntEquals(tc, ql_true, ql_find(&il, &i, (void *)&a, cb_match_int));
+    CuAssertIntEquals(tc, 2, i);
+
+    ql_advance(&il, &i, 1);
+    CuAssertIntEquals(tc, ql_false, ql_find(&il, &i, (void *)&a, cb_match_int));
+    ql_free(ql);
+}
+
+static void test_find(CuTest *tc) {
+    struct quicklist *ql = 0;
+    struct quicklist *il;
+    int i;
+
+    ql_push(&ql, (void *)data);
+    ql_push(&ql, (void *)(data+1));
+    ql_push(&ql, (void *)data);
+
+    il = ql; i = 0;
+    CuAssertIntEquals(tc, ql_true, ql_find(&il, &i, (void *)data, 0));
+    CuAssertIntEquals(tc, 0, i);
+
+    ql_advance(&il, &i, 1);
+    CuAssertIntEquals(tc, ql_true, ql_find(&il, &i, (void *)data, 0));
+    CuAssertIntEquals(tc, 2, i);
+
+    ql_advance(&il, &i, 1);
+    CuAssertIntEquals(tc, ql_false, ql_find(&il, &i, (void *)data, 0));
+    ql_free(ql);
+}
+
 static void test_insert(CuTest * tc)
 {
   struct quicklist *ql = NULL;
@@ -333,6 +384,8 @@ void add_suite_quicklist(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_iter_delete_all);
   SUITE_ADD_TEST(suite, test_more);
   SUITE_ADD_TEST(suite, test_foreach);
+  SUITE_ADD_TEST(suite, test_find);
+  SUITE_ADD_TEST(suite, test_find_cb);
   SUITE_ADD_TEST(suite, test_mapreduce);
   SUITE_ADD_TEST(suite, test_advance);
   SUITE_ADD_TEST(suite, test_replace);

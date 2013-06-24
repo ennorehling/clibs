@@ -56,6 +56,7 @@ extern "C" {
 
     struct quicklist * ql_push(struct quicklist **qlp, void *data);
     int ql_delete(struct quicklist **qlp, int index);
+    ql_bool ql_find(struct quicklist **qlp, int *index, const void *value, ql_bool(*equal)(const void *, const void *));
     int ql_insert(struct quicklist **qlp, int index, void *data);
     void ql_foreach(struct quicklist *ql, ql_cb cb);
     void ql_foreachx(struct quicklist *ql, ql_cbx cb, void *);
