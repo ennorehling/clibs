@@ -183,6 +183,43 @@ static void test_replace(CuTest * tc)
   ql_free(ql);
 }
 
+int cmp_str(const void *lhs, const void *rhs) {
+    return strcmp((const char *)lhs, (const char *)rhs);
+}
+
+static void test_set_insert_ex(CuTest * tc)
+{
+    const char * strings[] = {
+        "aaa", "bbb", "ccc", "ddd"
+    };
+    struct quicklist *ql = NULL;
+    int qi;
+    
+    /* insert a string: */
+    CuAssertIntEquals(tc, ql_true, ql_set_insert_ex(&ql, (void *)strings[0], cmp_str));
+    CuAssertIntEquals(tc, 1, ql_length(ql));
+
+    /* insert a second string: */
+    CuAssertIntEquals(tc, ql_true, ql_set_insert_ex(&ql, (void *)strings[1], cmp_str));
+    CuAssertIntEquals(tc, 2, ql_length(ql));
+    /* same string again, no change: */
+    CuAssertIntEquals(tc, ql_false, ql_set_insert_ex(&ql, (void *)strings[1], cmp_str));
+    CuAssertIntEquals(tc, 2, ql_length(ql));
+
+    /* a third string */
+    CuAssertIntEquals(tc, ql_true, ql_set_insert_ex(&ql, (void *)strings[2], cmp_str));
+    CuAssertIntEquals(tc, 3, ql_length(ql));
+
+    /* check that they are alphabetically ordered: */
+    for (qi=0;qi!=3;++qi) {
+        CuAssertPtrEquals(tc, (void *)strings[qi], ql_get(ql, qi));
+    }
+    
+    CuAssertIntEquals(tc, 1, ql_set_find_ex(&ql, &qi, (void *)strings[2], cmp_str));
+    CuAssertIntEquals(tc, 2, qi);
+    ql_free(ql);
+}
+
 static void test_set_insert(CuTest * tc)
 {
   struct quicklist *ql = NULL;
@@ -400,6 +437,7 @@ void add_suite_quicklist(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_delete_rand);
   SUITE_ADD_TEST(suite, test_delete_edgecases);
   SUITE_ADD_TEST(suite, test_set_insert);
+  SUITE_ADD_TEST(suite, test_set_insert_ex);
   SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
 }
 

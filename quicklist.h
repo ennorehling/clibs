@@ -65,7 +65,9 @@ extern "C" {
     
     /* you can use it as a set (sorted pointers)*/
     ql_bool ql_set_insert(struct quicklist **qlp, void *data);
+    ql_bool ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
     ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data);
+    ql_bool ql_set_find_ex(struct quicklist **qlp, int *qip, const void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
     ql_bool ql_set_remove(struct quicklist **qlp, const void *data);
 
 #ifdef __cplusplus

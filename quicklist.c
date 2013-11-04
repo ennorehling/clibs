@@ -257,6 +257,37 @@ ql_bool ql_set_insert(struct quicklist **qlp, void *data)
   return ql_true;
 }
 
+ql_bool ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const void *lhs, const void *rhs))
+{
+  if (*qlp) {
+    quicklist *ql = *qlp;
+    if (ql->num_elements > 0 && cmp_cb(ql->elements[ql->num_elements - 1], data)<0) {
+      if (ql->num_elements == QL_MAXSIZE || (ql->next
+          && cmp_cb(ql->next->elements[0], data)<=0)) {
+        return ql_set_insert(&ql->next, data);
+      } else {
+        ql->elements[ql->num_elements++] = data;
+      }
+      return ql_true;
+    } else {
+      int i;
+      /* TODO: OPT | binary search */
+      for (i = 0; i != ql->num_elements; ++i) {
+        int cmpi = cmp_cb(data, ql->elements[i]);
+        if (cmpi<0) {
+          ql_insert(qlp, i, data);
+          return ql_true;
+        }
+        if (cmpi == 0) {
+          return ql_false;
+        }
+      }
+    }
+  }
+  ql_push(qlp, data);
+  return ql_true;
+}
+
 ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data)
 {
   quicklist *ql = *qlp;
@@ -285,8 +316,37 @@ ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data)
   return ql_false;
 }
 
+ql_bool ql_set_find_ex(struct quicklist **qlp, int *qip, const void *data, int (*cmp_cb)(const void *lhs, const void *rhs))
+{
+  quicklist *ql = *qlp;
+  int qi;
+
+  while (ql && cmp_cb(ql->elements[ql->num_elements - 1], data)<0) {
+    ql = ql->next;
+  }
+
+  if (!ql)
+    return ql_false;
+
+  /* TODO: OPT | binary search */
+  for (qi = 0; qi != ql->num_elements; ++qi) {
+    int cmpi = cmp_cb(ql->elements[qi], data);
+    if (cmpi>0) {
+      return ql_false;
+    }
+    if (cmpi == 0) {
+      if (qip) {
+        *qip = qi;
+        *qlp = ql;
+      }
+      return ql_true;
+    }
+  }
+  return ql_false;
+}
+
 struct ql_iter qli_init(struct quicklist **qlp) {
-  ql_iter iter = { 0 };
+  ql_iter iter = { 0, 0, 0 };
   iter.l = *qlp;
   iter.lp = qlp;
   return iter;
