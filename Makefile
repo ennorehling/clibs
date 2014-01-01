@@ -1,7 +1,7 @@
 # I am not very good at Makefiles.
 
 ifndef CUTEST
-CUTEST = cutest
+CUTEST = ../cutest
 endif
 
 INCLUDES += -I. -I$(CUTEST)
