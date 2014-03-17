@@ -12,7 +12,7 @@ ifdef DLMALLOC
 LIBS += ${DLMALLOC}/lib/libmalloc.a
 endif
 
-all: benchmarks tests
+all: benchmarks test
 
 bin obj:
 	mkdir -p $@
@@ -22,7 +22,7 @@ benchmarks: bin/benchmark bin/naive bin/james
 	@bin/naive 100 1
 	@bin/james 100 1
 
-tests: bin/tests
+test: bin/tests
 	@bin/tests
 
 obj/%.c.o: %.c | obj
