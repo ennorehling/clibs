@@ -1,18 +1,22 @@
 # I am not very good at Makefiles.
 
-ifndef CUTEST
+INCLUDES += -I.
+
+ifeq (,$(wildcard ../cutest))
+CUTEST=.
+else
 CUTEST = ../cutest
+INCLUDES += -I../cutest
 endif
 
-INCLUDES += -I. -I$(CUTEST)
-CFLAGS += -Wall -Wstrict-aliasing=2 -O3 $(INCLUDES)
-CPPFLAGS += -Wall -O3 $(INCLUDES)
+CFLAGS += -Wall -Wstrict-aliasing=2 -O3
+CPPFLAGS += -Wall -O3
 
 ifdef DLMALLOC
 LIBS += ${DLMALLOC}/lib/libmalloc.a
 endif
 
-all: benchmarks test
+all: bin/benchmark bin/naive bin/james
 
 bin obj:
 	mkdir -p $@
@@ -26,16 +30,16 @@ test: bin/tests
 	@bin/tests
 
 obj/%.c.o: %.c | obj
-	$(CC) -o $@ -c $^ $(CFLAGS)
+	$(CC) -o $@ -c $^ $(CFLAGS) $(INCLUDES)
 
 obj/%.cpp.o: %.cpp | obj
-	$(CXX) -o $@ -c $^ $(CPPFLAGS)
+	$(CXX) -o $@ -c $^ $(CPPFLAGS) $(INCLUDES)
 
 bin/benchmark: obj/benchmark.c.o obj/critbit.c.o obj/strtolh.c.o | bin
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 bin/naive: obj/naive.c.o obj/strtolh.c.o | bin
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(LIBS)
 
 bin/james: obj/james.cpp.o obj/strtolh.c.o | bin
 	$(CXX) -o $@ $^ $(LIBS)
@@ -43,7 +47,7 @@ bin/james: obj/james.cpp.o obj/strtolh.c.o | bin
 bin/tests: critbit_tests.c \
  test_critbit.c critbit.c \
  $(CUTEST)/CuTest.c | bin
-	$(CC) $(CFLAGS) -lm -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^ $(LIBS)
 
 clean:
 	@rm -rf *~ bin obj
