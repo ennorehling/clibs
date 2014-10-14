@@ -12,15 +12,24 @@ endif
 
 all: bin/test_quicklist
 
-bin:
+bin obj:
 	mkdir -p $@
 
 test: bin/test_quicklist
 	@bin/test_quicklist
 
-bin/test_quicklist: test_quicklist.c quicklist.h \
-quicklist.c $(CUTEST)/CuTest.c | bin
+obj/%.o: %.c %.h | obj
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+
+obj/test_%.o: test_%.c %.h | obj
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+
+obj/CuTest.o: $(CUTEST)/CuTest.c $(CUTEST)/CuTest.h | obj
+	$(CC) -o $@ -c $(CUTEST)/CuTest.c $(CFLAGS) -I$(CUTEST)
+
+bin/test_quicklist: obj/test_quicklist.o obj/quicklist.o \
+ obj/CuTest.o | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -lm $^ -o $@
 
 clean:
-	@rm -rf *~ bin
+	@rm -rf *~ bin obj
