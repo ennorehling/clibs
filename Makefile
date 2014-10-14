@@ -20,7 +20,7 @@ test: bin/test_quicklist
 
 bin/test_quicklist: test_quicklist.c quicklist.h \
 quicklist.c $(CUTEST)/CuTest.c | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
+	$(CC) $(CFLAGS) $(INCLUDES) -lm $^ -o $@
 
 clean:
 	@rm -rf *~ bin
