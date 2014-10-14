@@ -1,13 +1,16 @@
 # I am not very good at Makefiles.
 
-ifndef CUTEST
+CFLAGS += -Wall -O3
+INCLUDES += -I.
+
+ifeq (,$(wildcard ../cutest))
+CUTEST=.
+else
 CUTEST = ../cutest
+INCLUDES += -I../cutest
 endif
 
-CFLAGS += -Wall -O3
-INCLUDES = -I$(CUTEST) -I.
-
-all: test
+all: bin/test_quicklist
 
 bin:
 	mkdir -p $@
