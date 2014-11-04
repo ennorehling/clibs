@@ -6,11 +6,16 @@
 #include "critbit.h"
 #include "strtolh.h"
 
+#define unused(x) (void)x
+
 int count_cb(const void * match, const void * key, size_t keylen, void *result)
 {
-  long * ctr = (long*)result;
-  ++*ctr;
-  return 0;
+    long * ctr = (long*)result;
+    unused(keylen);
+    unused(key);
+    unused(match);
+    ++*ctr;
+    return 0;
 }
 
 int main(int argc, char** argv) {
