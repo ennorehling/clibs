@@ -4,17 +4,17 @@
 
 void add_suite_critbit(CuSuite *suite);
 
-int main(int argc, char ** argv)
+int main(void)
 {
-  CuString *output = CuStringNew();
-  CuSuite *suite = CuSuiteNew();
+    CuString *output = CuStringNew();
+    CuSuite *suite = CuSuiteNew();
 
-  add_suite_critbit(suite);
+    add_suite_critbit(suite);
 
-  CuSuiteRun(suite);
-  CuSuiteSummary(suite, output);
-  CuSuiteDetails(suite, output);
-  printf("%s\n", output->buffer);
-  return suite->failCount;
+    CuSuiteRun(suite);
+    CuSuiteSummary(suite, output);
+    CuSuiteDetails(suite, output);
+    printf("%s\n", output->buffer);
+    return suite->failCount;
 }
 
