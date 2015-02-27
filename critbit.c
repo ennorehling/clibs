@@ -338,10 +338,10 @@ size_t cb_new_kv(const char *key, size_t keylen, void * value, size_t len, void 
 {
   char * dst = (char*)out;
   if (dst!=key) {
-    memcpy(dst, key, keylen);
+    memmove(dst, key, keylen);
   }
   dst[keylen] = 0;
-  memcpy(dst+keylen+1, value, len);
+  memmove(dst+keylen+1, value, len);
   return len+keylen+1;
 }
 
@@ -349,5 +349,5 @@ void cb_get_kv(const void *kv, void * value, size_t len)
 {
   const char * key = (const char *)kv;
   size_t keylen = strlen(key)+1;
-  memcpy(value, key+keylen, len);
+  memmove(value, key+keylen, len);
 }
