@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2010-2011, Enno Rehling <enno@eressea.de>
+Copyright (c) 2010-2015, Enno Rehling <enno@eressea.de>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -31,6 +31,7 @@ extern "C" {
 
 #define ql_true 1
 #define ql_false 0
+#define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
 
     typedef int ql_bool;
     typedef struct quicklist quicklist;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2010-2011, Enno Rehling <enno@eressea.de>
+Copyright (c) 2010-2015, Enno Rehling <enno@eressea.de>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
-#define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
 #define QL_LIMIT 7 /* this many or fewer number in a node => attempt merge */
 
 /* The total size of this struct is 64 bytes on a 32-bit system with
@@ -264,7 +263,7 @@ ql_bool ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const
     if (ql->num_elements > 0 && cmp_cb(ql->elements[ql->num_elements - 1], data)<0) {
       if (ql->num_elements == QL_MAXSIZE || (ql->next
           && cmp_cb(ql->next->elements[0], data)<=0)) {
-        return ql_set_insert(&ql->next, data);
+        return ql_set_insert_ex(&ql->next, data, cmp_cb);
       } else {
         ql->elements[ql->num_elements++] = data;
       }

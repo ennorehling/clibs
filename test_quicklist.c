@@ -220,6 +220,17 @@ static void test_set_insert_ex(CuTest * tc)
     ql_free(ql);
 }
 
+static void test_set_insert_ex_large(CuTest * tc)
+{
+    const char * string = "12345678901234567890";
+    struct quicklist *ql = NULL;
+    int i;
+    for (i = 0; i != QL_MAXSIZE+1; ++i) {
+        CuAssertIntEquals(tc, ql_true, ql_set_insert_ex(&ql, (void *)(string+i), cmp_str));
+    }
+    CuAssertIntEquals(tc, ql_false, ql_set_insert_ex(&ql, (void *)(string + 3), cmp_str));
+}
+
 static void test_set_insert(CuTest * tc)
 {
   struct quicklist *ql = NULL;
@@ -438,6 +449,7 @@ void add_suite_quicklist(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_delete_edgecases);
   SUITE_ADD_TEST(suite, test_set_insert);
   SUITE_ADD_TEST(suite, test_set_insert_ex);
+  SUITE_ADD_TEST(suite, test_set_insert_ex_large);
   SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
 }
 
