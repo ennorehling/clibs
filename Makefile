@@ -1,23 +1,35 @@
 # I am not very good at Makefiles.
 
-ifndef CUTEST
+CFLAGS += -Wall -O3
+INCLUDES += -I.
+
+ifeq (,$(wildcard ../cutest))
+CUTEST=.
+else
 CUTEST = ../cutest
+INCLUDES += -I../cutest
 endif
 
-CFLAGS += -Wall -O3
-INCLUDES = -I$(CUTEST) -I.
+all: bin/test_quicklist
 
-all: test
-
-bin:
+bin obj:
 	mkdir -p $@
 
 test: bin/test_quicklist
 	@bin/test_quicklist
 
-bin/test_quicklist: test_quicklist.c quicklist.h \
-quicklist.c $(CUTEST)/CuTest.c | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^
+obj/%.o: %.c %.h | obj
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+
+obj/test_%.o: test_%.c %.h | obj
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+
+obj/CuTest.o: $(CUTEST)/CuTest.c $(CUTEST)/CuTest.h | obj
+	$(CC) -o $@ -c $(CUTEST)/CuTest.c $(CFLAGS) -I$(CUTEST)
+
+bin/test_quicklist: obj/test_quicklist.o obj/quicklist.o \
+ obj/CuTest.o | bin
+	$(CC) $(CFLAGS) $(INCLUDES) -lm $^ -o $@
 
 clean:
-	@rm -rf *~ bin
+	@rm -rf *~ bin obj
