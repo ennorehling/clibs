@@ -9,7 +9,7 @@ CUTEST = ../cutest
 INCLUDES += -I../cutest
 endif
 
-CFLAGS += -Wall -Wstrict-aliasing=2 -O3
+CFLAGS += -Wall -Wstrict-aliasing=2 -O3 -Wconversion -Wextra
 CPPFLAGS += -Wall -O3
 
 ifdef DLMALLOC
