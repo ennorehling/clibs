@@ -116,8 +116,8 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
       } else {
         unsigned char *iptr, *bytes = (unsigned char *)key, *ikey = bytes;
         void * vptr;
-        unsigned int mask, branch;
-        unsigned int byte = 0;
+        unsigned int mask, byte = 0;
+        int branch;
         size_t len;
         struct critbit_node * node = make_internal_node();
 

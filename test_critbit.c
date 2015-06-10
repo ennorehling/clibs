@@ -249,7 +249,7 @@ static void test_keyvalue(CuTest * tc)
   size_t len = strlen(key);
 
   len = cb_new_kv(key, len, &i, sizeof(int), buffer);
-  CuAssertIntEquals(tc, strlen(buffer)+1+sizeof(int), len);
+  CuAssertIntEquals(tc, (int)(strlen(buffer)+1+sizeof(int)), (int)len);
   CuAssertStrEquals(tc, buffer, key);
   cb_get_kv(buffer, &result, sizeof(int));
   CuAssertIntEquals(tc, i, result);
