@@ -23,7 +23,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 struct critbit_node {
   void * child[2];
   size_t byte;
-  unsigned char mask;
+  unsigned int mask;
 };
 
 #define EXTERNAL_NODE 0
@@ -39,7 +39,7 @@ static int decode_pointer(void ** ptr)
   return INTERNAL_NODE;
 }
 
-void * make_external_node(const void * key, size_t keylen)
+static void * make_external_node(const void * key, size_t keylen)
 {
   char * data = (char *)malloc(sizeof(size_t) + keylen);
 #ifndef NDEBUG
@@ -64,7 +64,7 @@ static void from_external_node(void * ptr, void **key, size_t *keylen)
   *key = bytes+sizeof(size_t);
 }
 
-struct critbit_node * make_internal_node(void)
+static struct critbit_node * make_internal_node(void)
 {
   struct critbit_node *node = (struct critbit_node *)malloc(sizeof(struct critbit_node));
   return node;

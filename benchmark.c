@@ -8,7 +8,7 @@
 
 #define unused(x) (void)x
 
-int count_cb(const void * match, const void * key, size_t keylen, void *result)
+static int count_cb(const void * match, const void * key, size_t keylen, void *result)
 {
     long * ctr = (long*)result;
     unused(keylen);

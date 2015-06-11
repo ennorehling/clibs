@@ -9,14 +9,20 @@ CUTEST = ../cutest
 INCLUDES += -I../cutest
 endif
 
-CFLAGS += -Wall -Wstrict-aliasing=2 -O3 -Wconversion -Wextra
+CFLAGS += -Wall -Wextra -Wstrict-aliasing=2 -O3 -Wconversion -Wno-sign-conversion
 CPPFLAGS += -Wall -O3
+
+ifeq "$(CC)" "clang"
+CFLAGS += -Weverything
+# stop clang warning us about strncmp:
+CFLAGS += -Wno-disabled-macro-expansion
+endif
 
 ifdef DLMALLOC
 LIBS += ${DLMALLOC}/lib/libmalloc.a
 endif
 
-all: bin/benchmark bin/naive bin/james
+all: benchmarks test
 
 bin obj:
 	mkdir -p $@
