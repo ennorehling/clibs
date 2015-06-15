@@ -199,7 +199,7 @@ static void * cb_find_top_i(critbit_tree * cb, const void * key, size_t keylen)
   return top;
 }
 
-static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const void ** results, int numresults, int * offset, int next)
+static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, void ** results, int numresults, int * offset, int next)
 {
   assert(next<=numresults);
   if (next==numresults) {
@@ -212,7 +212,7 @@ static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const v
     }
   } else {
     /* reached an external node */
-    const char * str;
+    char * str;
     void * vptr;
     size_t len;
 
@@ -229,7 +229,7 @@ static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, const v
   return next;
 }
 
-int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, const void ** results, int numresults, int offset)
+int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, void ** results, int numresults, int offset)
 {
   if (numresults>0) {
     void *top = cb_find_top_i(cb, key, keylen);
