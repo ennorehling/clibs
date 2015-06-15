@@ -4,6 +4,8 @@
 #include <CuTest.h>
 #include "critbit.h"
 
+void add_suite_critbit(CuSuite *suite);
+
 static void test_empty(CuTest * tc)
 {
   critbit_tree cb = CRITBIT_TREE();
@@ -157,14 +159,14 @@ static void test_find_prefix(CuTest * tc)
   CuAssertStrEquals(tc, 0, matches[0]);
 }
 
-int count_cb(const void * match, const void * key, size_t keylen, void * cbdata)
+static int count_cb(const void * match, const void * key, size_t keylen, void * cbdata)
 {
   int * result = (int *)cbdata;
   ++*result;
   return memcmp(match, key, keylen);
 }
 
-int ordered_cb(const void * match, const void * key, size_t keylen, void * cbdata)
+static int ordered_cb(const void * match, const void * key, size_t keylen, void * cbdata)
 {
   const void ** prevptr = (const void **)cbdata;
   const void * prev = *prevptr;
@@ -249,7 +251,7 @@ static void test_keyvalue(CuTest * tc)
   size_t len = strlen(key);
 
   len = cb_new_kv(key, len, &i, sizeof(int), buffer);
-  CuAssertIntEquals(tc, strlen(buffer)+1+sizeof(int), len);
+  CuAssertIntEquals(tc, (int)(strlen(buffer)+1+sizeof(int)), (int)len);
   CuAssertStrEquals(tc, buffer, key);
   cb_get_kv(buffer, &result, sizeof(int));
   CuAssertIntEquals(tc, i, result);
