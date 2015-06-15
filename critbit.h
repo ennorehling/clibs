@@ -50,7 +50,7 @@ void cb_clear(critbit_tree * cb);
 #define CB_KV_SIZE(keylen, datalen) (keylen+datalen+1)
 size_t cb_new_kv(const char *key, size_t keylen, void * value, size_t len, void * out);
 void cb_get_kv(const void *kv, void * value, size_t len);
-void cb_get_kv_ex(const void *kv, const void ** value);
+void cb_get_kv_ex(void *kv, void ** value);
 
 #ifdef __cplusplus
 }

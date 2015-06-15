@@ -352,9 +352,9 @@ void cb_get_kv(const void *kv, void * value, size_t len)
   memmove(value, key+keylen, len);
 }
 
-void cb_get_kv_ex(const void *kv, const void ** value)
+void cb_get_kv_ex(void *kv, void ** value)
 {
-    const char * key = (const char *)kv;
+    char * key = (char *)kv;
     size_t keylen = strlen(key) + 1;
     *value = key + keylen;
 }
