@@ -119,7 +119,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
         unsigned int mask, byte = 0;
         int branch;
         size_t len;
-        struct critbit_node * node = make_internal_node();
+        struct critbit_node * node;
 
         from_external_node(ptr, &vptr, &len);
 
@@ -132,6 +132,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
         if (byte==keylen && byte==len) {
           return 0; /* duplicate entry */
         }
+        node = make_internal_node();
         node->byte = byte;
         mask = *ikey ^ *iptr; /* these are all the bits that differ */
         mask |= mask>>1;
