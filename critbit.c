@@ -101,7 +101,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
   assert(key);
   if (!cb->root) {
     cb->root = make_external_node(key, keylen);
-    return 1;
+    return CB_SUCCESS;
   } else {
     void ** iter = &cb->root;
     struct critbit_node * prev = 0;
@@ -130,7 +130,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
         }
 
         if (byte==keylen && byte==len) {
-          return 0; /* duplicate entry */
+          return CB_EXISTS; /* duplicate entry */
         }
         node = make_internal_node();
         node->byte = byte;

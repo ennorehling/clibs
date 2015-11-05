@@ -28,7 +28,7 @@ static void test_insert(CuTest * tc)
   CuAssertPtrNotNull(tc, cb.root);
 
   result = cb_insert_str(&cb, "herpderp");
-  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, CB_EXISTS, result);
 
   str = cb_find_str(&cb, "herpderp");
   CuAssertStrEquals(tc, "herpderp", str);
@@ -233,7 +233,7 @@ static void test_insert_duplicates(CuTest * tc)
 
   result = cb_insert_str(&cb, "herpderp");
   result = cb_insert_str(&cb, "herpderp");
-  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, CB_EXISTS, result);
   result = cb_erase_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
   CuAssertPtrEquals(tc, 0, cb.root);
@@ -268,11 +268,11 @@ static void test_clear(CuTest * tc)
 {
   critbit_tree cb = CRITBIT_TREE();
 
-  CuAssertIntEquals(tc, 1, cb_insert_str(&cb, "herp"));
+  CuAssertIntEquals(tc, CB_SUCCESS, cb_insert_str(&cb, "herp"));
   CuAssertPtrNotNull(tc, cb_find_str(&cb, "herp"));
   cb_clear(&cb);
   CuAssertStrEquals(tc, 0, cb_find_str(&cb, "herp"));
-  CuAssertIntEquals(tc, 1, cb_insert_str(&cb, "herp"));
+  CuAssertIntEquals(tc, CB_SUCCESS, cb_insert_str(&cb, "herp"));
   CuAssertPtrNotNull(tc, cb_find_str(&cb, "herp"));
 }
 
