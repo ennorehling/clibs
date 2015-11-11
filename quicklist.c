@@ -141,9 +141,11 @@ int ql_insert(quicklist ** qlp, int i, void *data)
         if (i >= QL_MAXSIZE) {
             return ql_insert(&ql->next, i - ql->num_elements, data);
         }
-        else if (ql->num_elements < QL_MAXSIZE && ql->num_elements>=i) {
-            memmove(ql->elements + i + 1, ql->elements + i,
-                (ql->num_elements - i) * sizeof(void *));
+        else if (ql->num_elements < QL_MAXSIZE && i<=ql->num_elements) {
+            if (i<ql->num_elements) {
+                memmove(ql->elements + i + 1, ql->elements + i,
+                        (ql->num_elements - i) * sizeof(void *));
+            }
             ql->elements[i] = data;
             ++ql->num_elements;
         }
