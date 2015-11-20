@@ -170,7 +170,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
   }
 }
 
-static void * cb_find_top_i(critbit_tree * cb, const void * key, size_t keylen)
+static void * cb_find_top_i(const critbit_tree * cb, const void * key, size_t keylen)
 {
   void *ptr, *top = 0;
   assert(key);
@@ -230,7 +230,7 @@ static int cb_find_prefix_i(void * ptr, const void * key, size_t keylen, void **
   return next;
 }
 
-int cb_find_prefix(critbit_tree * cb, const void * key, size_t keylen, void ** results, int numresults, int offset)
+int cb_find_prefix(const critbit_tree * cb, const void * key, size_t keylen, void ** results, int numresults, int offset)
 {
   if (numresults>0) {
     void *top = cb_find_top_i(cb, key, keylen);
@@ -335,7 +335,7 @@ int cb_erase(critbit_tree * cb, const void * key, size_t keylen)
   }
 }
 
-size_t cb_new_kv(const char *key, size_t keylen, void * value, size_t len, void * out)
+size_t cb_new_kv(const char *key, size_t keylen, const void * value, size_t len, void * out)
 {
   char * dst = (char*)out;
   if (dst!=key) {
