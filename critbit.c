@@ -326,8 +326,9 @@ int cb_erase(critbit_tree * cb, const void * key, size_t keylen)
       size_t len;
       from_external_node(ptr, &str, &len);
       if (len==keylen && memcmp(key, str, len)==0) {
-        free(ptr);
         *iter = parent->child[1-branch];
+        free(ptr);
+        free(parent);
         return CB_SUCCESS;
       }
       return 0;
