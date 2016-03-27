@@ -29,6 +29,7 @@ typedef struct critbit_tree {
 
 #define CB_SUCCESS 0
 #define CB_EXISTS 1
+#define CB_NOTFOUND 2
 
 #define CRITBIT_TREE() { 0 }
 
