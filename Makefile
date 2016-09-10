@@ -9,7 +9,7 @@ CUTEST = ../cutest
 INCLUDES += -I../cutest
 endif
 
-CFLAGS += -O3 -Wall -Wextra -Wstrict-aliasing=2 -Wno-unused-function
+CFLAGS += -g -O3 -Wall -Wextra -Wstrict-aliasing=2 -Wno-unused-function
 CPPFLAGS += -O3 -Wall
 
 ifeq "$(CC)" "clang"
@@ -57,3 +57,6 @@ bin/tests: critbit_tests.c \
 
 clean:
 	@rm -rf *~ bin obj
+
+valgrind: bin/tests
+	@valgrind --leak-check=full bin/tests

@@ -304,8 +304,8 @@ void add_suite_critbit(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_insert);
   SUITE_ADD_TEST(suite, test_insert_more);
   SUITE_ADD_TEST(suite, test_insert_reverse);
-  SUITE_ADD_TEST(suite, test_erase_notfound);
   SUITE_ADD_TEST(suite, test_erase);
+  SUITE_ADD_TEST(suite, test_erase_notfound);
   SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_find_prefix);
   SUITE_ADD_TEST(suite, test_insert_duplicates);
