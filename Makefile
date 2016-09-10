@@ -9,8 +9,8 @@ CUTEST = ../cutest
 INCLUDES += -I../cutest
 endif
 
-CFLAGS += -Wall -Wextra -Wstrict-aliasing=2 -O3 -Wconversion -Wno-sign-conversion
-CPPFLAGS += -Wall -O3
+CFLAGS += -O3 -Wall -Wextra -Wstrict-aliasing=2 -Wno-unused-function
+CPPFLAGS += -O3 -Wall
 
 ifeq "$(CC)" "clang"
 CFLAGS += -Weverything
