@@ -88,7 +88,7 @@ static void test_erase(CuTest * tc)
   const char * str;
 
   result = cb_erase_str(&cb, "herpderp");
-  CuAssertIntEquals(tc, 0, result);
+  CuAssertIntEquals(tc, CB_NOTFOUND, result);
 
   result = cb_insert_str(&cb, "herp");
   result = cb_insert_str(&cb, "derp");
@@ -106,6 +106,28 @@ static void test_erase(CuTest * tc)
   CuAssertPtrEquals(tc, 0, cb.root);
 
   cb_clear(&cb);
+}
+
+static void test_erase_notfound(CuTest * tc)
+{
+    critbit_tree cb = CRITBIT_TREE();
+    int result;
+    const char * str;
+
+    result = cb_erase_str(&cb, "herpderp");
+    CuAssertIntEquals(tc, CB_NOTFOUND, result);
+
+    result = cb_insert_str(&cb, "herp");
+    result = cb_erase_str(&cb, "herpderp");
+    CuAssertIntEquals(tc, CB_NOTFOUND, result);
+    str = cb_find_str(&cb, "herp");
+    CuAssertStrEquals(tc, "herp", str);
+
+    result = cb_erase_str(&cb, "herp");
+    CuAssertIntEquals(tc, CB_SUCCESS, result);
+    CuAssertPtrEquals(tc, 0, cb.root);
+
+    cb_clear(&cb);
 }
 
 static void test_find_prefix(CuTest * tc)
@@ -282,6 +304,7 @@ void add_suite_critbit(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_insert);
   SUITE_ADD_TEST(suite, test_insert_more);
   SUITE_ADD_TEST(suite, test_insert_reverse);
+  SUITE_ADD_TEST(suite, test_erase_notfound);
   SUITE_ADD_TEST(suite, test_erase);
   SUITE_ADD_TEST(suite, test_foreach);
   SUITE_ADD_TEST(suite, test_find_prefix);
