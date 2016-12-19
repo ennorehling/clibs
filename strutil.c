@@ -1,6 +1,6 @@
 #include <ctype.h>
 #include <stdlib.h>
-#include "strtolh.h"
+#include "strutil.h"
 
 long strtolh(const char *nptr, int base)
 {

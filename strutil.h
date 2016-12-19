@@ -1,5 +1,5 @@
-#ifndef STRTOLH_H
-#define STRTOLH_H
+#ifndef STRUTIL_H
+#define STRUTIL_H
 #ifdef __cplusplus
 extern "C" {
 #endif
