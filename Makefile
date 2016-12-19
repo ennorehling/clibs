@@ -10,15 +10,11 @@ endif
 
 all: test
 
-test: bin/test_critbit bin/test_quicklist 
-	@bin/test_critbit
-	@bin/test_quicklist
+test: bin/tests
+	@bin/tests
 
 bin obj:
 	mkdir -p $@
-
-obj/%.c.o: %.c | obj
-	$(CC) -o $@ -c $^ $(CFLAGS) $(INCLUDES)
 
 clean:
 	@rm -rf bin obj
@@ -29,7 +25,9 @@ obj/%.o: %.c %.h | obj
 obj/test_%.o: test_%.c %.h | obj
 	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
 
-bin/test_%: obj/test_%.o obj/%.o \
- obj/CuTest.o | bin
+bin/tests: tests.c obj/CuTest.o \
+	obj/test_quicklist.o obj/quicklist.o \
+	obj/test_critbit.o obj/critbit.o \
+	obj/test_strutil.o obj/strutil.o | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -lm $^ -o $@
 
