@@ -1,16 +1,6 @@
 # I am not very good at Makefiles.
 
-INCLUDES += -I.
-
-ifeq (,$(wildcard ../cutest))
-CUTEST=.
-else
-CUTEST = ../cutest
-INCLUDES += -I../cutest
-endif
-
 CFLAGS += -g -O3 -Wall -Wextra -Wstrict-aliasing=2 -Wno-unused-function
-CPPFLAGS += -O3 -Wall
 
 ifeq "$(CC)" "clang"
 CFLAGS += -Weverything
@@ -18,45 +8,28 @@ CFLAGS += -Weverything
 CFLAGS += -Wno-disabled-macro-expansion
 endif
 
-ifdef DLMALLOC
-LIBS += ${DLMALLOC}/lib/libmalloc.a
-endif
+all: test
 
-all: benchmarks test
+test: bin/test_critbit bin/test_quicklist 
+	@bin/test_critbit
+	@bin/test_quicklist
 
 bin obj:
 	mkdir -p $@
 
-benchmarks: bin/benchmark bin/naive bin/james
-	@bin/benchmark 100 1
-	@bin/naive 100 1
-	@bin/james 100 1
-
-test: bin/tests
-	@bin/tests
-
 obj/%.c.o: %.c | obj
 	$(CC) -o $@ -c $^ $(CFLAGS) $(INCLUDES)
 
-obj/%.cpp.o: %.cpp | obj
-	$(CXX) -o $@ -c $^ $(CPPFLAGS) $(INCLUDES)
-
-bin/benchmark: obj/benchmark.c.o obj/critbit.c.o obj/strtolh.c.o | bin
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-bin/naive: obj/naive.c.o obj/strtolh.c.o | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(LIBS)
-
-bin/james: obj/james.cpp.o obj/strtolh.c.o | bin
-	$(CXX) -o $@ $^ $(LIBS)
-
-bin/tests: critbit_tests.c \
- test_critbit.c critbit.c \
- $(CUTEST)/CuTest.c | bin
-	$(CC) $(CFLAGS) $(INCLUDES) -lm -o $@ $^ $(LIBS)
-
 clean:
-	@rm -rf *~ bin obj
+	@rm -rf bin obj
 
-valgrind: bin/tests
-	@valgrind --leak-check=full bin/tests
+obj/%.o: %.c %.h | obj
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+
+obj/test_%.o: test_%.c %.h | obj
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+
+bin/test_%: obj/test_%.o obj/%.o \
+ obj/CuTest.o | bin
+	$(CC) $(CFLAGS) $(INCLUDES) -lm $^ -o $@
+

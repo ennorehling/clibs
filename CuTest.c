@@ -33,7 +33,7 @@ void CuStringInit(CuString* str)
 {
 	str->length = 0;
 	str->size = STRING_MAX;
-	str->buffer = (char*) malloc(sizeof(char) * STRING_MAX);
+	str->buffer = (char*) malloc(sizeof(char) * str->size);
 	str->buffer[0] = '\0';
 }
 
@@ -42,7 +42,7 @@ CuString* CuStringNew(void)
 	CuString* str = (CuString*) malloc(sizeof(CuString));
 	str->length = 0;
 	str->size = STRING_MAX;
-	str->buffer = (char*) malloc(sizeof(char) * STRING_MAX);
+	str->buffer = (char*) malloc(sizeof(char) * str->size);
 	str->buffer[0] = '\0';
 	return str;
 }

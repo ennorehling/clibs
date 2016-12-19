@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <CuTest.h>
+#include "CuTest.h"
 #include "critbit.h"
 
 void add_suite_critbit(CuSuite *suite);
@@ -312,3 +312,22 @@ void add_suite_critbit(CuSuite *suite)
   SUITE_ADD_TEST(suite, test_keyvalue);
   SUITE_ADD_TEST(suite, test_clear);
 }
+
+int main(void)
+{
+    CuString *output = CuStringNew();
+    CuSuite *suite = CuSuiteNew();
+    int result;
+    add_suite_critbit(suite);
+
+    CuSuiteRun(suite);
+    CuSuiteSummary(suite, output);
+    CuSuiteDetails(suite, output);
+    printf("%s\n", output->buffer);
+
+    result = suite->failCount;
+    CuStringDelete(output);
+    CuSuiteDelete(suite);
+    return result;
+}
+
