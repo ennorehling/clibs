@@ -33,7 +33,7 @@ struct selist {
     void *elements[QL_MAXSIZE];
 };
 
-int ql_find(struct selist **qlp, int *index, const void *value, ql_bool(*match)(const void *, const void *))
+int ql_find(struct selist **qlp, int *index, const void *value, int(*match)(const void *, const void *))
 {
     for (; *qlp; ql_advance(qlp, index, 1)) {
         void *x = ql_get(*qlp, *index);
@@ -235,13 +235,13 @@ void ql_map_reduce(struct selist *ql, void(*mapfunc)(void *entry, void *data), v
 
 #if 0
 
-ql_bool ql_set_remove(struct selist **qlp, const void *data)
+int ql_set_remove(struct selist **qlp, const void *data)
 {
     int qi;
     selist *ql = *qlp;
 
     if (!ql)
-        return ql_false;
+        return 0;
 
     for (qi = 0; qi != ql->num_elements; ++qi) {
         void *qd = ql_get(ql, qi);
@@ -252,7 +252,7 @@ ql_bool ql_set_remove(struct selist **qlp, const void *data)
     return ql_set_remove(&ql->next, data);
 }
 
-ql_bool ql_set_insert(struct selist **qlp, void *data)
+int ql_set_insert(struct selist **qlp, void *data)
 {
     if (*qlp) {
         selist *ql = *qlp;
@@ -264,7 +264,7 @@ ql_bool ql_set_insert(struct selist **qlp, void *data)
             else {
                 ql->elements[ql->num_elements++] = data;
             }
-            return ql_true;
+            return 1;
         }
         else {
             int i;
@@ -272,19 +272,19 @@ ql_bool ql_set_insert(struct selist **qlp, void *data)
             for (i = 0; i != ql->num_elements; ++i) {
                 if (data < ql->elements[i]) {
                     ql_insert(qlp, i, data);
-                    return ql_true;
+                    return 1;
                 }
                 if (data == ql->elements[i]) {
-                    return ql_false;
+                    return 0;
                 }
             }
         }
     }
     ql_push(qlp, data);
-    return ql_true;
+    return 1;
 }
 
-ql_bool ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
+int ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
 {
     if (*qlp) {
         selist *ql = *qlp;
@@ -296,7 +296,7 @@ ql_bool ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const voi
             else {
                 ql->elements[ql->num_elements++] = data;
             }
-            return ql_true;
+            return 1;
         }
         else {
             int i;
@@ -305,19 +305,19 @@ ql_bool ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const voi
                 int cmpi = cmp_cb(data, ql->elements[i]);
                 if (cmpi < 0) {
                     ql_insert(qlp, i, data);
-                    return ql_true;
+                    return 1;
                 }
                 if (cmpi == 0) {
-                    return ql_false;
+                    return 0;
                 }
             }
         }
     }
     ql_push(qlp, data);
-    return ql_true;
+    return 1;
 }
 
-ql_bool ql_set_find(struct selist **qlp, int *qip, const void *data)
+int ql_set_find(struct selist **qlp, int *qip, const void *data)
 {
     selist *ql = *qlp;
     int qi;
@@ -327,25 +327,25 @@ ql_bool ql_set_find(struct selist **qlp, int *qip, const void *data)
     }
 
     if (!ql)
-        return ql_false;
+        return 0;
 
     /* TODO: OPT | binary search */
     for (qi = 0; qi != ql->num_elements; ++qi) {
         if (ql->elements[qi] > data) {
-            return ql_false;
+            return 0;
         }
         if (ql->elements[qi] == data) {
             if (qip) {
                 *qip = qi;
                 *qlp = ql;
             }
-            return ql_true;
+            return 1;
         }
     }
-    return ql_false;
+    return 0;
 }
 
-ql_bool ql_set_find_ex(struct selist **qlp, int *qip, const void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
+int ql_set_find_ex(struct selist **qlp, int *qip, const void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
 {
     selist *ql = *qlp;
     int qi;
@@ -355,23 +355,23 @@ ql_bool ql_set_find_ex(struct selist **qlp, int *qip, const void *data, int(*cmp
     }
 
     if (!ql)
-        return ql_false;
+        return 0;
 
     /* TODO: OPT | binary search */
     for (qi = 0; qi != ql->num_elements; ++qi) {
         int cmpi = cmp_cb(ql->elements[qi], data);
         if (cmpi > 0) {
-            return ql_false;
+            return 0;
         }
         if (cmpi == 0) {
             if (qip) {
                 *qip = qi;
                 *qlp = ql;
             }
-            return ql_true;
+            return 1;
         }
     }
-    return ql_false;
+    return 0;
 }
 
 struct ql_iter qli_init(struct selist **qlp) {
@@ -381,7 +381,7 @@ struct ql_iter qli_init(struct selist **qlp) {
     return iter;
 }
 
-ql_bool qli_more(ql_iter iter) {
+int qli_more(ql_iter iter) {
     selist * ql = iter.l;
     int qi = iter.i;
     if (ql) {
@@ -392,7 +392,7 @@ ql_bool qli_more(ql_iter iter) {
         }
         return qi < ql->num_elements;
     }
-    return ql_false;
+    return 0;
 }
 
 void * qli_next(struct ql_iter *iter) {

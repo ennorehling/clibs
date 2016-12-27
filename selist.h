@@ -49,25 +49,21 @@ extern "C" {
     void ql_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
 
     /*
-#define ql_true 1
-#define ql_false 0
-    typedef int ql_bool;
-
     typedef struct ql_iter {
         struct quicklist *l, **lp;
         int i;
     } ql_iter;
     ql_iter qli_init(struct quicklist **qlp);
-    ql_bool qli_more(ql_iter iter);
+    int qli_more(ql_iter iter);
     void * qli_get(ql_iter iter);
     void * qli_next(struct ql_iter *iter);
     void qli_delete(struct ql_iter *iter);
     
-    ql_bool ql_set_insert(struct quicklist **qlp, void *data);
-    ql_bool ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
-    ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data);
-    ql_bool ql_set_find_ex(struct quicklist **qlp, int *qip, const void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
-    ql_bool ql_set_remove(struct quicklist **qlp, const void *data);
+    int ql_set_insert(struct quicklist **qlp, void *data);
+    int ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
+    int ql_set_find(struct quicklist **qlp, int *qip, const void *data);
+    int ql_set_find_ex(struct quicklist **qlp, int *qip, const void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
+    int ql_set_remove(struct quicklist **qlp, const void *data);
 */
 
 #ifdef __cplusplus

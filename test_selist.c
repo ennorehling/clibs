@@ -7,44 +7,6 @@ static const char * lipsum = "Lorem ipsum dolor sit amet, "
 "consectetur adipisicing elit, sed do eiusmod tempor "
 "incididunt ut labore et dolore magna aliqua.";
 
-static void test_iter_delete_all(CuTest * tc)
-{
-    selist * ql = 0;
-    ql_iter iter;
-
-    ql_push(&ql, (void *)lipsum);
-    iter = qli_init(&ql);
-    qli_delete(&iter);
-    CuAssertPtrEquals(tc, 0, ql);
-}
-
-static void test_loop(CuTest * tc)
-{
-    ql_iter iter;
-    selist * ql = 0;
-    int result = 0;
-
-    ql_push(&ql, (void *)lipsum);
-    ql_push(&ql, (void *)(lipsum + 1));
-    for (iter = qli_init(&ql); qli_more(iter);) {
-        const char * c = (const char *)qli_next(&iter);
-        result += *c;
-    }
-    CuAssertIntEquals(tc, lipsum[0] + lipsum[1], result);
-}
-
-static void test_more(CuTest * tc)
-{
-    ql_iter iter;
-    selist * ql = 0;
-
-    ql_push(&ql, (void *)lipsum);
-    iter = qli_init(&ql);
-    CuAssertTrue(tc, qli_more(iter));
-    ql_delete(&iter.l, iter.i);
-    CuAssertTrue(tc, !qli_more(iter));
-}
-
 static void my_map(void *entry, void *data) {
     const char * str = (const char *)entry;
     *(int *)data = *str;
@@ -91,7 +53,7 @@ static void test_foreach(CuTest *tc) {
     ql_free(ql);
 }
 
-static ql_bool cb_match_int(const void*a, const void*b) {
+static int cb_match_int(const void*a, const void*b) {
     return *(const int *)a == *(const int *)b;
 }
 
@@ -271,29 +233,6 @@ static void test_insert_many(CuTest * tc)
     ql_free(ql);
 }
 
-static void test_insert_atend(CuTest * tc)
-{
-    struct selist *ql = NULL;
-    ql_iter qi;
-    int i;
-    for (i = 0; i != QL_MAXSIZE; ++i) {
-        ql_insert(&ql, i, (void *)(lipsum + i));
-    }
-    CuAssertIntEquals(tc, QL_MAXSIZE, ql_length(ql));
-    qi = qli_init(&ql);
-    for (i = 0; qli_more(qi); ++i) {
-        void *ptr = qli_next(&qi);
-        CuAssertPtrEquals(tc, (void *)(lipsum + i), ptr);
-        if (i < QL_MAXSIZE - 1) {
-            CuAssertPtrEquals(tc, ql, qi.l);
-        }
-        else {
-            CuAssertPtrEquals(tc, 0, qi.l);
-        }
-    }
-    ql_free(ql);
-}
-
 static void test_delete_rand(CuTest * tc)
 {
     struct selist *ql = NULL;
@@ -442,13 +381,72 @@ static void test_set_find(CuTest * tc)
 
     ql_free(ql);
 }
+
+static void test_iter_delete_all(CuTest * tc)
+{
+    selist * ql = 0;
+    ql_iter iter;
+
+    ql_push(&ql, (void *)lipsum);
+    iter = qli_init(&ql);
+    qli_delete(&iter);
+    CuAssertPtrEquals(tc, 0, ql);
+}
+
+static void test_loop(CuTest * tc)
+{
+    ql_iter iter;
+    selist * ql = 0;
+    int result = 0;
+
+    ql_push(&ql, (void *)lipsum);
+    ql_push(&ql, (void *)(lipsum + 1));
+    for (iter = qli_init(&ql); qli_more(iter);) {
+        const char * c = (const char *)qli_next(&iter);
+        result += *c;
+    }
+    CuAssertIntEquals(tc, lipsum[0] + lipsum[1], result);
+}
+
+static void test_more(CuTest * tc)
+{
+    ql_iter iter;
+    selist * ql = 0;
+
+    ql_push(&ql, (void *)lipsum);
+    iter = qli_init(&ql);
+    CuAssertTrue(tc, qli_more(iter));
+    ql_delete(&iter.l, iter.i);
+    CuAssertTrue(tc, !qli_more(iter));
+}
+
+static void test_insert_atend(CuTest * tc)
+{
+    struct selist *ql = NULL;
+    ql_iter qi;
+    int i;
+    for (i = 0; i != QL_MAXSIZE; ++i) {
+        ql_insert(&ql, i, (void *)(lipsum + i));
+    }
+    CuAssertIntEquals(tc, QL_MAXSIZE, ql_length(ql));
+    qi = qli_init(&ql);
+    for (i = 0; qli_more(qi); ++i) {
+        void *ptr = qli_next(&qi);
+        CuAssertPtrEquals(tc, (void *)(lipsum + i), ptr);
+        if (i < QL_MAXSIZE - 1) {
+            CuAssertPtrEquals(tc, ql, qi.l);
+        }
+        else {
+            CuAssertPtrEquals(tc, 0, qi.l);
+        }
+    }
+    ql_free(ql);
+}
+
 #endif
 
 void add_suite_selist(CuSuite *suite)
 {
-    SUITE_ADD_TEST(suite, test_loop);
-    SUITE_ADD_TEST(suite, test_iter_delete_all);
-    SUITE_ADD_TEST(suite, test_more);
     SUITE_ADD_TEST(suite, test_foreach);
     SUITE_ADD_TEST(suite, test_find);
     SUITE_ADD_TEST(suite, test_find_cb);
@@ -461,11 +459,14 @@ void add_suite_selist(CuSuite *suite)
     SUITE_ADD_TEST(suite, test_empty_list);
     SUITE_ADD_TEST(suite, test_insert_delete_gives_null);
     SUITE_ADD_TEST(suite, test_insert_many);
-    SUITE_ADD_TEST(suite, test_insert_atend);
     SUITE_ADD_TEST(suite, test_delete_rand);
     SUITE_ADD_TEST(suite, test_delete_edgecases);
     SUITE_ADD_TEST(suite, test_push_doesnt_invalidate_iterator);
 #if 0
+    SUITE_ADD_TEST(suite, test_insert_atend);
+    SUITE_ADD_TEST(suite, test_iter_delete_all);
+    SUITE_ADD_TEST(suite, test_more);
+    SUITE_ADD_TEST(suite, test_loop);
     SUITE_ADD_TEST(suite, test_set_remove);
     SUITE_ADD_TEST(suite, test_set_find);
     SUITE_ADD_TEST(suite, test_set_insert);

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "CuTest.h"
 
-void add_suite_quicklist(CuSuite *suite);
+void add_suite_selist(CuSuite *suite);
 void add_suite_strutil(CuSuite *suite);
 void add_suite_critbit(CuSuite *suite);
 
@@ -14,7 +14,7 @@ int main(void)
     int result;
     add_suite_critbit(suite);
     add_suite_critbit(suite);
-    add_suite_quicklist(suite);
+    add_suite_selist(suite);
     
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);
