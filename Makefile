@@ -26,7 +26,7 @@ obj/test_%.o: test_%.c %.h | obj
 	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
 
 bin/tests: tests.c obj/CuTest.o \
-	obj/test_fastlist.o obj/fastlist.o \
+	obj/test_selist.o obj/selist.o \
 	obj/test_critbit.o obj/critbit.o \
 	obj/test_strutil.o obj/strutil.o | bin
 	$(CC) $(CFLAGS) $(INCLUDES) -lm $^ -o $@

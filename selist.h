@@ -14,8 +14,8 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **/
 
-#ifndef _QUICKLIST_H
-#define _QUICKLIST_H
+#ifndef _SELIST_H
+#define _SELIST_H
 
 /* From http://en.wikipedia.org/wiki/Unrolled_linked_list
  * In computer programming, an unrolled linked list is a variation on the

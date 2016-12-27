@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 project (clibs C)
 
 FILE (GLOB LIB_HDR *.h)
-add_library (${PROJECT_NAME} strutil.c critbit.c fastlist.c ${LIB_HDR})
+add_library (${PROJECT_NAME} strutil.c critbit.c selist.c ${LIB_HDR})
 
-add_executable (test_clibs tests.c CuTest.c test_fastlist.c test_strutil.c test_critbit.c)
+add_executable (test_clibs tests.c CuTest.c test_selist.c test_strutil.c test_critbit.c)
 target_link_libraries (test_clibs ${PROJECT_NAME})
 
 enable_testing()
