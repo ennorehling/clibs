@@ -29,47 +29,46 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 extern "C" {
 #endif
 
+    typedef struct selist selist;
+    typedef void (*ql_cbx)(void *entry, void *more);
+    typedef void (*ql_cb)(void *entry);
+
+    void * ql_get(const struct selist *ql, int qi);
+    int ql_length(const struct selist *ql);
+    void ql_free(struct selist *ql);
+    int ql_empty(const struct selist *ql);
+
+    struct selist * ql_push(struct selist **qlp, void *data);
+    int ql_delete(struct selist **qlp, int index);
+    int ql_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
+    int ql_insert(struct selist **qlp, int index, void *data);
+    void ql_foreach(struct selist *ql, ql_cb cb);
+    void ql_foreachx(struct selist *ql, ql_cbx cb, void *);
+    int ql_advance(struct selist **iterator, int *index, int stride);
+    void *ql_replace(struct selist *ql, int index, void *data);
+    void ql_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
+
+    /*
 #define ql_true 1
 #define ql_false 0
-#define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
-
     typedef int ql_bool;
-    typedef struct quicklist quicklist;
+
     typedef struct ql_iter {
         struct quicklist *l, **lp;
         int i;
     } ql_iter;
-    typedef void (*ql_cbx)(void *entry, void *more);
-    typedef void (*ql_cb)(void *entry);
-    
     ql_iter qli_init(struct quicklist **qlp);
     ql_bool qli_more(ql_iter iter);
     void * qli_get(ql_iter iter);
     void * qli_next(struct ql_iter *iter);
     void qli_delete(struct ql_iter *iter);
-
-    void ql_map_reduce(struct quicklist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
     
-    void * ql_get(const struct quicklist *ql, int qi);
-    int ql_length(const struct quicklist *ql);
-    void ql_free(struct quicklist *ql);
-    ql_bool ql_empty(const struct quicklist *ql);
-
-    struct quicklist * ql_push(struct quicklist **qlp, void *data);
-    int ql_delete(struct quicklist **qlp, int index);
-    ql_bool ql_find(struct quicklist **qlp, int *index, const void *value, ql_bool(*equal)(const void *, const void *));
-    int ql_insert(struct quicklist **qlp, int index, void *data);
-    void ql_foreach(struct quicklist *ql, ql_cb cb);
-    void ql_foreachx(struct quicklist *ql, ql_cbx cb, void *);
-    int ql_advance(struct quicklist **iterator, int *index, int stride);
-    void *ql_replace(struct quicklist *ql, int index, void *data);
-    
-    /* you can use it as a set (sorted pointers)*/
     ql_bool ql_set_insert(struct quicklist **qlp, void *data);
     ql_bool ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
     ql_bool ql_set_find(struct quicklist **qlp, int *qip, const void *data);
     ql_bool ql_set_find_ex(struct quicklist **qlp, int *qip, const void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
     ql_bool ql_set_remove(struct quicklist **qlp, const void *data);
+*/
 
 #ifdef __cplusplus
 }
