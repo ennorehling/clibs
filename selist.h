@@ -30,23 +30,21 @@ extern "C" {
 #endif
 
     typedef struct selist selist;
-    typedef void (*ql_cbx)(void *entry, void *more);
-    typedef void (*ql_cb)(void *entry);
+    typedef void (*selist_cb)(void *entry, void *more);
 
-    void * ql_get(const struct selist *ql, int qi);
-    int ql_length(const struct selist *ql);
-    void ql_free(struct selist *ql);
-    int ql_empty(const struct selist *ql);
+    void * selist_get(const struct selist *ql, int qi);
+    int selist_length(const struct selist *ql);
+    void selist_free(struct selist *ql);
+    int selist_empty(const struct selist *ql);
 
-    struct selist * ql_push(struct selist **qlp, void *data);
-    int ql_delete(struct selist **qlp, int index);
-    int ql_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
-    int ql_insert(struct selist **qlp, int index, void *data);
-    void ql_foreach(struct selist *ql, ql_cb cb);
-    void ql_foreachx(struct selist *ql, ql_cbx cb, void *);
-    int ql_advance(struct selist **iterator, int *index, int stride);
-    void *ql_replace(struct selist *ql, int index, void *data);
-    void ql_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
+    struct selist * selist_push(struct selist **qlp, void *data);
+    int selist_delete(struct selist **qlp, int index);
+    int selist_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
+    int selist_insert(struct selist **qlp, int index, void *data);
+    void selist_foreach(struct selist *ql, selist_cb cb, void *);
+    int selist_advance(struct selist **iterator, int *index, int stride);
+    void *selist_replace(struct selist *ql, int index, void *data);
+    void selist_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
 
     /*
     typedef struct ql_iter {

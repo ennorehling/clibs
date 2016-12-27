@@ -21,8 +21,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
-#define QL_MAXSIZE 14 /* max. number of elements unrolled into one node */
-#define QL_LIMIT 7 /* this many or fewer number in a node => attempt merge */
+#define LIST_MAXSIZE 14 /* max. number of elements unrolled into one node */
+#define LIST_LIMIT 7 /* this many or fewer number in a node => attempt merge */
 
 /* The total size of this struct is 64 bytes on a 32-bit system with
  * normal alignment. YMMV, so on a 64-bit system, twiddle the
@@ -30,13 +30,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 struct selist {
     struct selist *next;
     int num_elements;
-    void *elements[QL_MAXSIZE];
+    void *elements[LIST_MAXSIZE];
 };
 
-int ql_find(struct selist **qlp, int *index, const void *value, int(*match)(const void *, const void *))
+int selist_find(struct selist **qlp, int *index, const void *value, int(*match)(const void *, const void *))
 {
-    for (; *qlp; ql_advance(qlp, index, 1)) {
-        void *x = ql_get(*qlp, *index);
+    for (; *qlp; selist_advance(qlp, index, 1)) {
+        void *x = selist_get(*qlp, *index);
         if (match ? match(value, x) : value == x) {
             return 1;
         }
@@ -44,13 +44,13 @@ int ql_find(struct selist **qlp, int *index, const void *value, int(*match)(cons
     return 0;
 }
 
-void *ql_get(const selist * ql, int i)
+void *selist_get(const selist * ql, int i)
 {
     assert(ql);
-    return (i < ql->num_elements) ? ql->elements[i] : ql_get(ql->next, i - ql->num_elements);
+    return (i < ql->num_elements) ? ql->elements[i] : selist_get(ql->next, i - ql->num_elements);
 }
 
-void *ql_replace(selist * ql, int i, void *data)
+void *selist_replace(selist * ql, int i, void *data)
 {
     assert(ql);
     if (i < ql->num_elements) {
@@ -59,24 +59,24 @@ void *ql_replace(selist * ql, int i, void *data)
         return orig;
     }
     else {
-        return ql_replace(ql->next, i - ql->num_elements, data);
+        return selist_replace(ql->next, i - ql->num_elements, data);
     }
 }
 
-int ql_length(const selist * ql)
+int selist_length(const selist * ql)
 {
-    return ql ? ql->num_elements + ql_length(ql->next) : 0;
+    return ql ? ql->num_elements + selist_length(ql->next) : 0;
 }
 
-int ql_empty(const selist * ql)
+int selist_empty(const selist * ql)
 {
     return !ql;
 }
 
-selist * ql_push(selist ** qlp, void *data)
+selist * selist_push(selist ** qlp, void *data)
 {
     selist *ql = 0;
-    while (*qlp && ((*qlp)->next || (*qlp)->num_elements == QL_MAXSIZE)) {
+    while (*qlp && ((*qlp)->next || (*qlp)->num_elements == LIST_MAXSIZE)) {
         qlp = &(*qlp)->next;
     }
     if (!*qlp) {
@@ -96,13 +96,13 @@ selist * ql_push(selist ** qlp, void *data)
     return ql;
 }
 
-int ql_delete(selist ** qlp, int i)
+int selist_delete(selist ** qlp, int i)
 {
     selist *ql = *qlp;
     if (i < 0)
         return EINVAL;
     if (ql && i >= ql->num_elements) {
-        return ql_delete(&ql->next, i - ql->num_elements);
+        return selist_delete(&ql->next, i - ql->num_elements);
     }
     else if (ql) {
         if (i + 1 < ql->num_elements) {
@@ -114,9 +114,9 @@ int ql_delete(selist ** qlp, int i)
             *qlp = ql->next;
             free(ql);
         }
-        else if (ql->next && ql->num_elements <= QL_LIMIT) {
+        else if (ql->next && ql->num_elements <= LIST_LIMIT) {
             selist *qn = ql->next;
-            if (ql->num_elements + qn->num_elements > QL_MAXSIZE) {
+            if (ql->num_elements + qn->num_elements > LIST_MAXSIZE) {
                 ql->elements[ql->num_elements] = qn->elements[0];
                 --qn->num_elements;
                 ++ql->num_elements;
@@ -135,14 +135,14 @@ int ql_delete(selist ** qlp, int i)
     return 0;
 }
 
-int ql_insert(selist ** qlp, int i, void *data)
+int selist_insert(selist ** qlp, int i, void *data)
 {
     selist *ql = *qlp;
     if (ql) {
-        if (i >= QL_MAXSIZE) {
-            return ql_insert(&ql->next, i - ql->num_elements, data);
+        if (i >= LIST_MAXSIZE) {
+            return selist_insert(&ql->next, i - ql->num_elements, data);
         }
-        else if (ql->num_elements < QL_MAXSIZE && i<=ql->num_elements) {
+        else if (ql->num_elements < LIST_MAXSIZE && i<=ql->num_elements) {
             if (i<ql->num_elements) {
                 memmove(ql->elements + i + 1, ql->elements + i,
                         (ql->num_elements - i) * sizeof(void *));
@@ -155,21 +155,21 @@ int ql_insert(selist ** qlp, int i, void *data)
             if (qn) {
                 qn->next = ql->next;
                 ql->next = qn;
-                qn->num_elements = ql->num_elements - QL_LIMIT;
-                ql->num_elements = QL_LIMIT;
+                qn->num_elements = ql->num_elements - LIST_LIMIT;
+                ql->num_elements = LIST_LIMIT;
                 memcpy(qn->elements, ql->elements + ql->num_elements, //TODO: V512 http://www.viva64.com/en/V512 A call of the 'memcpy' function will lead to underflow of the buffer 'qn->elements'.
-                    QL_LIMIT * sizeof(void *));
+                    LIST_LIMIT * sizeof(void *));
             }
             if (i <= ql->num_elements) {
-                return ql_insert(qlp, i, data);
+                return selist_insert(qlp, i, data);
             }
             else {
-                return ql_insert(&ql->next, i - ql->num_elements, data);
+                return selist_insert(&ql->next, i - ql->num_elements, data);
             }
         }
     }
     else if (i == 0) {
-        ql_push(qlp, data);
+        selist_push(qlp, data);
     }
     else {
         return EINVAL;
@@ -177,27 +177,17 @@ int ql_insert(selist ** qlp, int i, void *data)
     return 0;
 }
 
-void ql_foreach(struct selist *ql, void(*cb) (void *))
+void selist_foreach(struct selist *ql, selist_cb cb, void *more)
 {
     for (; ql; ql = ql->next) {
         int i;
         for (i = 0; i != ql->num_elements; ++i) {
-            cb(ql->elements[i]);
+            cb(ql->elements[i], more);
         }
     }
 }
 
-void ql_foreachx(struct selist *ql, void(*cb) (void *, void *), void *x)
-{
-    for (; ql; ql = ql->next) {
-        int i;
-        for (i = 0; i != ql->num_elements; ++i) {
-            cb(ql->elements[i], x);
-        }
-    }
-}
-
-int ql_advance(struct selist **iterator, int *index, int stride)
+int selist_advance(struct selist **iterator, int *index, int stride)
 {
     selist *ql = *iterator;
     int i = *index;
@@ -211,11 +201,11 @@ int ql_advance(struct selist **iterator, int *index, int stride)
     else {
         *index = i - ql->num_elements + stride;
         *iterator = ql->next;
-        return ql_advance(iterator, index, 0);
+        return selist_advance(iterator, index, 0);
     }
 }
 
-void ql_free(struct selist *ql)
+void selist_free(struct selist *ql)
 {
     while (ql) {
         selist * qn = ql;
@@ -224,18 +214,18 @@ void ql_free(struct selist *ql)
     }
 }
 
-void ql_map_reduce(struct selist *ql, void(*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result)
+void selist_map_reduce(struct selist *ql, void(*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result)
 {
     int qi;
-    for (qi = 0; ql; ql_advance(&ql, &qi, 1)) {
-        mapfunc(ql_get(ql, qi), data);
+    for (qi = 0; ql; selist_advance(&ql, &qi, 1)) {
+        mapfunc(selist_get(ql, qi), data);
         reducefunc(data, result);
     }
 }
 
 #if 0
 
-int ql_set_remove(struct selist **qlp, const void *data)
+int selist_set_remove(struct selist **qlp, const void *data)
 {
     int qi;
     selist *ql = *qlp;
@@ -244,22 +234,22 @@ int ql_set_remove(struct selist **qlp, const void *data)
         return 0;
 
     for (qi = 0; qi != ql->num_elements; ++qi) {
-        void *qd = ql_get(ql, qi);
+        void *qd = selist_get(ql, qi);
         if (qd == data) {
-            return ql_delete(qlp, qi) == 0;
+            return selist_delete(qlp, qi) == 0;
         }
     }
-    return ql_set_remove(&ql->next, data);
+    return selist_set_remove(&ql->next, data);
 }
 
-int ql_set_insert(struct selist **qlp, void *data)
+int selist_set_insert(struct selist **qlp, void *data)
 {
     if (*qlp) {
         selist *ql = *qlp;
         if (ql->num_elements > 0 && ql->elements[ql->num_elements - 1] < data) {
-            if (ql->num_elements == QL_MAXSIZE || (ql->next
+            if (ql->num_elements == LIST_MAXSIZE || (ql->next
                 && ql->next->elements[0] <= data)) {
-                return ql_set_insert(&ql->next, data);
+                return selist_set_insert(&ql->next, data);
             }
             else {
                 ql->elements[ql->num_elements++] = data;
@@ -271,7 +261,7 @@ int ql_set_insert(struct selist **qlp, void *data)
             /* TODO: OPT | binary search */
             for (i = 0; i != ql->num_elements; ++i) {
                 if (data < ql->elements[i]) {
-                    ql_insert(qlp, i, data);
+                    selist_insert(qlp, i, data);
                     return 1;
                 }
                 if (data == ql->elements[i]) {
@@ -280,18 +270,18 @@ int ql_set_insert(struct selist **qlp, void *data)
             }
         }
     }
-    ql_push(qlp, data);
+    selist_push(qlp, data);
     return 1;
 }
 
-int ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
+int selist_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
 {
     if (*qlp) {
         selist *ql = *qlp;
         if (ql->num_elements > 0 && cmp_cb(ql->elements[ql->num_elements - 1], data) < 0) {
-            if (ql->num_elements == QL_MAXSIZE || (ql->next
+            if (ql->num_elements == LIST_MAXSIZE || (ql->next
                 && cmp_cb(ql->next->elements[0], data) <= 0)) {
-                return ql_set_insert_ex(&ql->next, data, cmp_cb);
+                return selist_set_insert_ex(&ql->next, data, cmp_cb);
             }
             else {
                 ql->elements[ql->num_elements++] = data;
@@ -304,7 +294,7 @@ int ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const void *l
             for (i = 0; i != ql->num_elements; ++i) {
                 int cmpi = cmp_cb(data, ql->elements[i]);
                 if (cmpi < 0) {
-                    ql_insert(qlp, i, data);
+                    selist_insert(qlp, i, data);
                     return 1;
                 }
                 if (cmpi == 0) {
@@ -313,11 +303,11 @@ int ql_set_insert_ex(struct selist **qlp, void *data, int(*cmp_cb)(const void *l
             }
         }
     }
-    ql_push(qlp, data);
+    selist_push(qlp, data);
     return 1;
 }
 
-int ql_set_find(struct selist **qlp, int *qip, const void *data)
+int selist_set_find(struct selist **qlp, int *qip, const void *data)
 {
     selist *ql = *qlp;
     int qi;
@@ -345,7 +335,7 @@ int ql_set_find(struct selist **qlp, int *qip, const void *data)
     return 0;
 }
 
-int ql_set_find_ex(struct selist **qlp, int *qip, const void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
+int selist_set_find_ex(struct selist **qlp, int *qip, const void *data, int(*cmp_cb)(const void *lhs, const void *rhs))
 {
     selist *ql = *qlp;
     int qi;
@@ -374,14 +364,14 @@ int ql_set_find_ex(struct selist **qlp, int *qip, const void *data, int(*cmp_cb)
     return 0;
 }
 
-struct ql_iter qli_init(struct selist **qlp) {
-    ql_iter iter = { 0, 0, 0 };
+struct selist_iter qli_init(struct selist **qlp) {
+    selist_iter iter = { 0, 0, 0 };
     iter.l = *qlp;
     iter.lp = qlp;
     return iter;
 }
 
-int qli_more(ql_iter iter) {
+int qli_more(selist_iter iter) {
     selist * ql = iter.l;
     int qi = iter.i;
     if (ql) {
@@ -395,19 +385,19 @@ int qli_more(ql_iter iter) {
     return 0;
 }
 
-void * qli_next(struct ql_iter *iter) {
-    void * result = ql_get(iter->l, iter->i);
-    ql_advance(&iter->l, &iter->i, 1);
+void * qli_next(struct selist_iter *iter) {
+    void * result = selist_get(iter->l, iter->i);
+    selist_advance(&iter->l, &iter->i, 1);
     return result;
 }
 
-void * qli_get(struct ql_iter iter) {
-    return ql_get(iter.l, iter.i);
+void * qli_get(struct selist_iter iter) {
+    return selist_get(iter.l, iter.i);
 }
 
-void qli_delete(struct ql_iter *iter) {
+void qli_delete(struct selist_iter *iter) {
     selist * ql = iter->l;
-    ql_delete(&iter->l, iter->i);
+    selist_delete(&iter->l, iter->i);
     if (iter->l != ql && *(iter->lp) == ql) {
         *(iter->lp) = iter->l;
     }
