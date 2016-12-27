@@ -6,12 +6,14 @@ that allows fast search among a set of strings, including prefix-search.
 See also: [djb's site](http://cr.yp.to/critbit.html)
 
 
-## quicklist:
+## selist:
 
-A simple list that is better than (value, next) tuples in performance
-and memory usage.
+A space-efficient list that is superior to (value, next) tuples in
+terms of speed and memory use.
 
-The tests in this repository depends on the [cutest](https://github.com/badgerman/cutest) module.
-You may have to update the Makefile to point it to your local checkout.
+
+## tests:
+
+The tests in this repository use the very simple CuTest test library.
 
 [![endorse](https://api.coderwall.com/enno/endorsecount.png)](https://coderwall.com/enno)
