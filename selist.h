@@ -46,23 +46,6 @@ extern "C" {
     void *selist_replace(struct selist *ql, int index, void *data);
     void selist_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
 
-    /*
-    typedef struct ql_iter {
-        struct quicklist *l, **lp;
-        int i;
-    } ql_iter;
-    ql_iter qli_init(struct quicklist **qlp);
-    int qli_more(ql_iter iter);
-    void * qli_get(ql_iter iter);
-    void * qli_next(struct ql_iter *iter);
-    void qli_delete(struct ql_iter *iter);
-    
-    int ql_set_insert(struct quicklist **qlp, void *data);
-    int ql_set_insert_ex(struct quicklist **qlp, void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
-    int ql_set_find(struct quicklist **qlp, int *qip, const void *data);
-    int ql_set_find_ex(struct quicklist **qlp, int *qip, const void *data, int (*cmp_cb)(const void *lhs, const void *rhs));
-    int ql_set_remove(struct quicklist **qlp, const void *data);
-*/
 
 #ifdef __cplusplus
 }
