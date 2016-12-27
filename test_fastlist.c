@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "CuTest.h"
-#include "quicklist.h"
+#include "fastlist.h"
 
 static const char * lipsum = "Lorem ipsum dolor sit amet, "
 "consectetur adipisicing elit, sed do eiusmod tempor "
