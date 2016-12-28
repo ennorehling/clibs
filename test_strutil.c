@@ -2,8 +2,10 @@
 #include "CuTest.h"
 #include <stdlib.h>
 
+void add_suite_strutil(CuSuite *suite);
+
 static void test_strtolh(CuTest *tc) {
-    CuAssertIntEquals(tc, 1000, strtolh("1K", 10));
+    CuAssertIntEquals(tc, 1000, (int)strtolh("1K", 10));
 }
 
 void add_suite_strutil(CuSuite *suite)
