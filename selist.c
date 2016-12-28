@@ -117,11 +117,11 @@ int selist_delete(selist ** qlp, int i)
         else if (ql->next && ql->num_elements <= LIST_LIMIT) {
             selist *qn = ql->next;
             if (ql->num_elements + qn->num_elements > LIST_MAXSIZE) {
+                size_t len = (size_t)qn->num_elements * sizeof(void *);
                 ql->elements[ql->num_elements] = qn->elements[0];
                 --qn->num_elements;
                 ++ql->num_elements;
-                memmove(qn->elements, qn->elements + 1,
-                    qn->num_elements * sizeof(void *));
+                memmove(qn->elements, qn->elements + 1, len);
             }
             else {
                 size_t len = (size_t)qn->num_elements * sizeof(void *);

@@ -97,7 +97,7 @@ void CuStringInsert(CuString* str, const char* text, unsigned int pos)
 {
     size_t length = strlen(text);
 	if (pos > str->length)
-		pos = str->length;
+		pos = (unsigned int)str->length;
 	if (str->length + length + 1 >= str->size)
 		CuStringResize(str, str->length + length + 1 + STRING_INC);
 	memmove(str->buffer + pos + length, str->buffer + pos, (size_t)(str->length - pos) + 1);
