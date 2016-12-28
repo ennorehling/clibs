@@ -3,6 +3,7 @@
 
 #include <setjmp.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 #define CUTEST_VERSION  "CuTest 1.5"
 
