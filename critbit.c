@@ -314,7 +314,7 @@ int cb_erase(critbit_tree * cb, const void * key, size_t keylen)
     void *ptr = cb->root;
     struct critbit_node *parent = 0;
     unsigned char * bytes = (unsigned char *)key;
-    int branch;
+    int branch = 0;
 
     if (!cb->root) return CB_NOTFOUND;
 

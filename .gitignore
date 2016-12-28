@@ -9,3 +9,4 @@ bin/
 *.o
 *.opensdf
 config
+/vc14

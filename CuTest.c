@@ -11,15 +11,15 @@
  * CuStr
  *-------------------------------------------------------------------------*/
 
-char* CuStrAlloc(int size)
+char* CuStrAlloc(size_t size)
 {
-	char* newStr = (char*) malloc( sizeof(char) * (size_t)size );
+	char* newStr = (char*) malloc( sizeof(char) * size );
 	return newStr;
 }
 
 char* CuStrCopy(const char* old)
 {
-	int len = (int)strlen(old);
+	size_t len = strlen(old);
 	char* newStr = CuStrAlloc(len + 1);
 	strcpy(newStr, old);
 	return newStr;
@@ -54,7 +54,7 @@ void CuStringDelete(CuString *str)
         free(str);
 }
 
-void CuStringResize(CuString* str, int newSize)
+void CuStringResize(CuString* str, size_t newSize)
 {
 	str->buffer = (char*) realloc(str->buffer, sizeof(char) * (size_t)newSize);
 	str->size = newSize;
@@ -62,13 +62,13 @@ void CuStringResize(CuString* str, int newSize)
 
 void CuStringAppend(CuString* str, const char* text)
 {
-	int length;
+	size_t length;
 
 	if (text == NULL) {
 		text = "NULL";
 	}
 
-	length = (int)strlen(text);
+	length = strlen(text);
 	if (str->length + length + 1 >= str->size)
 		CuStringResize(str, str->length + length + 1 + STRING_INC);
 	str->length += length;
@@ -93,15 +93,15 @@ void CuStringAppendFormat(CuString* str, const char* format, ...)
 	CuStringAppend(str, buf);
 }
 
-void CuStringInsert(CuString* str, const char* text, int pos)
+void CuStringInsert(CuString* str, const char* text, unsigned int pos)
 {
-    int length = (int)strlen(text);
+    size_t length = strlen(text);
 	if (pos > str->length)
 		pos = str->length;
 	if (str->length + length + 1 >= str->size)
 		CuStringResize(str, str->length + length + 1 + STRING_INC);
 	memmove(str->buffer + pos + length, str->buffer + pos, (size_t)(str->length - pos) + 1);
-	str->length += (int)length;
+	str->length += length;
 	memcpy(str->buffer + pos, text, (size_t)length);
 }
 

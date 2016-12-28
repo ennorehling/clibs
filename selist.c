@@ -106,8 +106,8 @@ int selist_delete(selist ** qlp, int i)
     }
     else if (ql) {
         if (i + 1 < ql->num_elements) {
-            memmove(ql->elements + i, ql->elements + i + 1,
-                (ql->num_elements - i - 1) * sizeof(void *));
+            size_t len = (size_t)(ql->num_elements - i - 1) * sizeof(void *);
+            memmove(ql->elements + i, ql->elements + i + 1, len);
         }
         --ql->num_elements;
         if (ql->num_elements == 0) {
@@ -124,8 +124,8 @@ int selist_delete(selist ** qlp, int i)
                     qn->num_elements * sizeof(void *));
             }
             else {
-                memcpy(ql->elements + ql->num_elements, qn->elements,
-                    qn->num_elements * sizeof(void *));
+                size_t len = (size_t)qn->num_elements * sizeof(void *);
+                memcpy(ql->elements + ql->num_elements, qn->elements, len);
                 ql->num_elements += qn->num_elements;
                 ql->next = qn->next;
                 free(qn);
@@ -144,8 +144,8 @@ int selist_insert(selist ** qlp, int i, void *data)
         }
         else if (ql->num_elements < LIST_MAXSIZE && i<=ql->num_elements) {
             if (i<ql->num_elements) {
-                memmove(ql->elements + i + 1, ql->elements + i,
-                        (ql->num_elements - i) * sizeof(void *));
+                size_t len = (size_t)(ql->num_elements - i) * sizeof(void *);
+                memmove(ql->elements + i + 1, ql->elements + i, len);
             }
             ql->elements[i] = data;
             ++ql->num_elements;
