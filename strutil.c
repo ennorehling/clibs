@@ -1,5 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include "strutil.h"
 
 long strtolh(const char *nptr, int base)
