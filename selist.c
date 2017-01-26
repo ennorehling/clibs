@@ -232,3 +232,76 @@ void selist_map_reduce(struct selist *ql, void(*mapfunc)(void *entry, void *data
         reducefunc(data, result);
     }
 }
+<<<<<<< HEAD
+=======
+
+static int cmp_voidptr(const void *a, const void *b)
+{
+    if (a<b) return -1;
+    if (b<a) return 1;
+    return 0;
+}
+
+bool selist_set_insert(struct selist **qlp, void *data, cmp_cb cmp)
+{
+    if (*qlp) {
+        selist *ql = *qlp;
+        if (cmp==NULL) cmp = cmp_voidptr;
+        if (ql->num_elements > 0 && cmp(ql->elements[ql->num_elements - 1], data) < 0) {
+            if (ql->num_elements == LIST_MAXSIZE || (ql->next
+                && cmp(ql->next->elements[0], data) <= 0)) {
+                return selist_set_insert(&ql->next, data, cmp);
+            }
+            else {
+                ql->elements[ql->num_elements++] = data;
+            }
+            return true;
+        }
+        else {
+            int i;
+            /* TODO: OPT | binary search */
+            for (i = 0; i != ql->num_elements; ++i) {
+                int cmpi = cmp(data, ql->elements[i]);
+                if (cmpi < 0) {
+                    selist_insert(qlp, i, data);
+                    return true;
+                }
+                if (cmpi == 0) {
+                    return false;
+                }
+            }
+        }
+    }
+    selist_push(qlp, data);
+    return true;
+}
+
+bool selist_set_find(struct selist **qlp, int *qip, const void *data, cmp_cb cmp)
+{
+    selist *ql = *qlp;
+    int qi;
+
+    while (ql && cmp(ql->elements[ql->num_elements - 1], data) < 0) {
+        ql = ql->next;
+    }
+
+    if (!ql)
+        return false;
+
+    /* TODO: OPT | binary search */
+    for (qi = 0; qi != ql->num_elements; ++qi) {
+        int cmpi = cmp(ql->elements[qi], data);
+        if (cmpi > 0) {
+            return false;
+        }
+        if (cmpi == 0) {
+            if (qip) {
+                *qip = qi;
+                *qlp = ql;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+>>>>>>> use sorted lists as quick-and-dirty sets
