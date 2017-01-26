@@ -177,12 +177,22 @@ int selist_insert(selist ** qlp, int i, void *data)
     return 0;
 }
 
-void selist_foreach(struct selist *ql, selist_cb cb, void *more)
+void selist_foreach_ex(struct selist *ql, selist_cbex cb, void *more)
 {
     for (; ql; ql = ql->next) {
         int i;
         for (i = 0; i != ql->num_elements; ++i) {
             cb(ql->elements[i], more);
+        }
+    }
+}
+
+void selist_foreach(struct selist *ql, selist_cb cb)
+{
+    for (; ql; ql = ql->next) {
+        int i;
+        for (i = 0; i != ql->num_elements; ++i) {
+            cb(ql->elements[i]);
         }
     }
 }

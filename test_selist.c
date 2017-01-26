@@ -32,9 +32,15 @@ static void test_mapreduce(CuTest * tc)
     selist_free(ql);
 }
 
-static void my_callback(void *entry, void *x) {
+static void callback_ctx(void *entry, void *x) {
     const char * str = (const char *)entry;
     *(int *)x += str[0];
+}
+
+static int g_total;
+static void callback(void *entry) {
+    const char * str = (const char *)entry;
+    g_total += str[0];
 }
 
 static void test_foreach(CuTest *tc) {
@@ -42,8 +48,10 @@ static void test_foreach(CuTest *tc) {
     struct selist *ql = 0;
     selist_push(&ql, (void *)lipsum);
     selist_push(&ql, (void *)lipsum);
-    selist_foreach(ql, my_callback, &total);
+    selist_foreach_ex(ql, callback_ctx, &total);
     CuAssertIntEquals(tc, 152, total);
+    selist_foreach(ql, callback);
+    CuAssertIntEquals(tc, 152, g_total);
     selist_free(ql);
 }
 

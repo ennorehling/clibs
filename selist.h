@@ -30,7 +30,8 @@ extern "C" {
 #endif
 
     typedef struct selist selist;
-    typedef void (*selist_cb)(void *entry, void *more);
+    typedef void (*selist_cb)(void *entry);
+    typedef void (*selist_cbex)(void *entry, void *more);
 
     void * selist_get(const struct selist *ql, int qi);
     int selist_length(const struct selist *ql);
@@ -41,7 +42,8 @@ extern "C" {
     int selist_delete(struct selist **qlp, int index);
     int selist_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
     int selist_insert(struct selist **qlp, int index, void *data);
-    void selist_foreach(struct selist *ql, selist_cb cb, void *);
+    void selist_foreach(struct selist *ql, selist_cb cb);
+    void selist_foreach_ex(struct selist *ql, selist_cbex cb, void *);
     int selist_advance(struct selist **iterator, int *index, int stride);
     void *selist_replace(struct selist *ql, int index, void *data);
     void selist_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
