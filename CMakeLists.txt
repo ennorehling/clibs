@@ -3,9 +3,9 @@ project (clibs C)
 
 FILE (GLOB LIB_HDR *.h)
 add_library (${PROJECT_NAME} strutil.c critbit.c selist.c ${LIB_HDR})
-
-add_executable (test_clibs tests.c CuTest.c test_selist.c test_strutil.c test_critbit.c)
-target_link_libraries (test_clibs ${PROJECT_NAME})
+add_library (cutest CuTest.c)
+add_executable (test_clibs tests.c test_selist.c test_strutil.c test_critbit.c)
+target_link_libraries (test_clibs cutest ${PROJECT_NAME})
 
 enable_testing()
 add_test (clibs test_clibs)
