@@ -182,7 +182,7 @@ void selist_foreach_ex(struct selist *ql, selist_cbex cb, void *more)
     for (; ql; ql = ql->next) {
         int i;
         for (i = 0; i != ql->num_elements; ++i) {
-            cb(ql->elements[i], more);
+            if (!cb(ql->elements[i], more)) break;
         }
     }
 }

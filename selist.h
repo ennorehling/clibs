@@ -33,7 +33,7 @@ extern "C" {
 
     typedef struct selist selist;
     typedef void (*selist_cb)(void *entry);
-    typedef void (*selist_cbex)(void *entry, void *more);
+    typedef bool (*selist_cbex)(void *entry, void *more);
 
     void * selist_get(const struct selist *ql, int qi);
     int selist_length(const struct selist *ql);
