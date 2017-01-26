@@ -25,11 +25,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * is related to the B-tree.
 */
 
-<<<<<<< HEAD
-=======
 #include <stdbool.h>
 
->>>>>>> use sorted lists as quick-and-dirty sets
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,12 +50,9 @@ extern "C" {
     void *selist_replace(struct selist *ql, int index, void *data);
     void selist_map_reduce(struct selist *ql, void (*mapfunc)(void *entry, void *data), void(*reducefunc)(void *data, void *result), void *data, void *result);
 
-<<<<<<< HEAD
-=======
     typedef int(*cmp_cb)(const void *, const void *);
     bool selist_set_insert(struct selist **qlp, void *data, cmp_cb);
     bool selist_set_find(struct selist **qlp, int *qip, const void *data, cmp_cb);
->>>>>>> use sorted lists as quick-and-dirty sets
 
 #ifdef __cplusplus
 }

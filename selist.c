@@ -232,8 +232,6 @@ void selist_map_reduce(struct selist *ql, void(*mapfunc)(void *entry, void *data
         reducefunc(data, result);
     }
 }
-<<<<<<< HEAD
-=======
 
 static int cmp_voidptr(const void *a, const void *b)
 {
@@ -288,6 +286,7 @@ bool selist_set_find(struct selist **qlp, int *qip, const void *data, cmp_cb cmp
     if (!ql)
         return false;
 
+    if (cmp==NULL) cmp = cmp_voidptr;
     /* TODO: OPT | binary search */
     for (qi = 0; qi != ql->num_elements; ++qi) {
         int cmpi = cmp(ql->elements[qi], data);
@@ -304,4 +303,3 @@ bool selist_set_find(struct selist **qlp, int *qip, const void *data, cmp_cb cmp
     }
     return false;
 }
->>>>>>> use sorted lists as quick-and-dirty sets
