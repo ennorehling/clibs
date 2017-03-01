@@ -33,15 +33,21 @@ struct selist {
     void *elements[LIST_MAXSIZE];
 };
 
-int selist_find(struct selist **qlp, int *index, const void *value, int(*match)(const void *, const void *))
+bool selist_find(struct selist **qlp, int *index, const void *value, int(*match)(const void *, const void *))
 {
     for (; *qlp; selist_advance(qlp, index, 1)) {
         void *x = selist_get(*qlp, *index);
         if (match ? match(value, x) : value == x) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
+}
+
+static bool selist_contains(selist *ql, const void *value, int(*equal)(const void *, const void *))
+{
+    int i = 0;
+    return selist_find(&ql, &i, value, equal);
 }
 
 void *selist_get(const selist * ql, int i)

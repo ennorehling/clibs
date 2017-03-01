@@ -42,7 +42,8 @@ extern "C" {
 
     struct selist * selist_push(struct selist **qlp, void *data);
     int selist_delete(struct selist **qlp, int index);
-    int selist_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
+    bool selist_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
+    bool selist_contains(selist *ql, const void *value, int(*equal)(const void *, const void *));
     int selist_insert(struct selist **qlp, int index, void *data);
     void selist_foreach(struct selist *ql, selist_cb cb);
     void selist_foreach_ex(struct selist *ql, selist_cbex cb, void *);
