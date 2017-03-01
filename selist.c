@@ -44,7 +44,7 @@ bool selist_find(struct selist **qlp, int *index, const void *value, int(*match)
     return false;
 }
 
-static bool selist_contains(selist *ql, const void *value, int(*equal)(const void *, const void *))
+bool selist_contains(selist *ql, const void *value, int(*equal)(const void *, const void *))
 {
     int i = 0;
     return selist_find(&ql, &i, value, equal);
