@@ -178,7 +178,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
 static void * cb_find_top_i(const critbit_tree * cb, const void * key, size_t keylen)
 {
     void *ptr, *top = 0;
-    assert(key);
+    assert(keylen==0 || key);
 
     if (!cb->root) {
         return 0;
