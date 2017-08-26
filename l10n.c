@@ -79,49 +79,57 @@ static l10n_arg *get_arg(l10n_arg *args, const char *token)
     return NULL;
 }
 
+l10n_text *l10n_text_create(void)
+{
+    l10n_text *txt = calloc(1, sizeof(l10n_text));
+    if (txt) {
+        txt->refcount = 1;
+    }
+    return txt;
+}
+
 char *l10n_text_render(l10n_text *txt, char *buffer, size_t len)
 {
-    char token[L10N_TOKEN_MAXLEN];
-    const char *pi = txt->format;
     char * po = buffer;
 
-    while (*pi && po < buffer + len) {
-        size_t count = len - (po - buffer) - 1;
-        if (*pi == L10N_PREFIX_STRING) {
-            l10n_arg * arg;
-            int c;
-            c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
-            pi += c;
-            arg = get_arg(txt->args, token);
-            c = snprintf(po, count, "%s", arg->value.s);
-            po += c;
-        }
-        else if (*pi == L10N_PREFIX_INT) {
-            l10n_arg * arg;
-            int c;
+    if (txt->format) {
+        const char *pi = txt->format;
+        while (*pi && po < buffer + len) {
+            char token[L10N_TOKEN_MAXLEN];
+            size_t count = len - (po - buffer) - 1;
+            if (*pi == L10N_PREFIX_STRING) {
+                l10n_arg * arg;
+                int c;
+                c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
+                pi += c;
+                arg = get_arg(txt->args, token);
+                c = snprintf(po, count, "%s", arg->value.s);
+                po += c;
+            }
+            else if (*pi == L10N_PREFIX_INT) {
+                l10n_arg * arg;
+                int c;
 
-            c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
-            pi += c;
-            arg = get_arg(txt->args, token);
-            c = snprintf(po, count, "%d", arg->value.i);
-            po += c;
-        }
-        else {
-            *po++ = *pi++;
+                c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
+                pi += c;
+                arg = get_arg(txt->args, token);
+                c = snprintf(po, count, "%d", arg->value.i);
+                po += c;
+            }
+            else {
+                *po++ = *pi++;
+            }
         }
     }
     *po = '\0';
     return buffer;
 }
 
-l10n_text *l10n_text_build(const char *format, ...)
+l10n_text *l10n_text_assign_va(l10n_text *txt, const char * format, va_list va)
 {
-    l10n_text *txt;
-    va_list va;
     l10n_arg args[NUM_ARGS];
     int i;
 
-    va_start(va, format);
     for (i = 0; i != NUM_ARGS; ++i) {
         const char *name = va_arg(va, const char *);
         if (!name) {
@@ -144,11 +152,27 @@ l10n_text *l10n_text_build(const char *format, ...)
         }
         args[i].name = strdup(name);
     }
-    va_end(va);
-    txt = malloc(sizeof(l10n_text));
-    txt->refcount = 1;
     txt->format = format;
     txt->args = malloc(i * sizeof(l10n_arg));
     memcpy(txt->args, args, i * sizeof(l10n_arg));
+    return txt;
+}
+
+void l10n_text_assign(l10n_text *txt, const char *format, ...)
+{
+    va_list va;
+    va_start(va, format);
+    l10n_text_assign_va(txt, format, va);
+    va_end(va);
+}
+
+l10n_text *l10n_text_build(const char *format, ...) {
+    l10n_text *txt = l10n_text_create();
+    if (txt) {
+        va_list va;
+        va_start(va, format);
+        l10n_text_assign_va(txt, format, va);
+        va_end(va);
+    }
     return txt;
 }

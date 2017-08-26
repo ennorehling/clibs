@@ -47,6 +47,8 @@ extern "C" {
     } l10n_text;
 
     l10n_text *l10n_text_build(const char *format, ...);
+    l10n_text *l10n_text_create(void);
+    void l10n_text_assign(l10n_text *txt, const char *format, ...);
     l10n_text *l10n_text_copy(l10n_text *txt);
     l10n_text *l10n_text_release(l10n_text *txt);
     char *l10n_text_render(l10n_text *txt, char *buffer, size_t len);
