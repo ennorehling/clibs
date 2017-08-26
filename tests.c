@@ -12,7 +12,7 @@ int main(void)
     CuString *output = CuStringNew();
     CuSuite *suite = CuSuiteNew();
     int result;
-    add_suite_critbit(suite);
+    add_suite_strutil(suite);
     add_suite_critbit(suite);
     add_suite_selist(suite);
     

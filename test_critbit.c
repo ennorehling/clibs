@@ -4,8 +4,6 @@
 #include "CuTest.h"
 #include "critbit.h"
 
-void add_suite_critbit(CuSuite *suite);
-
 static void test_empty(CuTest * tc)
 {
   critbit_tree cb = CRITBIT_TREE();

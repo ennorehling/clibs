@@ -3,8 +3,6 @@
 #include "CuTest.h"
 #include "selist.h"
 
-void add_suite_selist(CuSuite *suite);
-
 static const char * lipsum = "Lorem ipsum dolor sit amet, "
 "consectetur adipisicing elit, sed do eiusmod tempor "
 "incididunt ut labore et dolore magna aliqua.";
