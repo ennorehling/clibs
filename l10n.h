@@ -41,9 +41,9 @@ extern "C" {
     } l10n_arg;
 
     typedef struct l10n_text {
+        int refcount;
         const char *format;
         struct l10n_arg *args;
-        int refcount;
     } l10n_text;
 
     l10n_text *l10n_text_build(const char *format, ...);
@@ -52,6 +52,8 @@ extern "C" {
     l10n_text *l10n_text_copy(l10n_text *txt);
     l10n_text *l10n_text_release(l10n_text *txt);
     char *l10n_text_render(l10n_text *txt, char *buffer, size_t len);
+    void l10n_text_init(l10n_text *txt);
+    void l10n_text_free(l10n_text *txt);
 
 #ifdef __cplusplus
 }

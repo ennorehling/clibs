@@ -4,7 +4,7 @@
 #include "CuTest.h"
 #include "l10n.h"
 
-static void test_l10n(CuTest * tc)
+static void test_l10n_heap(CuTest * tc)
 {
     char buffer[32];
     l10n_text *txt;
@@ -19,6 +19,39 @@ static void test_l10n(CuTest * tc)
     CuAssertStrEquals(tc, "Enno's blog (42 stars)", buffer);
     txt = l10n_text_release(txt);
     CuAssertPtrEquals(tc, NULL, txt);
+}
+
+static void test_l10n(CuTest * tc)
+{
+    char buffer[32];
+    l10n_text txt;
+
+    l10n_text_init(&txt);
+    CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
+    CuAssertStrEquals(tc, "", buffer);
+
+    l10n_text_assign(&txt, "$name's blog (%num stars)", "$name", "Enno", "%num", 42, NULL);
+    CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
+    CuAssertStrEquals(tc, "Enno's blog (42 stars)", buffer);
+
+    l10n_text_assign(&txt, "Hodor", NULL);
+    CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
+    CuAssertStrEquals(tc, "Hodor", buffer);
+
+    l10n_text_assign(&txt, NULL);
+    CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
+    CuAssertStrEquals(tc, "", buffer);
+
+}
+
+static void test_l10n_types(CuTest * tc)
+{
+    char buffer[32];
+    l10n_text txt = { 0 };
+
+    l10n_text_assign(&txt, "$name's blog (%num stars)", "$name", "Enno", "%num", 42, NULL);
+    CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
+    CuAssertStrEquals(tc, "Enno's blog (42 stars)", buffer);
 }
 
 static void test_l10n_build(CuTest * tc)
@@ -38,5 +71,7 @@ static void test_l10n_build(CuTest * tc)
 void add_suite_l10n(CuSuite *suite)
 {
     SUITE_ADD_TEST(suite, test_l10n);
+    SUITE_ADD_TEST(suite, test_l10n_types);
     SUITE_ADD_TEST(suite, test_l10n_build);
+    SUITE_ADD_TEST(suite, test_l10n_heap);
 }

@@ -34,21 +34,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define NUM_ARGS 8
 
-l10n_text *l10n_text_copy(l10n_text *txt)
-{
-    ++txt->refcount;
-    return txt;
-}
-
-l10n_text *l10n_text_release(l10n_text *txt)
-{
-    if (--txt->refcount == 0) {
-        free(txt);
-        txt = NULL;
-    }
-    return txt;
-}
-
 static int read_token(const char *buffer, char *token, size_t len)
 {
     char *po = token;
@@ -79,11 +64,43 @@ static l10n_arg *get_arg(l10n_arg *args, const char *token)
     return NULL;
 }
 
+void l10n_text_init(l10n_text *txt)
+{
+    txt->format = NULL;
+    txt->args = NULL;
+    txt->refcount = 0;
+}
+
+void l10n_text_free(l10n_text *txt)
+{
+    assert(txt->refcount == 0);
+    txt->format = NULL;
+    if (txt->args) free(txt->args);
+}
+
 l10n_text *l10n_text_create(void)
 {
     l10n_text *txt = calloc(1, sizeof(l10n_text));
     if (txt) {
+        l10n_text_init(txt);
         txt->refcount = 1;
+    }
+    return txt;
+}
+
+l10n_text *l10n_text_copy(l10n_text *txt)
+{
+    assert(txt->refcount>0);
+    ++txt->refcount;
+    return txt;
+}
+
+l10n_text *l10n_text_release(l10n_text *txt)
+{
+    if (--txt->refcount == 0) {
+        l10n_text_free(txt);
+        free(txt);
+        txt = NULL;
     }
     return txt;
 }
@@ -125,7 +142,7 @@ char *l10n_text_render(l10n_text *txt, char *buffer, size_t len)
     return buffer;
 }
 
-l10n_text *l10n_text_assign_va(l10n_text *txt, const char * format, va_list va)
+static l10n_text *l10n_text_assign_va(l10n_text *txt, const char * format, va_list va)
 {
     l10n_arg args[NUM_ARGS];
     int i;
@@ -161,12 +178,20 @@ l10n_text *l10n_text_assign_va(l10n_text *txt, const char * format, va_list va)
 void l10n_text_assign(l10n_text *txt, const char *format, ...)
 {
     va_list va;
-    va_start(va, format);
-    l10n_text_assign_va(txt, format, va);
-    va_end(va);
+    if (txt->args) {
+        /* TODO: combine code with assign_va to realloc these? */
+        free(txt->args);
+        txt->format = NULL;
+    }
+    if (format) {
+        va_start(va, format);
+        l10n_text_assign_va(txt, format, va);
+        va_end(va);
+    }
 }
 
-l10n_text *l10n_text_build(const char *format, ...) {
+l10n_text *l10n_text_build(const char *format, ...)
+{
     l10n_text *txt = l10n_text_create();
     if (txt) {
         va_list va;
