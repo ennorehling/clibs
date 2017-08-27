@@ -41,8 +41,8 @@ extern "C" {
     } l10n_arg;
 
     typedef struct l10n_text {
-        int refcount;
         const char *format;
+        int refcount;
         struct l10n_arg *args;
     } l10n_text;
 

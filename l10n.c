@@ -71,11 +71,34 @@ void l10n_text_init(l10n_text *txt)
     txt->refcount = 0;
 }
 
+static void free_args(l10n_arg args[])
+{
+    int i;
+    for (i = 0; i != NUM_ARGS && args[i].name; ++i) {
+        char type = args[i].name[0];
+        switch (type) {
+        case L10N_PREFIX_L10N:
+            l10n_text_release((l10n_text *)args[i].value.v);
+            break;
+        case L10N_PREFIX_STRING:
+            free(args[i].value.s);
+            break;
+        default:
+            break;
+        }
+        free(args[i].name);
+    }
+    free(args);
+}
+
 void l10n_text_free(l10n_text *txt)
 {
     assert(txt->refcount == 0);
     txt->format = NULL;
-    if (txt->args) free(txt->args);
+    if (txt->args) {
+        free_args(txt->args);
+        txt->args = NULL;
+    }
 }
 
 l10n_text *l10n_text_create(void)
@@ -120,6 +143,7 @@ char *l10n_text_render(l10n_text *txt, char *buffer, size_t len)
                 c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
                 pi += c;
                 arg = get_arg(txt->args, token);
+                // TODO: use strncpy instead?
                 c = snprintf(po, count, "%s", arg->value.s);
                 po += c;
             }
@@ -130,8 +154,20 @@ char *l10n_text_render(l10n_text *txt, char *buffer, size_t len)
                 c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
                 pi += c;
                 arg = get_arg(txt->args, token);
+                // TODO: use itoa instead?
                 c = snprintf(po, count, "%d", arg->value.i);
                 po += c;
+            }
+            else if (*pi == L10N_PREFIX_L10N) {
+                l10n_text *sub;
+                l10n_arg * arg;
+                int c;
+                c = read_token(++pi, token, L10N_TOKEN_MAXLEN);
+                pi += c;
+                arg = get_arg(txt->args, token);
+                sub = (l10n_text *)arg->value.v;
+                l10n_text_render(sub, po, count);
+                po += strlen(po);
             }
             else {
                 *po++ = *pi++;
@@ -170,8 +206,9 @@ static l10n_text *l10n_text_assign_va(l10n_text *txt, const char * format, va_li
         args[i].name = strdup(name);
     }
     txt->format = format;
-    txt->args = malloc(i * sizeof(l10n_arg));
+    txt->args = malloc((i+1) * sizeof(l10n_arg));
     memcpy(txt->args, args, i * sizeof(l10n_arg));
+    txt->args[i].name = NULL;
     return txt;
 }
 
@@ -180,7 +217,8 @@ void l10n_text_assign(l10n_text *txt, const char *format, ...)
     va_list va;
     if (txt->args) {
         /* TODO: combine code with assign_va to realloc these? */
-        free(txt->args);
+        free_args(txt->args);
+        txt->args = NULL;
         txt->format = NULL;
     }
     if (format) {
