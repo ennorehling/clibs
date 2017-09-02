@@ -48,7 +48,7 @@ static void test_l10n(CuTest * tc)
 static void test_l10n_simple(CuTest * tc)
 {
     char buffer[32];
-    l10n_text txt = { 0 };
+    l10n_text txt = { NULL, 0, 0 };
 
     l10n_text_assign(&txt, "$name's blog (%num stars)", "$name", "Enno", "%num", 42, NULL);
     CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
@@ -69,7 +69,7 @@ static void test_l10n_const(CuTest * tc)
 static void test_l10n_nested(CuTest * tc)
 {
     char buffer[32];
-    l10n_text txt = { 0 };
+    l10n_text txt = { NULL, 0, 0 };
     l10n_text *sub;
 
     sub = l10n_text_build("$name!", "$name", "Hodor", NULL);
