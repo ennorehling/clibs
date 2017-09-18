@@ -6,13 +6,15 @@
 void add_suite_selist(CuSuite *suite);
 void add_suite_strutil(CuSuite *suite);
 void add_suite_critbit(CuSuite *suite);
+void add_suite_l10n(CuSuite *suite);
 
 int main(void)
 {
     CuString *output = CuStringNew();
     CuSuite *suite = CuSuiteNew();
     int result;
-    add_suite_critbit(suite);
+    add_suite_l10n(suite);
+    add_suite_strutil(suite);
     add_suite_critbit(suite);
     add_suite_selist(suite);
     
@@ -26,4 +28,3 @@ int main(void)
     CuSuiteDelete(suite);
     return result;
 }
-
