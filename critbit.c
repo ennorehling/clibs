@@ -286,7 +286,7 @@ int cb_foreach(critbit_tree * cb, const void * key, size_t keylen, int(*match_cb
     return 0;
 }
 
-const void * cb_find(critbit_tree * cb, const void * key, size_t keylen)
+void * cb_find(critbit_tree * cb, const void * key, size_t keylen)
 {
     void * str;
     size_t len;
