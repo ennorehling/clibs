@@ -71,7 +71,12 @@ void *selist_replace(selist * ql, int i, void *data)
 
 int selist_length(const selist * ql)
 {
-    return ql ? ql->num_elements + selist_length(ql->next) : 0;
+    int size = 0;
+    const selist *it;
+    for (it=ql; it; it = it->next) {
+        size += it->num_elements;
+    }
+    return size;
 }
 
 int selist_empty(const selist * ql)
