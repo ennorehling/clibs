@@ -58,6 +58,8 @@ static int read_token(const char *buffer, char *token, size_t len)
 static l10n_arg *get_arg(l10n_arg *args, const char *token)
 {
     int i;
+
+    assert(args);
     for (i = 0; i != NUM_ARGS && args[i].name; ++i) {
         if (strcmp(args[i].name + 1, token) == 0) {
             return args + i;
