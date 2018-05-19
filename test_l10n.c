@@ -59,7 +59,7 @@ static void test_l10n_simple(CuTest * tc)
 static void test_l10n_const(CuTest * tc)
 {
     char buffer[32];
-    l10n_text txt = { "Hodor", 0 };
+    l10n_text txt = { "Hodor", 0, NULL };
 
     CuAssertPtrEquals(tc, buffer, l10n_text_render(&txt, buffer, sizeof(buffer)));
     CuAssertStrEquals(tc, "Hodor", buffer);
