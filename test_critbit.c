@@ -130,11 +130,11 @@ static void test_erase_notfound(CuTest * tc)
 
 static void test_find_prefix(CuTest * tc)
 {
-  char * matches[4] = { 0, 0, 0, 0 };
+  void * matches[4] = { 0, 0, 0, 0 };
   critbit_tree cb = CRITBIT_TREE();
   int result;
 
-  result = cb_find_prefix_str(&cb, "herpderp", (void**)matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "herpderp", matches, 4, 0);
   CuAssertIntEquals(tc, 0, result);
   CuAssertStrEquals(tc, 0, matches[0]);
 
@@ -144,29 +144,29 @@ static void test_find_prefix(CuTest * tc)
   result = cb_find_prefix_str(&cb, "herpderp", NULL, 0, 0);
   CuAssertIntEquals(tc, 0, result);
 
-  result = cb_find_prefix_str(&cb, "", (void**)matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 0);
   CuAssertIntEquals(tc, 1, result);
   CuAssertStrEquals(tc, "herp", matches[0]);
 
-  result = cb_find_prefix_str(&cb, "", (void**)matches, 4, 1);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 1);
   CuAssertIntEquals(tc, 0, result);
 
   result = cb_insert_str(&cb, "herpes");
 
-  result = cb_find_prefix_str(&cb, "", (void**)matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 0);
   CuAssertIntEquals(tc, 2, result);
   
   result = cb_insert_str(&cb, "herpderp");
   result = cb_insert_str(&cb, "derp");
 
-  result = cb_find_prefix_str(&cb, "", (void**)matches, 4, 2);
+  result = cb_find_prefix_str(&cb, "", matches, 4, 2);
   CuAssertIntEquals(tc, 2, result);
 
   /* silly edge-case, we expect no results, even if there are matches */
   result = cb_find_prefix_str(&cb, "herp", NULL, 0, 0);
   CuAssertIntEquals(tc, 0, result);
 
-  result = cb_find_prefix_str(&cb, "herp", (void**)matches, 4, 0);
+  result = cb_find_prefix_str(&cb, "herp", matches, 4, 0);
   CuAssertIntEquals(tc, 3, result);
   CuAssertStrEquals(tc, "herp", matches[0]);
   CuAssertStrEquals(tc, "herpderp", matches[1]);
@@ -174,7 +174,7 @@ static void test_find_prefix(CuTest * tc)
   CuAssertStrEquals(tc, 0, matches[3]);
 
   matches[0] = 0;
-  result = cb_find_prefix_str(&cb, "herp", (void**)matches, 4, 3);
+  result = cb_find_prefix_str(&cb, "herp", matches, 4, 3);
   CuAssertIntEquals(tc, 0, result);
   CuAssertStrEquals(tc, 0, matches[0]);
 }
