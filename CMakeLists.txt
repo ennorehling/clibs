@@ -30,5 +30,5 @@ IF (MSVC)
     ENDMACRO (MSVC_SET_WARNING_LEVEL)
 
     MSVC_SET_WARNING_LEVEL(3)
-    MSVC_CRT_SECURE_NO_WARNINGS (test_clibs clibs cutest)
+    MSVC_CRT_SECURE_NO_WARNINGS (cutest clibs test_clibs)
 ENDIF (MSVC)
