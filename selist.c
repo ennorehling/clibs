@@ -71,7 +71,12 @@ void *selist_replace(selist * ql, int i, void *data)
 
 int selist_length(const selist * ql)
 {
-    return ql ? ql->num_elements + selist_length(ql->next) : 0;
+    int size = 0;
+    const selist *it;
+    for (it=ql; it; it = it->next) {
+        size += it->num_elements;
+    }
+    return size;
 }
 
 int selist_empty(const selist * ql)
@@ -123,7 +128,7 @@ int selist_delete(selist ** qlp, int i)
         else if (ql->next && ql->num_elements <= LIST_LIMIT) {
             selist *qn = ql->next;
             if (ql->num_elements + qn->num_elements > LIST_MAXSIZE) {
-                size_t len = (size_t)qn->num_elements * sizeof(void *);
+                size_t len = (size_t)(qn->num_elements - 1) * sizeof(void *);
                 ql->elements[ql->num_elements] = qn->elements[0];
                 --qn->num_elements;
                 ++ql->num_elements;

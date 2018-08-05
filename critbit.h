@@ -43,7 +43,7 @@ void cb_clear(critbit_tree * cb);
 #define cb_insert_str(cb, key) \
   cb_insert(cb, (void *)key, strlen(key)+1)
 #define cb_find_str(cb, key) \
-  (const char *)cb_find(cb, (void *)key, strlen(key)+1)
+  cb_find(cb, (void *)key, strlen(key)+1)
 #define cb_erase_str(cb, key) \
   cb_erase(cb, (void *)key, strlen(key)+1)
 #define cb_find_prefix_str(cb, key, results, numresults, offset) \
