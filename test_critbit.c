@@ -12,7 +12,7 @@ static void test_empty(CuTest * tc)
   str = (const char *)cb_find_str(&cb, "herpderp");
   CuAssertStrEquals(tc, 0, str);
   cb_clear(&cb);
-  CuAssertPtrEquals(tc, 0, cb.root);
+  CuAssertPtrEquals(tc, NULL, cb.root);
 }
 
 static void test_insert(CuTest * tc)
@@ -101,7 +101,7 @@ static void test_erase(CuTest * tc)
 
   result = cb_erase_str(&cb, "derp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  CuAssertPtrEquals(tc, 0, cb.root);
+  CuAssertPtrEquals(tc, NULL, cb.root);
 
   cb_clear(&cb);
 }
@@ -123,7 +123,7 @@ static void test_erase_notfound(CuTest * tc)
 
     result = cb_erase_str(&cb, "herp");
     CuAssertIntEquals(tc, CB_SUCCESS, result);
-    CuAssertPtrEquals(tc, 0, cb.root);
+    CuAssertPtrEquals(tc, NULL, cb.root);
 
     cb_clear(&cb);
 }
@@ -256,7 +256,7 @@ static void test_insert_duplicates(CuTest * tc)
   CuAssertIntEquals(tc, CB_EXISTS, result);
   result = cb_erase_str(&cb, "herpderp");
   CuAssertIntEquals(tc, CB_SUCCESS, result);
-  CuAssertPtrEquals(tc, 0, cb.root);
+  CuAssertPtrEquals(tc, NULL, cb.root);
 
   cb_clear(&cb);
 }

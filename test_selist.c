@@ -134,7 +134,7 @@ static void test_insert_delete_gives_null(CuTest * tc)
     selist_push(&ql, (void *)lipsum);
     CuAssertIntEquals(tc, 0, selist_empty(ql));
     selist_delete(&ql, 0);
-    CuAssertPtrEquals(tc, 0, ql);
+    CuAssertPtrEquals(tc, NULL, ql);
     selist_free(ql);
 }
 
@@ -174,7 +174,7 @@ static void test_push(CuTest * tc)
     CuAssertIntEquals(tc, 1, selist_length(ql));
     CuAssertPtrEquals(tc, (void *)lipsum, selist_get(ql, 0));
     selist_delete(&ql, 0);
-    CuAssertPtrEquals(tc, 0, ql);
+    CuAssertPtrEquals(tc, NULL, ql);
 }
 
 static void test_push_returns_end(CuTest * tc)
@@ -211,7 +211,7 @@ static void test_delete_edgecases(CuTest * tc)
 {
     struct selist *ql = NULL;
     selist_delete(&ql, 0);
-    CuAssertPtrEquals(tc, 0, ql);
+    CuAssertPtrEquals(tc, NULL, ql);
     selist_push(&ql, (void *)lipsum);
     selist_delete(&ql, -1);
     selist_delete(&ql, 32);
@@ -232,7 +232,7 @@ static void test_insert_many(CuTest * tc)
         CuAssertPtrEquals(tc, (void *)(lipsum + 31), selist_get(ql, selist_length(ql) - 1));
         selist_delete(&ql, 0);
     }
-    CuAssertPtrEquals(tc, 0, ql);
+    CuAssertPtrEquals(tc, NULL, ql);
     selist_free(ql);
 }
 
