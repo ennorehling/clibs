@@ -252,7 +252,7 @@ int cb_find_prefix(const critbit_tree * cb, const void * key, size_t keylen, voi
     return 0;
 }
 
-static int cb_foreach_i(void * ptr, const void * key, size_t keylen, int(*match_cb)(const void * match, const void * key, size_t keylen, void *), void *data)
+static int cb_foreach_i(void * ptr, const void * key, size_t keylen, int(*match_cb)(void * match, const void * key, size_t keylen, void *), void *data)
 {
     int result = 0;
 
@@ -276,7 +276,7 @@ static int cb_foreach_i(void * ptr, const void * key, size_t keylen, int(*match_
     return result;
 }
 
-int cb_foreach(critbit_tree * cb, const void * key, size_t keylen, int(*match_cb)(const void * match, const void * key, size_t keylen, void *), void *data)
+int cb_foreach(critbit_tree * cb, const void * key, size_t keylen, int(*match_cb)(void * match, const void * key, size_t keylen, void *), void *data)
 {
     void *top = cb_find_top_i(cb, key, keylen);
     if (top) {
