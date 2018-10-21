@@ -179,14 +179,14 @@ static void test_find_prefix(CuTest * tc)
   CuAssertStrEquals(tc, 0, matches[0]);
 }
 
-static int count_cb(const void * match, const void * key, size_t keylen, void * cbdata)
+static int count_cb(void * match, const void * key, size_t keylen, void * cbdata)
 {
   int * result = (int *)cbdata;
   ++*result;
   return memcmp(match, key, keylen);
 }
 
-static int ordered_cb(const void * match, const void * key, size_t keylen, void * cbdata)
+static int ordered_cb(void * match, const void * key, size_t keylen, void * cbdata)
 {
   const void ** prevptr = (const void **)cbdata;
   const void * prev = *prevptr;
