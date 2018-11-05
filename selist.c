@@ -107,6 +107,22 @@ selist * selist_push(selist ** qlp, void *data)
     return ql;
 }
 
+void * selist_pop(selist **qlp)
+{
+    while (*qlp) {
+        selist *ql = *qlp;
+        if (ql->next == NULL) {
+            void * result;
+            int i = ql->num_elements - 1;
+            assert(i >= 0);
+            result = selist_get(ql, i);
+            selist_delete(qlp, i);
+            return result;
+        }
+        qlp = &ql->next;
+    }
+    return NULL;
+}
 int selist_delete(selist ** qlp, int i)
 {
     selist *ql = *qlp;

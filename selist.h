@@ -41,6 +41,7 @@ extern "C" {
     int selist_empty(const struct selist *ql);
 
     struct selist * selist_push(struct selist **qlp, void *data);
+    void *selist_pop(struct selist **qlp);
     int selist_delete(struct selist **qlp, int index);
     bool selist_find(struct selist **qlp, int *index, const void *value, int(*equal)(const void *, const void *));
     bool selist_contains(selist *ql, const void *value, int(*equal)(const void *, const void *));
