@@ -47,6 +47,7 @@ static void * make_external_node(const void * key, size_t keylen)
     assert((numvalue & 1) == 0);
 #endif
     assert(keylen);
+    if (!data) abort();
     memcpy(data, &keylen, sizeof(size_t));
     memcpy(data + sizeof(size_t), key, keylen);
     return (void*)(data + 1);

@@ -211,6 +211,7 @@ static l10n_text *l10n_text_assign_va(l10n_text *txt, const char * format, va_li
     }
     txt->format = format;
     txt->args = malloc((i+1) * sizeof(l10n_arg));
+    if (!txt->args) abort();
     memcpy(txt->args, args, i * sizeof(l10n_arg));
     txt->args[i].name = NULL;
     return txt;
