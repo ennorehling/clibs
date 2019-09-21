@@ -50,15 +50,14 @@ char *format_list(int argc, const char *argv[],
     else if (format_replace(start, "{0}", argv[0], buffer, len)) {
         int i;
         for (i = 1; i < argc - 2; ++i) {
-            if (!format_replace(buffer, "{1}", middle, buffer, len)) goto fail;
-            if (!format_replace(buffer, "{0}", argv[i], buffer, len)) goto fail;
+            if (!format_replace(buffer, "{1}", middle, buffer, len)) return NULL;
+            if (!format_replace(buffer, "{0}", argv[i], buffer, len)) return NULL;
         }
-        if (!format_replace(buffer, "{1}", end, buffer, len)) goto fail;
-        if (!format_replace(buffer, "{0}", argv[argc - 2], buffer, len)) goto fail;
+        if (!format_replace(buffer, "{1}", end, buffer, len)) return NULL;
+        if (!format_replace(buffer, "{0}", argv[argc - 2], buffer, len)) return NULL;
         if (format_replace(buffer, "{1}", argv[argc - 1], buffer, len)) {
             return buffer;
         }
     }
-    fail:
     return NULL;
 }
