@@ -1,8 +1,7 @@
 #include <string.h>
 #include <stdio.h>
-#include <stdbool.h>
 
-bool str_replace(const char *input, const char *pattern, 
+int format_replace(const char *input, const char *pattern, 
         const char *str, char *output, size_t len)
 {
     size_t slen = strlen(str);
@@ -21,10 +20,10 @@ bool str_replace(const char *input, const char *pattern,
             memcpy(output + plen + slen, pos + spat, 
                     1 + sinp - plen - spat);
             memcpy(output + plen, str, slen);
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
 char *format_list(int argc, const char *argv[],
@@ -42,21 +41,21 @@ char *format_list(int argc, const char *argv[],
         }
     }
     else if (argc == 2) {
-        if (str_replace(two, "{0}", argv[0], buffer, len)) {
-            if (str_replace(buffer, "{1}", argv[1], buffer, len)) {
+        if (format_replace(two, "{0}", argv[0], buffer, len)) {
+            if (format_replace(buffer, "{1}", argv[1], buffer, len)) {
                 return buffer;
             }
         }
     }
-    else if (str_replace(start, "{0}", argv[0], buffer, len)) {
+    else if (format_replace(start, "{0}", argv[0], buffer, len)) {
         int i;
         for (i = 1; i < argc - 2; ++i) {
-            if (!str_replace(buffer, "{1}", middle, buffer, len)) goto fail;
-            if (!str_replace(buffer, "{0}", argv[i], buffer, len)) goto fail;
+            if (!format_replace(buffer, "{1}", middle, buffer, len)) goto fail;
+            if (!format_replace(buffer, "{0}", argv[i], buffer, len)) goto fail;
         }
-        if (!str_replace(buffer, "{1}", end, buffer, len)) goto fail;
-        if (!str_replace(buffer, "{0}", argv[argc - 2], buffer, len)) goto fail;
-        if (str_replace(buffer, "{1}", argv[argc - 1], buffer, len)) {
+        if (!format_replace(buffer, "{1}", end, buffer, len)) goto fail;
+        if (!format_replace(buffer, "{0}", argv[argc - 2], buffer, len)) goto fail;
+        if (format_replace(buffer, "{1}", argv[argc - 1], buffer, len)) {
             return buffer;
         }
     }
