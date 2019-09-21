@@ -1,8 +1,7 @@
 #include <string.h>
 #include <stdio.h>
-#include <stdbool.h>
 
-bool str_replace(const char *input, const char *pattern, 
+int format_replace(const char *input, const char *pattern, 
         const char *str, char *output, size_t len)
 {
     size_t slen = strlen(str);
@@ -15,45 +14,51 @@ bool str_replace(const char *input, const char *pattern,
             size_t plen = pos - input;
 	    if (plen > 0) {
 		// copy text before the pattern:
-                memcpy(output, input, plen);
+            memcpy(output, input, plen);
 	    }
 	    // copy text after the pattern, leave room for str:
-            strncpy(output + plen + slen, pos + spat, 
-                    sinp - plen - spat);
+            memcpy(output + plen + slen, pos + spat, 
+                    1 + sinp - plen - spat);
             memcpy(output + plen, str, slen);
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
-const char *format_list(int argc, const char *argv[],
-        char *buffer, size_t len,
-        const char *two, 
-        const char *start,
-        const char *middle,
-        const char *end)
+char *format_list(int argc, const char *argv[],
+    char *buffer, size_t len,
+    const char *two,
+    const char *start,
+    const char *middle,
+    const char *end)
 {
-    if (argc == 1) return argv[0];
-    if (argc == 2) {
-        if (str_replace(two, "{0}", argv[0], buffer, len)) {
-            if (str_replace(buffer, "{1}", argv[1], buffer, len)) {
+    if (argc == 1) {
+        size_t slen = strlen(argv[0]);
+        if (slen < len) {
+            memcpy(buffer, argv[0], slen + 1);
+            return buffer;
+        }
+    }
+    else if (argc == 2) {
+        if (format_replace(two, "{0}", argv[0], buffer, len)) {
+            if (format_replace(buffer, "{1}", argv[1], buffer, len)) {
                 return buffer;
             }
         }
     }
-    else {
+    else if (format_replace(start, "{0}", argv[0], buffer, len)) {
+        int i;
+        for (i = 1; i < argc - 2; ++i) {
+            if (!format_replace(buffer, "{1}", middle, buffer, len)) goto fail;
+            if (!format_replace(buffer, "{0}", argv[i], buffer, len)) goto fail;
+        }
+        if (!format_replace(buffer, "{1}", end, buffer, len)) goto fail;
+        if (!format_replace(buffer, "{0}", argv[argc - 2], buffer, len)) goto fail;
+        if (format_replace(buffer, "{1}", argv[argc - 1], buffer, len)) {
+            return buffer;
+        }
     }
+    fail:
     return NULL;
 }
-
-int main(int argc, const char * argv[]) {
-    char buffer[128];
-    const char *str = format_list(argc-1, argv+1, buffer, sizeof(buffer),
-                     "{0} and {1}",
-                     "{0}, {1}",
-                     "{0}, {1}",
-                     "{0} and {1}");
-    return puts(str ? str : "error");
-}
-    

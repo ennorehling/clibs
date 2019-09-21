@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 project (clibs C)
 
 FILE (GLOB LIB_HDR *.h)
-add_library (${PROJECT_NAME} l10n.c strutil.c critbit.c selist.c ${LIB_HDR})
+add_library (${PROJECT_NAME} l10n.c strutil.c critbit.c selist.c format.c ${LIB_HDR})
 add_library (cutest CuTest.c)
-add_executable (test_clibs tests.c test_l10n.c test_selist.c test_strutil.c test_critbit.c)
+add_executable (test_clibs tests.c test_l10n.c test_selist.c test_strutil.c test_format.c test_critbit.c)
 target_link_libraries (test_clibs cutest ${PROJECT_NAME})
 
 enable_testing()
