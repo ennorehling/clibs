@@ -18,7 +18,7 @@ long strtolh(const char *nptr, int base)
     else if (*end=='g') result*=1000000000;
     else if (*end=='K') result*=0x400;
     else if (*end=='M') result*=0x100000;
-    else if (*end=='g') result*=0x40000000;
+    else if (*end=='G') result*=0x40000000;
   }
   return result;
 }
