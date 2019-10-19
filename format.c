@@ -12,14 +12,15 @@ int format_replace(const char *input, const char *pattern,
         char *pos = strstr(input, pattern);
         if (pos) {
             size_t plen = pos - input;
-	    if (plen > 0) {
-		// copy text before the pattern:
-            memcpy(output, input, plen);
-	    }
-	    // copy text after the pattern, leave room for str:
-            memcpy(output + plen + slen, pos + spat, 
-                    1 + sinp - plen - spat);
-            memcpy(output + plen, str, slen);
+            // copy text after the pattern, leave room for str:
+            memmove(output + plen + slen, pos + spat,
+                1 + sinp - plen - spat);
+            // replace the pattern:
+            memmove(output + plen, str, slen);
+            if (plen > 0 && output != input) {
+		        // copy text before the pattern:
+                memcpy(output, input, plen);
+	        }
             return 1;
         }
     }
