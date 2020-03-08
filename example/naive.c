@@ -44,5 +44,9 @@ int main(int argc, char** argv) {
   }
   now = clock();
   printf("find: %.2fs\n", (float)(now-start)/CLOCKS_PER_SEC);
+  for(i=0;i!=n;++i) {
+      free(strings[i]);
+  }
+  free(strings);
   return 0;
 }

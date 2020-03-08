@@ -268,9 +268,8 @@ static void test_sbs_printf(CuTest * tc)
     CuAssertStrEquals(tc, "123456789", buffer);
 }
 
-CuSuite *get_strings_suite(void)
+void add_suite_strings(CuSuite *suite)
 {
-    CuSuite *suite = CuSuiteNew();
     SUITE_ADD_TEST(suite, test_str_hash);
     SUITE_ADD_TEST(suite, test_str_escape);
     SUITE_ADD_TEST(suite, test_str_escape_ex);
@@ -284,5 +283,4 @@ CuSuite *get_strings_suite(void)
     SUITE_ADD_TEST(suite, test_sbs_strcat);
     SUITE_ADD_TEST(suite, test_sbs_substr);
     SUITE_ADD_TEST(suite, test_sbs_printf);
-    return suite;
 }

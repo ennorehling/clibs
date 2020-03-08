@@ -46,7 +46,7 @@ static void * make_external_node(const void * key, size_t keylen)
     ptrdiff_t numvalue = (char *)data - (char*)0;
     assert((numvalue & 1) == 0);
 #endif
-    assert(keylen);
+    assert(keylen > 0);
     if (!data) abort();
     memcpy(data, &keylen, sizeof(size_t));
     memcpy(data + sizeof(size_t), key, keylen);
