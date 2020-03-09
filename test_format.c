@@ -3,7 +3,7 @@
 #include <string.h>
 
 static char *list_english(int argc, const char **argv) {
-    char buffer[128];
+    static char buffer[128];
     return format_list(argc, argv, buffer, sizeof(buffer),
         "{0} and {1}",
         "{0}, {1}",

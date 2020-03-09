@@ -28,6 +28,7 @@ obj/test_%.o: test_%.c %.h | obj
 bin/tests: tests.c obj/CuTest.o \
 	obj/test_selist.o obj/selist.o \
 	obj/test_l10n.o obj/l10n.o \
+	obj/test_strings.c obj/strings.c \
 	obj/test_critbit.o obj/critbit.o \
 	obj/test_format.o obj/format.o \
 	obj/test_strutil.o obj/strutil.o | bin
