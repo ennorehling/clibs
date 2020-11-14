@@ -209,7 +209,7 @@ void sbs_printf(struct sbstring *sbs, const char *format, ...)
         int bytes = vsnprintf(sbs->end, size, format, argp);
         if (bytes > 0) {
             if ((size_t)bytes >= size) {
-                bytes = size - 1;
+                bytes = (int)(size - 1);
                 /* terminate truncated output */
                 sbs->end[bytes] = '\0';
             }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.9)
 project (clibs C)
 
 FILE (GLOB LIB_HDR *.h)
