@@ -41,7 +41,7 @@ const char *str_itoa(int n)
 
 size_t str_strlcpy(char *dst, const char *src, size_t len)
 {
-#ifdef HAVE_BSDSTRING
+#ifdef HAVE_STRLCPY
     return strlcpy(dst, src, len);
 #else
     register char *d = dst;
@@ -72,7 +72,7 @@ size_t str_strlcpy(char *dst, const char *src, size_t len)
 
 size_t str_strlcat(char *dst, const char *src, size_t len)
 {
-#ifdef HAVE_BSDSTRING
+#ifdef HAVE_STRLCAT
     return strlcat(dst, src, len);
 #else
     register char *d = dst;
