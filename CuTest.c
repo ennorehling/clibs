@@ -1,3 +1,9 @@
+#ifdef _MSC_VER
+#pragma warning(disable:4267)
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#endif
 #include <assert.h>
 #include <setjmp.h>
 #include <stdlib.h>
@@ -13,7 +19,7 @@
 
 char* CuStrAlloc(size_t size)
 {
-	char* newStr = (char*) malloc( sizeof(char) * size );
+	char* newStr = (char*) malloc(sizeof(char) * size);
 	return newStr;
 }
 
