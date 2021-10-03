@@ -10,7 +10,7 @@ static void test_empty(CuTest * tc)
   const char * str;
 
   str = (const char *)cb_find_str(&cb, "herpderp");
-  CuAssertStrEquals(tc, 0, str);
+  CuAssertStrEquals(tc, NULL, str);
   cb_clear(&cb);
   CuAssertPtrEquals(tc, NULL, cb.root);
 }
@@ -95,7 +95,7 @@ static void test_erase(CuTest * tc)
   CuAssertIntEquals(tc, CB_SUCCESS, result);
 
   str = cb_find_str(&cb, "herp");
-  CuAssertStrEquals(tc, 0, str);
+  CuAssertStrEquals(tc, NULL, str);
   str = cb_find_str(&cb, "derp");
   CuAssertStrEquals(tc, "derp", str);
 
@@ -136,7 +136,7 @@ static void test_find_prefix(CuTest * tc)
 
   result = cb_find_prefix_str(&cb, "herpderp", matches, 4, 0);
   CuAssertIntEquals(tc, 0, result);
-  CuAssertStrEquals(tc, 0, matches[0]);
+  CuAssertStrEquals(tc, NULL, matches[0]);
 
   result = cb_insert_str(&cb, "herp");
 
@@ -171,12 +171,12 @@ static void test_find_prefix(CuTest * tc)
   CuAssertStrEquals(tc, "herp", matches[0]);
   CuAssertStrEquals(tc, "herpderp", matches[1]);
   CuAssertStrEquals(tc, "herpes", matches[2]);
-  CuAssertStrEquals(tc, 0, matches[3]);
+  CuAssertStrEquals(tc, NULL, matches[3]);
 
   matches[0] = 0;
   result = cb_find_prefix_str(&cb, "herp", matches, 4, 3);
   CuAssertIntEquals(tc, 0, result);
-  CuAssertStrEquals(tc, 0, matches[0]);
+  CuAssertStrEquals(tc, NULL, matches[0]);
 }
 
 static int count_cb(void * match, const void * key, size_t keylen, void * cbdata)
@@ -291,7 +291,7 @@ static void test_clear(CuTest * tc)
   CuAssertIntEquals(tc, CB_SUCCESS, cb_insert_str(&cb, "herp"));
   CuAssertPtrNotNull(tc, cb_find_str(&cb, "herp"));
   cb_clear(&cb);
-  CuAssertStrEquals(tc, 0, cb_find_str(&cb, "herp"));
+  CuAssertStrEquals(tc, NULL, cb_find_str(&cb, "herp"));
   CuAssertIntEquals(tc, CB_SUCCESS, cb_insert_str(&cb, "herp"));
   CuAssertPtrNotNull(tc, cb_find_str(&cb, "herp"));
 }
