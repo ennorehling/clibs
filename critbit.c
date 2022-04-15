@@ -107,7 +107,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
     }
     else {
         void ** iter = &cb->root;
-        struct critbit_node * prev = 0;
+        struct critbit_node * prev = NULL;
         for (;;) {
             void * ptr = *iter;
             if (decode_pointer(&ptr) == INTERNAL_NODE) {
@@ -178,7 +178,7 @@ int cb_insert(critbit_tree * cb, const void * key, size_t keylen)
 
 static void * cb_find_top_i(const critbit_tree * cb, const void * key, size_t keylen)
 {
-    void *ptr, *top = 0;
+    void *ptr, *top = NULL;
     assert(keylen==0 || key);
 
     if (!cb->root) {
@@ -313,7 +313,7 @@ int cb_erase(critbit_tree * cb, const void * key, size_t keylen)
 {
     void **iter = NULL;
     void *ptr = cb->root;
-    struct critbit_node *parent = 0;
+    struct critbit_node *parent = NULL;
     unsigned char * bytes = (unsigned char *)key;
     int branch = 0;
 

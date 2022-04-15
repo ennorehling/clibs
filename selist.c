@@ -86,7 +86,7 @@ int selist_empty(const selist * ql)
 
 selist * selist_push(selist ** qlp, void *data)
 {
-    selist *ql = 0;
+    selist *ql = NULL;
     while (*qlp && ((*qlp)->next || (*qlp)->num_elements == LIST_MAXSIZE)) {
         qlp = &(*qlp)->next;
     }

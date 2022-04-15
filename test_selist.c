@@ -22,7 +22,7 @@ static void test_mapreduce(CuTest * tc)
 {
     int buffer;
     int result = 0;
-    struct selist *ql = 0;
+    struct selist *ql = NULL;
     selist_push(&ql, (void *)lipsum);
     selist_push(&ql, (void *)lipsum);
     selist_map_reduce(ql, my_map, my_reduce, &buffer, &result);
@@ -46,7 +46,7 @@ static void callback(void *entry) {
 
 static void test_foreach(CuTest *tc) {
     int total = 0;
-    struct selist *ql = 0;
+    struct selist *ql = NULL;
     selist_push(&ql, (void *)lipsum);
     selist_push(&ql, (void *)lipsum);
     selist_foreach_ex(ql, callback_ctx, &total);
@@ -64,7 +64,7 @@ static void test_find_cb(CuTest *tc) {
     int a = 42;
     int b = 23;
     int c = 42;
-    struct selist *ql = 0;
+    struct selist *ql = NULL;
     struct selist *il;
     int i;
 
@@ -86,7 +86,7 @@ static void test_find_cb(CuTest *tc) {
 }
 
 static void test_find(CuTest *tc) {
-    struct selist *ql = 0;
+    struct selist *ql = NULL;
     struct selist *il;
     int i;
 
