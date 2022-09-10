@@ -201,15 +201,15 @@ char *str_strdup(const char *s) {
 
 void sbs_printf(struct sbstring *sbs, const char *format, ...)
 {
-    size_t size = sbs->size - (sbs->end - sbs->begin);
+    size_t size = (sbs->end - sbs->begin);
 
-    if (size > 0) {
+    if (size < sbs->size) {
         va_list argp;
         va_start(argp, format);
-        int bytes = vsnprintf(sbs->end, size, format, argp);
+        int bytes = vsnprintf(sbs->end, sbs->size - size, format, argp);
         if (bytes > 0) {
-            if ((size_t)bytes >= size) {
-                bytes = (int)(size - 1);
+            if ((size_t)bytes >= sbs->size - size) {
+                bytes = (int)(sbs->size - size - 1);
                 /* terminate truncated output */
                 sbs->end[bytes] = '\0';
             }
