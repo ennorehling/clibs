@@ -1,8 +1,5 @@
 #ifdef _MSC_VER
-#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
-#endif
-#define HAVE__ITOA
 #endif
 #include "strings.h"
 
@@ -13,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef HAVE_LIBBSD
+#if HAVE_LIBBSD
 #include <bsd/string.h>
 #else
 #include <string.h>
@@ -21,8 +18,10 @@
 
 const char* str_itoa_r(int val, char *buf)
 {
-#ifdef HAVE__ITOA
+#if HAVE__ITOA
     return _itoa(val, buf, 10);
+#elif HAVE_ITOA
+    return itoa(val, buf, 10);
 #else
     snprintf(buf, 12, "%d", val);
     return buf;
@@ -32,8 +31,10 @@ const char* str_itoa_r(int val, char *buf)
 const char *str_itoa(int n)
 {
     static char buf[12];
-#ifdef HAVE__ITOA
+#if HAVE__ITOA
     return _itoa(n, buf, 10);
+#elif HAVE_ITOA
+    return itoa(n, buf, 10);
 #else
     return str_itoa_r(n, buf);
 #endif
@@ -41,7 +42,7 @@ const char *str_itoa(int n)
 
 size_t str_strlcpy(char *dst, const char *src, size_t len)
 {
-#ifdef HAVE_STRLCPY
+#if HAVE_STRLCPY
     return strlcpy(dst, src, len);
 #else
     register char *d = dst;
@@ -72,7 +73,7 @@ size_t str_strlcpy(char *dst, const char *src, size_t len)
 
 size_t str_strlcat(char *dst, const char *src, size_t len)
 {
-#ifdef HAVE_STRLCAT
+#if HAVE_STRLCAT
     return strlcat(dst, src, len);
 #else
     register char *d = dst;
@@ -185,10 +186,10 @@ unsigned int wang_hash(unsigned int a)
 
 char *str_strdup(const char *s) {
     if (s == NULL) return NULL;
-#ifdef HAVE_STRDUP
-    return strdup(s);
-#elif defined(_MSC_VER)
+#if HAVE__STRDUP
     return _strdup(s);
+#elif HAVE_STRDUP
+    return strdup(s);
 #else
     size_t len = strlen(s);
     char *dup = malloc(len + 1);
