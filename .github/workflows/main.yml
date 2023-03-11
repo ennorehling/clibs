@@ -8,14 +8,13 @@ jobs:
       - name: Get latest CMake and ninja
         uses: lukka/get-cmake@latest  
       - name: Git Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ennorehling/clibs
       - name: Build and Test
-        uses: ashutoshvarma/action-cmake-build@master
+        uses: threeal/cmake-action@v1.1.0
         with:
-          build-dir: ${{ runner.workspace }}/build
-          build-type: Release
+          args: "-DCMAKE_BUILD_TYPE=Release"
           run-test: true
-          ctest-options: --output-on-failure
+          test-args: "--output-on-failure"
 
