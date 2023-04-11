@@ -10,4 +10,5 @@ bin/
 *.o
 *.opensdf
 config
+.gdb_history
 /vc14

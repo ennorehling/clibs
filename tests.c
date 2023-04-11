@@ -9,6 +9,7 @@ void add_suite_strings(CuSuite *suite);
 void add_suite_strutil(CuSuite *suite);
 void add_suite_critbit(CuSuite *suite);
 void add_suite_l10n(CuSuite *suite);
+void add_suite_cmdline(CuSuite *suite);
 
 int main(void)
 {
@@ -21,6 +22,7 @@ int main(void)
     add_suite_strutil(suite);
     add_suite_critbit(suite);
     add_suite_selist(suite);
+    add_suite_cmdline(suite);
     
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);
