@@ -3,7 +3,6 @@
 
 #include "CuTest.h"
 #include <string.h>
-#include <stdlib.h>
 
 static void test_parse_cmdline(CuTest *tc)
 {
@@ -16,7 +15,7 @@ static void test_parse_cmdline(CuTest *tc)
     CuAssertPtrEquals(tc, NULL, params[0].key);
 
     const char *input = "-test -foo=bar one two -help three";
-    char *copy = malloc(strlen(input));
+    char copy[64];
     char *argv[6];
     int argc = 0;
     memcpy(copy, input, strlen(input)+1);
