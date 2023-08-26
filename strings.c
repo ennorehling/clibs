@@ -232,34 +232,44 @@ void sbs_init(struct sbstring *sbs, char *buffer, size_t size)
 
 void sbs_adopt(struct sbstring *sbs, char *buffer, size_t size)
 {
-    size_t len = strlen(buffer);
-    assert(sbs);
-    assert(size > len);
-    sbs->begin = buffer;
-    sbs->size = size;
-    sbs->end = buffer + len;
+    if (buffer && size > 0) {
+        size_t len = strlen(buffer);
+        assert(sbs);
+        assert(size > len);
+        sbs->begin = buffer;
+        sbs->size = size;
+        sbs->end = buffer + len;
+    }
+    else {
+        sbs->end = sbs->begin = NULL;
+        sbs->size = 0;
+    }
 }
 
 void sbs_strncat(struct sbstring *sbs, const char *str, size_t size)
 {
-    size_t len;
     assert(sbs);
-    len = sbs->size - (sbs->end - sbs->begin) - 1;
-    if (len < size) {
-        size = len;
+    if (str) {
+        size_t len;
+        len = sbs->size - (sbs->end - sbs->begin) - 1;
+        if (len < size) {
+            size = len;
+        }
+        memcpy(sbs->end, str, size);
+        sbs->end[size] = '\0';
+        sbs->end += size;
     }
-    memcpy(sbs->end, str, size);
-    sbs->end[size] = '\0';
-    sbs->end += size;
 }
 
 void sbs_strcat(struct sbstring *sbs, const char *str)
 {
     size_t len;
     assert(sbs);
-    len = sbs->size - (sbs->end - sbs->begin);
-    str_strlcpy(sbs->end, str, len);
-    sbs->end += strlen(sbs->end);
+    if (str) {
+        len = sbs->size - (sbs->end - sbs->begin);
+        str_strlcpy(sbs->end, str, len);
+        sbs->end += strlen(sbs->end);
+    }
     assert(sbs->begin + sbs->size >= sbs->end);
 }
 
@@ -285,8 +295,11 @@ void sbs_substr(sbstring *sbs, ptrdiff_t pos, size_t len)
 
 size_t sbs_length(const struct sbstring *sbs)
 {
-    assert(sbs->begin + sbs->size >= sbs->end);
-    return sbs->end - sbs->begin;
+    if (sbs->begin) {
+        assert(sbs->begin + sbs->size >= sbs->end);
+        return sbs->end - sbs->begin;
+    }
+    return 0;
 }
 
 char *str_unescape(char *str) {

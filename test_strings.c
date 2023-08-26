@@ -149,6 +149,7 @@ static void test_sbstring(CuTest * tc)
     sbstring sbs;
     sbs_init(&sbs, buffer, sizeof(buffer));
     CuAssertStrEquals(tc, "", sbs.begin);
+    CuAssertIntEquals(tc, 0, (int)sbs_length(&sbs));
     sbs_strcat(&sbs, "Hodor");
     CuAssertStrEquals(tc, "Hodor", sbs.begin);
     sbs_strcat(&sbs, "Hodor");
@@ -179,6 +180,10 @@ static void test_sbstring(CuTest * tc)
     sbs_adopt(&sbs, buffer + 2, sizeof(buffer) - 2);
     CuAssertStrEquals(tc, "3456789012345", sbs.begin);
     CuAssertIntEquals(tc, 13, (int)sbs_length(&sbs));
+
+    sbs_adopt(&sbs, NULL, 8);
+    CuAssertStrEquals(tc, NULL, sbs.begin);
+    CuAssertIntEquals(tc, 0, (int)sbs_length(&sbs));
 }
 
 static void test_sbs_strcat(CuTest * tc)
@@ -188,6 +193,8 @@ static void test_sbs_strcat(CuTest * tc)
 
     sbs_init(&sbs, buffer, sizeof(buffer));
     sbs_strcat(&sbs, "AB");
+    CuAssertStrEquals(tc, "AB", sbs.begin);
+    sbs_strcat(&sbs, NULL);
     CuAssertStrEquals(tc, "AB", sbs.begin);
     sbs_strcat(&sbs, "CD");
     CuAssertStrEquals(tc, "ABCD", sbs.begin);
@@ -200,6 +207,8 @@ static void test_sbs_strcat(CuTest * tc)
 
     sbs_init(&sbs, buffer, sizeof(buffer));
     sbs_strncat(&sbs, "12345678901234567890", 4);
+    CuAssertStrEquals(tc, "1234", sbs.begin);
+    sbs_strncat(&sbs, NULL, 4);
     CuAssertStrEquals(tc, "1234", sbs.begin);
     sbs_strncat(&sbs, "12345678901234567890", 4);
     CuAssertStrEquals(tc, "1234123", sbs.begin);
