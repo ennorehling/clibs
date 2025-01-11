@@ -117,6 +117,7 @@ static void test_str_strlcpy(CuTest * tc)
 
     memset(buffer, 0x7f, sizeof(buffer));
 
+    CuAssertIntEquals(tc, 8, (int)str_strlcpy(NULL, "herpderp", 0));
     CuAssertIntEquals(tc, 4, (int)str_strlcpy(buffer, "herp", 8));
     CuAssertStrEquals(tc, "herp", buffer);
     CuAssertIntEquals(tc, 0x7f, buffer[5]);
@@ -141,6 +142,85 @@ static void test_str_itoa(CuTest * tc)
     CuAssertStrEquals(tc, "0", str_itoa(0));
     CuAssertStrEquals(tc, "1234567890", str_itoa(1234567890));
     CuAssertStrEquals(tc, "-1234567890", str_itoa(-1234567890));
+}
+
+static void test_str_format(CuTest *tc)
+{
+    const char *params[] = {
+        "name\0Enno",
+        "time\0now"
+    };
+    char buffer[64];
+    /* no tokens */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 11, (int)str_format(NULL, 0, "Hello World", NULL, 0));
+    CuAssertIntEquals(tc, 11, (int) str_format(buffer, 64, "Hello World", NULL, 0));
+    CuAssertStrEquals(tc, "Hello World", buffer);
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 11, (int)str_format(buffer, 12, "Hello World", NULL, 0));
+    CuAssertStrEquals(tc, "Hello World", buffer);
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 11, (int)str_format(buffer, 11, "Hello World", NULL, 0));
+    CuAssertStrEquals(tc, "Hello Worl", buffer);
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 11, (int)str_format(buffer, 64, "Hello World", params, 2));
+    CuAssertStrEquals(tc, "Hello World", buffer);
+
+    /* unterminated token error */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 0, (int)str_format(buffer, 64, "Hello {world", NULL, 0));
+
+    /* token not found */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 13, (int)str_format(buffer, 64, "Hello {world}", NULL, 0));
+    CuAssertStrEquals(tc, "Hello {world}", buffer);
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 13, (int)str_format(buffer, 64, "Hello {world}", params, 2));
+    CuAssertStrEquals(tc, "Hello {world}", buffer);
+
+    /* happy case, find a token and replace it */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 10, (int)str_format(buffer, 64, "Hello {name}", params, 2));
+    CuAssertStrEquals(tc, "Hello Enno", buffer);
+
+    /* repeat tokens */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 12, (int)str_format(buffer, 64, "{name} is {name}", params, 2));
+    CuAssertStrEquals(tc, "Enno is Enno", buffer);
+
+    /* multiple tokens */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 28, (int)str_format(buffer, 29, "Hello {name}, the time is {time}.", params, 2));
+    CuAssertStrEquals(tc, "Hello Enno, the time is now.", buffer);
+
+    /* escaping braces */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 12, (int)str_format(buffer, 64, "Hello \\{name\\}", params, 2));
+    CuAssertStrEquals(tc, "Hello {name}", buffer);
+
+    /* escape other characters */
+    memset(buffer, 0, sizeof(buffer));
+    CuAssertIntEquals(tc, 13, (int)str_format(buffer, 64, "Hello \\\\\\World\\", params, 2));
+    CuAssertStrEquals(tc, "Hello \\World\\", buffer);
+
+
+#if 0
+
+    /* buffer too short */
+    CuAssertStrEquals(tc, "Hello", str_format(buffer, 6, "Hello {name}", params, 2));
+
+    /* escaped braces */
+    CuAssertStrEquals(tc, "Hello {name}!", str_format(buffer, 64, "Hello \\{name\\}!", params, 2));
+
+    /* escaped backslashes */
+    CuAssertStrEquals(tc, "Hello \\Enno!", str_format(buffer, 64, "Hello \\\\{name}!", params, 2));
+
+    /* ignore garbage single backslash */
+    CuAssertStrEquals(tc, "", str_format(buffer, 64, "\\", params, 2));
+
+    /* syntax error (missing }) */
+    CuAssertPtrEquals(tc, NULL, str_format(buffer, 64, "Hello {name", params, 2));
+#endif
 }
 
 static void test_sbstring(CuTest * tc)
@@ -293,6 +373,7 @@ void add_suite_strings(CuSuite *suite)
     SUITE_ADD_TEST(suite, test_str_strlcat);
     SUITE_ADD_TEST(suite, test_str_strlcpy);
     SUITE_ADD_TEST(suite, test_str_itoa);
+    SUITE_ADD_TEST(suite, test_str_format);
     SUITE_ADD_TEST(suite, test_sbstring);
     SUITE_ADD_TEST(suite, test_sbs_strcat);
     SUITE_ADD_TEST(suite, test_sbs_substr);

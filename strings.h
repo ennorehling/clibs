@@ -10,6 +10,7 @@ size_t str_strlcpy(char *dst, const char *src, size_t len);
 size_t str_strlcat(char *dst, const char *src, size_t len);
 char *str_strdup(const char *s);
 
+size_t str_format(char *dst, size_t size, const char *format, const char *params[], size_t nparams);
 const char *str_escape(const char *str, char *buffer, size_t size);
 const char *str_escape_ex(const char *str, char *buffer, size_t size, const char *chars);
 char *str_unescape(char *str);

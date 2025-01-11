@@ -50,7 +50,7 @@ size_t str_strlcpy(char *dst, const char *src, size_t len)
     register size_t n = len;
 
     assert(src);
-    assert(dst);
+    assert(dst || len==0);
     /* Copy as many bytes as will fit */
     if (n != 0 && --n != 0) {
         do {
@@ -428,6 +428,101 @@ const char *str_escape_ex(const char *str, char *buffer, size_t size, const char
     }
     *write = '\0';
     return buffer;
+}
+
+size_t str_format(char *dst, size_t size, const char *format, const char *params[], size_t nparams)
+{
+    const char *pos, *copy = format;
+    char *write = dst;
+
+    size_t space = size;
+    size_t space_needed = 0;
+
+    for (pos = format; *pos; ++pos) {
+        pos = strpbrk(pos, "{\\");
+        if (!pos) {
+            /* no more tokens, copy remainder of format string to output */
+            space_needed += str_strlcpy(write, copy, space);
+            break;
+        }
+        else {
+            size_t bytes = pos - copy;
+            /* found the start of a new token, copy `bytes` of lead text from [copy, pos) */
+            space_needed += bytes;
+            if (space > 0) {
+                if (bytes >= space) {
+                    bytes = space - 1;
+                }
+                str_strlcpy(write, copy, bytes + 1);
+                write += bytes;
+                space -= bytes;
+            }
+        }
+        if (*pos == '{') {
+            const char *token = pos + 1;
+
+            copy = strchr(pos, '}');
+            if (!copy) {
+                /* syntax error: unterminated token */
+                return 0;
+            }
+            else {
+                /* found a token in the [token, copy) interval */
+                size_t keylen = copy - token;
+                size_t n;
+                const char *val = NULL;
+                for (n = 0; n != nparams; ++n) {
+                    const char *key = params[n];
+                    if (0 == strncmp(key, token, keylen)) {
+                        /* param matches token? */
+                        if (key[keylen] == '\0') {
+                            val = key + keylen + 1;
+                            break;
+                        }
+                    }
+                }
+                if (val) {
+                    size_t slen = str_strlcpy(write, val, space);
+                    space_needed += slen;
+                    if (slen < space) {
+                        space -= slen;
+                        write += slen;
+                    }
+                    else {
+                        /* buffer is full */
+                        write += space - 1;
+                        space = 0;
+                    }
+                }
+                else {
+                    /* token not found, copy [pos, copy] to output instead */
+                    size_t bytes = keylen + 2;
+                    space_needed += bytes;
+                    if (bytes >= space) {
+                        bytes = space - 1;
+                    }
+                    str_strlcpy(write, pos, bytes + 1);
+                    write += bytes;
+                    space -= bytes;
+                }
+                pos = ++copy;
+            }
+        }
+        else {
+            /** backslash escapes the next character */
+            ++space_needed;
+            if (pos[1]) ++pos;
+            if (space > 1) {
+                *write++ = *pos;
+                --space;
+            }
+            copy = pos + 1;
+        }
+    }
+    if (copy < pos) {
+        space_needed += str_strlcpy(write, copy, space);
+    }
+    return space_needed;
 }
 
 const char *str_escape(const char *str, char *buffer, size_t size) {
