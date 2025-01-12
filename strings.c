@@ -505,7 +505,7 @@ size_t str_format(char *dst, size_t size, const char *format, const char *params
                     write += bytes;
                     space -= bytes;
                 }
-                pos = ++copy;
+                pos = copy++;
             }
         }
         else {
